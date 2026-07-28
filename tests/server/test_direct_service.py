@@ -234,6 +234,9 @@ class DirectServiceTests(unittest.TestCase):
         now = [0.0]; limiter = RateLimiter(lambda: now[0], max_sources=2)
         self.assertTrue(limiter.allow("a", 10, 1, 10, 10)); self.assertFalse(limiter.allow("a", 10, 1, 10, 10)); now[0] = 11; limiter.cleanup(10); self.assertTrue(limiter.allow("a", 10, 1, 10, 10)); limiter.allow("b", 10, 1, 10, 10); limiter.allow("c", 10, 1, 10, 10); self.assertLessEqual(len(limiter.sources), 2)
 
+    def test_listener_allows_controlled_restart_after_time_wait(self) -> None:
+        self.assertTrue(BoundedIPv4Server.allow_reuse_address)
+
     def test_invalid_schema_is_not_healthy(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = pathlib.Path(directory) / "invalid.sqlite3"; path.write_bytes(b"not sqlite"); self.assertFalse(check_database(str(path)))

@@ -175,7 +175,9 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
 
 class BoundedIPv4Server(socketserver.ThreadingMixIn, socketserver.TCPServer):
     address_family = socket.AF_INET
-    allow_reuse_address = False
+    # A controlled restart can otherwise collide with the listener's short
+    # TCP TIME_WAIT window and trigger an avoidable restart loop.
+    allow_reuse_address = True
     daemon_threads = True
     block_on_close = True
 
