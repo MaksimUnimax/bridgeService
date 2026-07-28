@@ -10,6 +10,7 @@ from collections import deque
 from typing import Callable
 
 from .database import check_database
+from .pairing import pair
 
 
 class RateLimiter:
@@ -52,7 +53,7 @@ def _body(data: dict[str, str]) -> bytes:
 
 
 def _response(status: int, data: dict[str, str], retry_after: int | None = None) -> bytes:
-    reasons = {200: "OK", 400: "Bad Request", 404: "Not Found", 405: "Method Not Allowed", 413: "Content Too Large", 414: "URI Too Long", 429: "Too Many Requests", 431: "Request Header Fields Too Large", 503: "Service Unavailable"}
+    reasons = {200: "OK", 201: "Created", 400: "Bad Request", 403: "Forbidden", 404: "Not Found", 405: "Method Not Allowed", 413: "Content Too Large", 414: "URI Too Long", 415: "Unsupported Media Type", 429: "Too Many Requests", 431: "Request Header Fields Too Large", 503: "Service Unavailable"}
     payload = _body(data)
     headers = [f"HTTP/1.1 {status} {reasons.get(status, 'Error')}\r\n", "Content-Type: application/json; charset=utf-8\r\n", "Cache-Control: no-store\r\n", "X-Content-Type-Options: nosniff\r\n", "Connection: close\r\n", f"Content-Length: {len(payload)}\r\n"]
     if retry_after is not None:
@@ -71,9 +72,10 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
         config = self.server.config  # type: ignore[attr-defined]
         self.request.settimeout(config.request_timeout_seconds)
         try:
-            raw = self._read_headers(config.max_header_bytes, config.max_request_line_bytes)
-            if raw is None:
+            parsed = self._read_headers(config.max_header_bytes, config.max_request_line_bytes)
+            if parsed is None:
                 return
+            raw, initial_body = parsed
             lines = raw.split(b"\r\n")
             if len(lines) < 2 or not lines[0]:
                 self._send(400, {"error": "bad_request"})
@@ -113,21 +115,41 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
                 if length > config.max_request_body_bytes:
                     self._send(413, {"error": "content_too_large"})
                     return
-                remaining = length
+                body = bytearray(initial_body[:length])
+                remaining = length - len(body)
                 while remaining:
                     chunk = self.request.recv(min(1024, remaining))
                     if not chunk:
                         self._send(400, {"error": "bad_request"})
                         return
                     remaining -= len(chunk)
-            limiter = self.server.limiter  # type: ignore[attr-defined]
-            if not limiter.allow(self.client_address[0], config.per_source_rate_window_seconds, config.per_source_rate_limit, config.global_rate_window_seconds, config.global_rate_limit):
-                self._send(429, {"error": "rate_limited"}, 10)
-                return
-            if parts[0] != b"GET":
+                    body.extend(chunk)
+            else:
+                body = bytearray()
+            target_raw = parts[1]
+            is_pairing = target_raw.split(b"?", 1)[0] == b"/v2/pairing/complete"
+            if is_pairing:
+                if not self.server.pairing_limiter.allow(self.client_address[0], 60, 10, 60, 60):  # type: ignore[attr-defined]
+                    self._send(429, {"error": "rate_limited"}, 10); return
+            else:
+                limiter = self.server.limiter  # type: ignore[attr-defined]
+                if not limiter.allow(self.client_address[0], config.per_source_rate_window_seconds, config.per_source_rate_limit, config.global_rate_window_seconds, config.global_rate_limit):
+                    self._send(429, {"error": "rate_limited"}, 10); return
+            if parts[0] != b"GET" and not is_pairing:
                 self._send(405, {"error": "method_not_allowed"})
                 return
-            target = parts[1].split(b"?", 1)[0]
+            if is_pairing:
+                if parts[0] != b"POST": self._send(405, {"error":"method_not_allowed"}); return
+                if b"?" in target_raw: self._send(400, {"error":"pairing_rejected"}); return
+                if headers.get("transfer-encoding", "").lower() == "chunked": self._send(400, {"error":"bad_request"}); return
+                if headers.get("content-type", "").lower() != "application/json": self._send(415, {"error":"unsupported_media_type"}); return
+                try: ok, data = pair(self.server.service.database_path, bytes(body))  # type: ignore[attr-defined]
+                except ValueError: self._send(400, {"error":"pairing_rejected"}); return
+                if ok:
+                    data["instance_id"] = self.server.service.identity["instance_id"]  # type: ignore[attr-defined]
+                    self._send(201, data); return
+                self._send(403, {"error":"pairing_rejected"}); return
+            target = target_raw.split(b"?", 1)[0]
             service = self.server.service  # type: ignore[attr-defined]
             ready = check_database(service.database_path)
             identity = getattr(service, "identity", None)
@@ -139,7 +161,7 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
             elif target == b"/v2/version":
                 self._send(200, {"service": service.service_name, "version": service.version, "api_version": "v2", "transport": "direct-http-bootstrap"})
             elif target == b"/v2/diagnostics/public":
-                self._send(200 if ready else 503, {"service": service.service_name, "version": service.version, "status": "ready" if ready else "unavailable", "listener_scope": "public", "database": "ready" if ready else "unavailable", "identity": "ready" if identity else "unavailable", "pairing": "disabled", "crypto": "disabled", "tasks": "disabled"})
+                self._send(200 if ready else 503, {"service": service.service_name, "version": service.version, "status": "ready" if ready else "unavailable", "listener_scope": "public", "database": "ready" if ready else "unavailable", "identity": "ready" if identity else "unavailable", "pairing": "enabled", "crypto": "disabled", "tasks": "disabled"})
             elif target == b"/v2/bootstrap":
                 if not ready or not identity:
                     self._send(503, {"error": "unavailable"})
@@ -150,7 +172,7 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
         except (socket.timeout, TimeoutError, OSError, UnicodeError):
             return
 
-    def _read_headers(self, maximum: int, line_maximum: int) -> bytes | None:
+    def _read_headers(self, maximum: int, line_maximum: int) -> tuple[bytes, bytes] | None:
         data = bytearray()
         while b"\r\n\r\n" not in data:
             chunk = self.request.recv(min(1024, maximum + 1 - len(data)))
@@ -163,14 +185,14 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
             if len(data) > maximum:
                 self._send(431, {"error": "headers_too_large"})
                 return None
-        head = bytes(data).split(b"\r\n\r\n", 1)[0]
+        full = bytes(data); head, initial_body = full.split(b"\r\n\r\n", 1)
         if len(head) > maximum:
             self._send(431, {"error": "headers_too_large"})
             return None
         if len(head.split(b"\r\n")) - 1 > 32:
             self._send(431, {"error": "too_many_headers"})
             return None
-        return head + b"\r\n\r\n"
+        return head + b"\r\n\r\n", initial_body
 
 
 class BoundedIPv4Server(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -185,6 +207,7 @@ class BoundedIPv4Server(socketserver.ThreadingMixIn, socketserver.TCPServer):
         self.config = config
         self.service = service
         self.limiter = RateLimiter()
+        self.pairing_limiter = RateLimiter(max_sources=1024)
         self._slots = __import__("threading").BoundedSemaphore(config.max_concurrent_requests)
         self.request_queue_size = config.listen_backlog
         super().__init__(address, DirectRequestHandler)

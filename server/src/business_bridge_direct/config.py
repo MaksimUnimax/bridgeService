@@ -66,7 +66,7 @@ def load_config(path: str | os.PathLike[str]) -> DirectConfig:
         raise ValueError("invalid config") from exc
     if not isinstance(data, dict) or set(data) != _FIELDS:
         raise ValueError("invalid config fields")
-    if not isinstance(data["listen_host"], str) or data["listen_host"] not in {"78.17.68.165", "0.0.0.0"}:
+    if not isinstance(data["listen_host"], str) or data["listen_host"] != "78.17.68.165":
         raise ValueError("unsupported IPv4 bind")
     if type(data["listen_port"]) is not int or data["listen_port"] != 18100:
         raise ValueError("invalid port")

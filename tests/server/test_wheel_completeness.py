@@ -18,6 +18,8 @@ REQUIRED = {
     "business_bridge_direct/identity.py",
     "business_bridge_direct/identity_cli.py",
     "business_bridge_direct/main.py",
+    "business_bridge_direct/pairing.py",
+    "business_bridge_direct/pairing_cli.py",
     "business_bridge_direct/py.typed",
 }
 
@@ -26,7 +28,7 @@ class WheelCompletenessTests(unittest.TestCase):
     def test_clean_wheel_contains_complete_runtime_package(self) -> None:
         wheel = pathlib.Path(os.environ["BB2_WHEEL_UNDER_TEST"])
         self.assertTrue(wheel.is_file())
-        self.assertEqual(wheel.name, "business_bridge_2_direct-0.4.0-py3-none-any.whl")
+        self.assertEqual(wheel.name, "business_bridge_2_direct-0.5.0-py3-none-any.whl")
         with zipfile.ZipFile(wheel) as archive:
             self.assertEqual(archive.testzip(), None)
             names = set(archive.namelist())
