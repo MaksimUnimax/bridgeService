@@ -96,7 +96,7 @@ class BaselineTests(unittest.TestCase):
     install_path = pathlib.Path("/opt/business-bridge-2-direct")
     if ROOT == install_path:
         self.assertTrue(install_path.is_dir())
-        self.assertTrue((install_path / "server" / ".venv").is_dir())
+        self.assertTrue((install_path / ".venv").is_dir())
     for path in (
         pathlib.Path("/etc/business-bridge-2-direct"),
         pathlib.Path("/var/lib/business-bridge-2-direct"),
