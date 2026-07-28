@@ -1,6 +1,6 @@
 # BB2 Direct — roadmap 19 ранов
 
-Основные раны выполняются строго по порядку, одновременно только один, без дробления. После `FAILED/BLOCKED` допускается максимум один FIX1; циклы запрещены.
+Основные раны выполняются строго по порядку, одновременно только один, без дробления. Corrective continuation не создаёт новый основной ран и обязана повторно проверить все acceptance criteria исходного рана.
 
 | ID | Цель и полный scope | Acceptance | Final marker |
 |---|---|---|---|
@@ -24,4 +24,4 @@
 | BB2-DIRECT-17 | Security/failure tests, abuse, isolation, redaction и rollback | Полный security/failure pack PASS | `BB2_DIRECT_17_COMPLETE` |
 | BB2-DIRECT-18 | E2E, release, checksums, extension ZIP, guide и clean main | Production release готов к user acceptance | `BB2_DIRECT_18_COMPLETE` |
 
-Текущий результат после публикации acceptance: `BB2-DIRECT-05 ACCEPTED / PASS`; стабильная server identity и public bootstrap доказаны после restart с внешних узлов. Direct пока не production-ready: pairing, crypto, tasks и reports отсутствуют. Следующий `BB2-DIRECT-06`.
+Текущий подтверждённый результат: `BB2-DIRECT-07 ACCEPTED / PASS`. Direct 0.6.0 имеет отдельную identity, одноразовое pairing и защищённый BB2D-P1 browser/server protocol с реальным Chrome Web Crypto evidence. Task/report API и выполнение пользовательских заданий ещё отсутствуют. Следующий основной ран: `BB2-DIRECT-08`.
