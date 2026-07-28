@@ -4,7 +4,7 @@
 |---|---|---|---|---|---|---|
 | BB2-DIRECT-00 | Inventory and safety | Read-only service/network checks | Prior run evidence | Legacy | ACCEPTED / PASS | `BB2_DIRECT_00_READ_ONLY_COMPLETE` |
 | BB2-DIRECT-01 | Contract complete and consistent | Markdown/link/secret/consistency scans | `BB2-DIRECT-01_DOCUMENTATION_EVIDENCE.md` | Documentation | ACCEPTED / PASS | `BB2_DIRECT_01_COMPLETE` |
-| BB2-DIRECT-02 | Isolated source baseline | Manifest and baseline tests | Deferred run evidence | Source | NOT TESTED | `BB2_DIRECT_02_COMPLETE` |
+| BB2-DIRECT-02 | Isolated source baseline | Manifest, package-install and baseline tests | `docs/development/evidence/BB2-DIRECT-02_SOURCE_BASELINE_EVIDENCE.md` | Source | ACCEPTED / PASS | `BB2_DIRECT_02_COMPLETE` |
 | BB2-DIRECT-03 | Local Direct service | systemd/health tests | Deferred run evidence | Server | NOT TESTED | `BB2_DIRECT_03_COMPLETE` |
 | BB2-DIRECT-04 | Public reachability | External TCP/HTTP and firewall test | Deferred run evidence | Network | NOT TESTED | `BB2_DIRECT_04_COMPLETE` |
 | BB2-DIRECT-05 | Stable server identity | Restart/fingerprint test | Deferred run evidence | Server | NOT TESTED | `BB2_DIRECT_05_COMPLETE` |
