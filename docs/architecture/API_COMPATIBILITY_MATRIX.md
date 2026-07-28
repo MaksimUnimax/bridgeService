@@ -1,12 +1,16 @@
 # API compatibility matrix
 
 The following facts are confirmed from the read-only legacy source inventory.
-Future Direct endpoint names and runtime behavior remain deferred until the
-scoped implementation runs.
+Legacy health remains source-confirmed. Direct now has a deliberately
+separate localhost-only diagnostic surface; task/report compatibility remains
+deferred.
 
 | Function | Legacy source-confirmed endpoint/mechanism | Direct baseline status | Source | Status |
 |---|---|---|---|---|
-| Health | `GET /v2/health` in `Bridge2Application.handle` | Runtime deferred | `app/api.py:61-69` | CONFIRMED |
+| Legacy health | `GET /v2/health` in `Bridge2Application.handle` | Source-confirmed; legacy remains 200 | `app/api.py:61-69` | CONFIRMED |
+| Direct health | — | `GET /v2/health` implemented, DB-gated | `docs/development/evidence/BB2-DIRECT-03_LOCAL_SERVICE_EVIDENCE.md` | IMPLEMENTED |
+| Direct version | — | `GET /v2/version` implemented, Direct-only | `docs/development/evidence/BB2-DIRECT-03_LOCAL_SERVICE_EVIDENCE.md` | IMPLEMENTED |
+| Direct diagnostics | — | `GET /v2/diagnostics/public` implemented, safe diagnostics | `docs/development/evidence/BB2-DIRECT-03_LOCAL_SERVICE_EVIDENCE.md` | IMPLEMENTED |
 | Identity | `GET /v2/identity`, bearer authorization | Runtime deferred | `app/api.py:71-92`, `app/security.py:125-140` | CONFIRMED |
 | Executor listing | `GET /v2/executors`, database health rows plus health manager definitions | Runtime deferred | `app/api.py:94-125` | CONFIRMED |
 | Executor refresh | `POST /v2/executors/refresh`, refresh manager request | Runtime deferred | `app/api.py:127-137` | CONFIRMED |
@@ -22,7 +26,6 @@ scoped implementation runs.
 | Executor probing | Registry definitions and refresh manager run configured probes | Runtime deferred | `app/executor_registry.py:22-334` | CONFIRMED |
 | Persistence | SQLite database abstraction with chains, jobs, deliveries and events | Excluded from this baseline | `app/database.py:70-889` | CONFIRMED |
 
-No endpoint, response behavior, Direct route, or transport mapping is invented
-by this baseline. Service activation, listener binding, Direct persistence,
-authentication migration, executor execution, and report delivery are
-deferred to their explicitly scoped future runs.
+Direct task, report, identity, pairing, crypto, executor and extension
+transport compatibility remains deferred; this run does not claim those
+interfaces.

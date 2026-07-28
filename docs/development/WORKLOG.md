@@ -116,3 +116,16 @@ Marker: `BB2_DIRECT_01_COMPLETE`.
 
 Marker: `BB2_DIRECT_02_COMPLETE`.
 Следующий ран: `BB2-DIRECT-03`.
+
+## 2026-07-28 — BB2-DIRECT-03 — isolated localhost service
+
+- Implementation commits: `89575d777a1a02b06ece95c6ed85f0711e6ec786` and lifecycle-test follow-up `e9bee7bb1d8017cd42d480e940bafb6a61a41f61`; both published linearly to `development` with the project-specific deploy key over SSH/443. `main` remained `c426263e6dd00135a0023a0fa08a500273e73e23`.
+- Installed `/opt/business-bridge-2-direct` version 0.2.0, config `/etc/business-bridge-2-direct/service.json`, state `/var/lib/business-bridge-2-direct`, log contract `/var/log/business-bridge-2-direct`, empty secrets directory, and unit `business-bridge-2-direct.service`.
+- Dedicated system user/group `business-bridge-direct` (UID/GID 995), nologin, locked password, no privileged groups. Listener is exactly `127.0.0.1:18100`; endpoints are GET health, version and public diagnostics only.
+- SQLite is owned by the Direct user, mode 0600, `PRAGMA user_version=1`, one `runtime_metadata` table, and schema/service metadata only. No legacy database, state, logs, secrets or venv were reused.
+- Repository, staging and final installed tests passed: 13 collected, 13 passed, 0 failed, 0 skipped. Wheel/package metadata and manifest verification passed; systemd-analyze verify passed; installed unit is byte-equivalent to the repository template.
+- One controlled Direct SIGKILL restart-policy test was executed. PID changed from 1661755 to 1661953; NRestarts increased from 20 to 24; service recovered active/running with health 200 and persistent DB schema. Legacy before/after remained PID 1619365, start `Mon 2026-07-27 13:16:29 MSK`, NRestarts 0, localhost listener and health 200.
+- Two pre-activation Direct staging attempts were rolled back safely; the final deployment remained within Direct scope. No legacy mutation occurred. Evidence is redacted and contains no secrets, tokens, DB rows or full journal.
+
+Marker: `BB2_DIRECT_03_COMPLETE`.
+Следующий ран: `BB2-DIRECT-04` — public bind/firewall/external reachability; не выполнялся.
