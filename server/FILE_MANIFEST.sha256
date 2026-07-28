@@ -1,7 +1,7 @@
 6a0181cce1d14767324ecfb78802afe2837ff93f73bf455f783887915e4f7771  ./.gitignore
 b0e1bc5bdd3d6b74bc56ff9817f6c55e41622fad18d9fa6308d918cba1d4e2e3  ./README_DEVELOPMENT.md
 d399e7d3f082206594afbc1b8e6f95e0b8eece7cee79b90d47764f4a1fa44c5f  ./config/service.example.json
-0e47e9a34446a54b00680ac7d78c43445ec5a3d27375de418ebcf12419830c73  ./pyproject.toml
+8266dba1a22df9d0ac349f7efbb8686738aea345304c4019e8a09306bcb26733  ./pyproject.toml
 483b620894faa822729447ea2ffad95cd094f857fca38a46e8189096c1201730  ./src/business_bridge_direct/__init__.py
 19f5097f7455852fd2cdc743a0ce27277b5a502e8ea6ec48ac6daa1c6a7efeb1  ./src/business_bridge_direct/config.py
 41108f0400770f833641ea1e3d19321e4fdb989f4906345bb5687f567135abda  ./src/business_bridge_direct/database.py
@@ -12,3 +12,4 @@ ed637589a434a7686d25a77237463f05acc815532383d73a90e9e466d49a28d0  ./src/business
 13a6d6057fa9d2c3aa169e956bfbfa4b6241a82d636bd1adad1f652be57aba25  ./src/business_bridge_direct/identity_cli.py
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./src/business_bridge_direct/py.typed
 09a6a0689f4b5cf2af65d340e08e0201a9c8bb4a34110962e579e95714f1f445  ./systemd/business-bridge-2-direct.service
+8cd5b6301fb35036ee7113a036afef2594aa537fa511260a214f49b3b131d95e  ../tests/server/test_wheel_completeness.py

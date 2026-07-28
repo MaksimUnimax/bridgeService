@@ -14,6 +14,8 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["business_bridge_direct*"]
+namespaces = false
 
 [tool.setuptools.package-data]
 business_bridge_direct = ["py.typed"]
