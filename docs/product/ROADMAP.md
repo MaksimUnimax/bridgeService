@@ -24,4 +24,4 @@
 | BB2-DIRECT-17 | Security/failure tests, abuse, isolation, redaction и rollback | Полный security/failure pack PASS | `BB2_DIRECT_17_COMPLETE` |
 | BB2-DIRECT-18 | E2E, release, checksums, extension ZIP, guide и clean main | Production release готов к user acceptance | `BB2_DIRECT_18_COMPLETE` |
 
-Текущий результат после публикации acceptance: `BB2-DIRECT-04 ACCEPTED / PASS`; публичная reachability доказана с внешних узлов. Direct пока не production-ready: pairing, crypto, identity, tasks и reports ещё отсутствуют. Следующий `BB2-DIRECT-05`.
+Текущий результат после публикации acceptance: `BB2-DIRECT-05 ACCEPTED / PASS`; стабильная server identity и public bootstrap доказаны после restart с внешних узлов. Direct пока не production-ready: pairing, crypto, tasks и reports отсутствуют. Следующий `BB2-DIRECT-06`.

@@ -29,3 +29,7 @@ deferred.
 Direct task, report, identity, pairing, crypto, executor and extension
 transport compatibility remains deferred; this run does not claim those
 interfaces.
+
+| Direct bootstrap | — | `GET /v2/bootstrap`, public key and fingerprint discovery only | BB2-DIRECT-05 evidence | IMPLEMENTED |
+
+The legacy identity endpoint remains separate and no bearer-compatibility claim is made. Pairing/device APIs remain deferred to BB2-DIRECT-06.

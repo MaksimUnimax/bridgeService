@@ -19,3 +19,7 @@ MITM и подмена сервера — fingerprint, server signature и authe
 ## Lifecycle
 
 Pairing code одноразовый; server/device revoke немедленно блокирует session. Rotation имеет metadata и требует fingerprint confirmation; backup boundary для identity keys проходит только по отдельным Direct backup/restore, при identity change extension предупреждает и не принимает сервер молча. Permanent secret в connection bundle не допускается. Secret storage — отдельные права Direct; old Bridge secrets не читаются и не переиспользуются.
+
+### BB2-DIRECT-05 stable server identity
+
+Direct has a stable UUIDv4 identity and separate ECDSA P-256 signing key in unencrypted PKCS#8 PEM. The public key is canonical DER SubjectPublicKeyInfo, transferred as unpadded base64url; fingerprint is SHA-256 over exact DER bytes. Startup validates permissions, curve, public-key equality, fingerprint and possession before binding. `/v2/bootstrap` is unauthenticated discovery and does not authenticate the server or replace encryption. Pairing is BB2-DIRECT-06; signed/encrypted transport is BB2-DIRECT-07. Rotation requires separate backup and explicit confirmation; no production rotation occurred.

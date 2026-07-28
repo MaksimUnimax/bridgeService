@@ -1,0 +1,23 @@
+{
+  "technical_id": "BB2-DIRECT-05-FIX7",
+  "status": "PASS",
+  "version": "0.4.0",
+  "service": "business-bridge-2-direct",
+  "instance_id": "73515b73-a4d3-41c7-b143-624ce2a42eb5",
+  "fingerprint": "sha256:b0adfb05bd25e9684279494aa8054191dca70784fab416a29ec699b737111bc4",
+  "algorithm": "ECDSA_P256_SHA256",
+  "public_key_format": "SPKI_DER_BASE64URL",
+  "rotation_generation": 1,
+  "local_http_200": true,
+  "fingerprint_matches_spki": true,
+  "public_matches_private": true,
+  "deterministic_repeated_response": true,
+  "external_probes": [
+    {"node": "r.jina.ai/104.26.10.242", "http": 200, "body_proof": true},
+    {"node": "r.jina.ai/172.67.70.54", "http": 200, "body_proof": true}
+  ],
+  "private_material_printed": false,
+  "private_key_hash_printed": false,
+  "filesystem_paths_exposed": false,
+  "pairing_or_device_credentials_exposed": false
+}

@@ -1,0 +1,23 @@
+{
+  "technical_id": "BB2-DIRECT-05-FIX7",
+  "status": "PASS",
+  "restrictive_umask_reproduced": true,
+  "package_present": true,
+  "root_import_before_normalization": true,
+  "service_user_import_before_normalization": false,
+  "failure_class": "filesystem traversal/read permissions",
+  "service_user_import_after_normalization": true,
+  "install_tree_service_writable": false,
+  "identity_directory": "root:business-bridge-direct 0750",
+  "identity_metadata": "root:business-bridge-direct 0640 regular hardlink_count_1",
+  "private_key": "root:business-bridge-direct 0640 regular hardlink_count_1",
+  "database_service_writable": true,
+  "wrong_permissions_fail_closed": true,
+  "wrong_owner_group_fail_closed": true,
+  "symlink_fail_closed": true,
+  "hardlink_fail_closed": true,
+  "public_private_mismatch_fail_closed": true,
+  "partial_state_fail_closed": true,
+  "malformed_metadata_fail_closed": true,
+  "no_secret_output": true
+}

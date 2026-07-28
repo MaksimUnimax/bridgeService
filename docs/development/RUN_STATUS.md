@@ -9,7 +9,7 @@
 | BB2-DIRECT-02 | Изолированный source baseline | ACCEPTED / PASS |
 | BB2-DIRECT-03 | Минимальная новая служба на localhost | ACCEPTED / PASS |
 | BB2-DIRECT-04 | Публичный bind и внешняя достижимость | ACCEPTED / PASS |
-| BB2-DIRECT-05 | Instance identity и серверная ключевая пара | NOT STARTED |
+| BB2-DIRECT-05 | Instance identity и серверная ключевая пара | ACCEPTED / PASS |
 | BB2-DIRECT-06 | Одноразовое pairing | NOT STARTED |
 | BB2-DIRECT-07 | Защищённый прикладной протокол | NOT STARTED |
 | BB2-DIRECT-08 | Совместимый task/report API | NOT STARTED |
@@ -32,6 +32,7 @@ BB2_DIRECT_01_COMPLETE
 BB2_DIRECT_02_COMPLETE
 BB2_DIRECT_03_COMPLETE
 BB2_DIRECT_04_COMPLETE
+BB2_DIRECT_05_COMPLETE
 ```
 
 ## Правила перехода
@@ -43,4 +44,10 @@ BB2_DIRECT_04_COMPLETE
 - После `FAILED/BLOCKED` допускается один `BB2-DIRECT-XX-FIX1` только для доказанного блокера.
 - Необязательные улучшения записываются как `DEFERRED` и не создают новые раны.
 
-Следующий ран: `BB2-DIRECT-05` — instance identity и серверная ключевая пара.
+Следующий ран: `BB2-DIRECT-06` — одноразовое pairing; BB2-DIRECT-06..18 остаются `NOT STARTED`.
+
+## BB2-DIRECT-05-FIX7
+
+`BB2-DIRECT-05 = ACCEPTED / PASS`. Marker: `BB2_DIRECT_05_COMPLETE`.
+
+FIX7 завершил permission correction, nested identity metadata migration, exact-wheel deployment, one controlled Direct restart sequence, public bootstrap evidence, rollback proof and legacy safety checks. Следующий ран: `BB2-DIRECT-06`; он не выполнялся.
