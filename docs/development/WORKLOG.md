@@ -56,3 +56,31 @@ BB2_DIRECT_00_READ_ONLY_COMPLETE
 ### Следующий ран
 
 `BB2-DIRECT-01` — архитектурный, продуктовый и совместимый контракт.
+
+---
+
+## BB2-DIRECT-01 — продуктовый, архитектурный и совместимый контракт
+
+**Статус:** ACCEPTED / PASS
+
+### Созданные и обновлённые материалы
+
+Созданы product, architecture, security, compatibility, acceptance, rollback и три ADR-документа; обновлены README, master context, run status и этот worklog; добавлено documentation evidence.
+
+### Принятые решения
+
+- Direct — прямое соединение extension с публичным IPv4 VPS клиента без relay/control plane, tunnel или обязательного домена.
+- Bundle выдаёт CLI, содержит одноразовые pairing-данные, не содержит постоянный private key.
+- Sensitive payload защищается application-layer encryption; legacy остаётся fallback.
+- Direct получает отдельные paths/DB/secrets/service/user/port; bind подтверждается в BB2-DIRECT-04.
+- Pairing имеет TTL 5–10 минут, single-use, limits, device identity и revoke.
+
+### Проверки и ограничения
+
+Выполнены проверки наличия/непустоты файлов, Markdown-ссылок, placeholder/secret scans, terminology/cross-document consistency, 19-run count, acceptance coverage, SHA-256 и git diff. Runtime, systemd unit, user, порт 18100, firewall, legacy Bridge и BB2-DIRECT-02 не затрагивались. Неподтверждённые legacy endpoint’ы оставлены `NEEDS_SOURCE_CONFIRMATION` до BB2-DIRECT-02/08.
+
+### Marker и следующий ран
+
+`BB2_DIRECT_01_COMPLETE`.
+
+Следующий ран: `BB2-DIRECT-02` — изолированный source baseline.

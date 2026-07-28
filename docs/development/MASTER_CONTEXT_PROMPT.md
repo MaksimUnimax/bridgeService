@@ -145,4 +145,12 @@ BB2-DIRECT-01: NEXT
 BB2-DIRECT-02..18: NOT STARTED
 ```
 
+## Контракт BB2-DIRECT-01
+
+Сервер и VPS принадлежат клиенту; relay/control plane разработчика отсутствует, публичный IPv4 обязателен, домен не обязателен, сторонний tunnel не используется. CLI выдаёт один versioned connection bundle с одноразовыми pairing-данными; bundle не содержит постоянный private key и не является бессрочным credential. Sensitive payload защищается application-layer envelope; HTTP не считается защитой. Pairing одноразовое, TTL 5–10 минут, с attempt/rate limits, отдельной device identity и revoke. Серверы изолируются профилями и conversation ID. Краткий обрыв восстанавливается автоматически, после restart достаточно «Подключить». Legacy сохраняется до полной приёмки, Direct не использует рабочие DB/secrets/state/logs.
+
+Изолированные Direct-ресурсы: `/opt/business-bridge-2-direct`, `/etc/business-bridge-2-direct`, `/etc/business-bridge-2-direct/secrets`, `/var/lib/business-bridge-2-direct`, `/var/log/business-bridge-2-direct`, `business-bridge-2-direct.service`, user `business-bridge-direct`, initial port `18100`, first-station IPv4 `78.17.68.165`; bind утверждается в BB2-DIRECT-04. Baseline cryptography: ECDH/ECDSA P-256, HKDF-SHA-256, AES-256-GCM, SHA-256, nonce/timestamp/expiry/sequence/request ID/replay ledger.
+
+Раны 00–18 выполняются строго по порядку, основные раны не дробятся; после FAILED/BLOCKED допускается максимум один FIX1, циклы запрещены. Разработка отражается в `development`, в `main` позднее переносится чистый production release. Текущая точка: `BB2-DIRECT-01 ACCEPTED / PASS`, marker `BB2_DIRECT_01_COMPLETE`, следующий `BB2-DIRECT-02`; runtime Direct и BB2-DIRECT-02 в этом ране не выполняются.
+
 После вставки этого prompt не пересказывай план. Сообщи последний принятый и следующий ран, затем выдай в одном блоке для копирования только полный CLI-prompt следующего рана.

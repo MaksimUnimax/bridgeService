@@ -5,7 +5,7 @@
 | Ран | Назначение | Статус |
 |---|---|---|
 | BB2-DIRECT-00 | Read-only инвентаризация действующего Bridge и сети | ACCEPTED / PASS |
-| BB2-DIRECT-01 | Архитектурный, продуктовый и совместимый контракт | NEXT |
+| BB2-DIRECT-01 | Архитектурный, продуктовый и совместимый контракт | ACCEPTED / PASS |
 | BB2-DIRECT-02 | Изолированный source baseline | NOT STARTED |
 | BB2-DIRECT-03 | Минимальная новая служба на localhost | NOT STARTED |
 | BB2-DIRECT-04 | Публичный bind и внешняя достижимость | NOT STARTED |
@@ -28,6 +28,7 @@
 
 ```text
 BB2_DIRECT_00_READ_ONLY_COMPLETE
+BB2_DIRECT_01_COMPLETE
 ```
 
 ## Правила перехода
@@ -38,3 +39,5 @@ BB2_DIRECT_00_READ_ONLY_COMPLETE
 - После `PASS` обновляются этот файл и `WORKLOG.md`.
 - После `FAILED/BLOCKED` допускается один `BB2-DIRECT-XX-FIX1` только для доказанного блокера.
 - Необязательные улучшения записываются как `DEFERRED` и не создают новые раны.
+
+Следующий ран: `BB2-DIRECT-02` — изолированный source baseline.
