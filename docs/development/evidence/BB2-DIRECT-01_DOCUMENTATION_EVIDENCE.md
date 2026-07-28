@@ -25,7 +25,7 @@
 | `docs/development/RUN_STATUS.md` | UPDATED | 2717 | `877f538dbdd246edbd4f28bc1806b9568bf1aaaa2f3ed6f4bb2cd24e10214d75` |
 | `docs/development/WORKLOG.md` | UPDATED | 5081 | `69ba239b0389b18ac64cd3d572d866d493eb22715658b4d9f450933f71714d21` |
 
-Evidence file hash is reported after final file assembly. The published commit SHA is recorded in the final evidence follow-up commit.
+Published documentation commit before this evidence-only follow-up: `8c8de55`. The final published HEAD is the evidence follow-up commit recorded by Git after commit.
 
 ## Checks
 
