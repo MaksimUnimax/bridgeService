@@ -1,0 +1,20 @@
+{
+  "version": "0.3.0",
+  "limits": {"request_timeout_seconds": 5, "max_request_line_bytes": 2048, "max_header_bytes": 8192, "max_header_count": 32, "max_request_body_bytes": 4096, "max_concurrent_requests": 16, "listen_backlog": 32, "per_source_rate_window_seconds": 10, "per_source_rate_limit": 30, "global_rate_window_seconds": 10, "global_rate_limit": 120},
+  "tests": [
+    {"case":"request_line_within_limit","expected":200,"actual":200,"duration_ms":1,"result":"PASS"},
+    {"case":"oversized_request_line","expected":414,"actual":414,"duration_ms":1,"result":"PASS"},
+    {"case":"oversized_headers","expected":431,"actual":431,"duration_ms":1,"result":"PASS"},
+    {"case":"excessive_header_count","expected":431,"actual":431,"duration_ms":1,"result":"PASS"},
+    {"case":"body_within_limit_method_handling","expected":405,"actual":405,"duration_ms":1,"result":"PASS"},
+    {"case":"oversized_body","expected":413,"actual":413,"duration_ms":1,"result":"PASS"},
+    {"case":"malformed_request","expected":400,"actual":400,"duration_ms":1,"result":"PASS"},
+    {"case":"unknown_route","expected":404,"actual":404,"duration_ms":1,"result":"PASS"},
+    {"case":"unsupported_method","expected":405,"actual":405,"duration_ms":1,"result":"PASS"},
+    {"case":"slow_partial_request","expected":"closed_after_timeout","actual":"closed_after_5s","duration_ms":5000,"result":"PASS"},
+    {"case":"concurrency_overflow","expected":503,"actual":503,"duration_ms":1,"result":"PASS"},
+    {"case":"per_source_rate_overflow","expected":429,"actual":429,"duration_ms":20,"result":"PASS"},
+    {"case":"global_rate_overflow","expected":429,"actual":429,"duration_ms":20,"result":"PASS"},
+    {"case":"expired_rate_bucket_cleanup","expected":"bounded","actual":"bounded","duration_ms":1,"result":"PASS"}
+  ]
+}

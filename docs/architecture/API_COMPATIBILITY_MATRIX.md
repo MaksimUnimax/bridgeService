@@ -2,15 +2,15 @@
 
 The following facts are confirmed from the read-only legacy source inventory.
 Legacy health remains source-confirmed. Direct now has a deliberately
-separate localhost-only diagnostic surface; task/report compatibility remains
+separate public IPv4 diagnostic surface; task/report compatibility remains
 deferred.
 
 | Function | Legacy source-confirmed endpoint/mechanism | Direct baseline status | Source | Status |
 |---|---|---|---|---|
 | Legacy health | `GET /v2/health` in `Bridge2Application.handle` | Source-confirmed; legacy remains 200 | `app/api.py:61-69` | CONFIRMED |
-| Direct health | — | `GET /v2/health` implemented, DB-gated | `docs/development/evidence/BB2-DIRECT-03_LOCAL_SERVICE_EVIDENCE.md` | IMPLEMENTED |
-| Direct version | — | `GET /v2/version` implemented, Direct-only | `docs/development/evidence/BB2-DIRECT-03_LOCAL_SERVICE_EVIDENCE.md` | IMPLEMENTED |
-| Direct diagnostics | — | `GET /v2/diagnostics/public` implemented, safe diagnostics | `docs/development/evidence/BB2-DIRECT-03_LOCAL_SERVICE_EVIDENCE.md` | IMPLEMENTED |
+| Direct health | — | `GET /v2/health` public, DB-gated | `docs/development/evidence/BB2-DIRECT-04_PUBLIC_REACHABILITY_EVIDENCE.md` | IMPLEMENTED |
+| Direct version | — | `GET /v2/version` public, Direct-only | `docs/development/evidence/BB2-DIRECT-04_PUBLIC_REACHABILITY_EVIDENCE.md` | IMPLEMENTED |
+| Direct diagnostics | — | `GET /v2/diagnostics/public` public, safe diagnostics | `docs/development/evidence/BB2-DIRECT-04_PUBLIC_REACHABILITY_EVIDENCE.md` | IMPLEMENTED |
 | Identity | `GET /v2/identity`, bearer authorization | Runtime deferred | `app/api.py:71-92`, `app/security.py:125-140` | CONFIRMED |
 | Executor listing | `GET /v2/executors`, database health rows plus health manager definitions | Runtime deferred | `app/api.py:94-125` | CONFIRMED |
 | Executor refresh | `POST /v2/executors/refresh`, refresh manager request | Runtime deferred | `app/api.py:127-137` | CONFIRMED |

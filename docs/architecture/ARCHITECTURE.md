@@ -18,4 +18,4 @@ Legacy: ChatGPT → extension → существующий Bridge transport → 
 
 ## Deployment и bind
 
-Публичный IPv4 обязателен, первый стенд — `78.17.68.165`. Перед bind порт `18100` повторно проверяется; выбор делается по фактической конфигурации между `78.17.68.165:18100` и `0.0.0.0:18100`, а наличие public IPv4 на интерфейсе не предполагается. Firewall меняется только в BB2-DIRECT-04; внешний provider firewall/security group проверяется отдельно. В этом ране listener и служба не создаются.
+Публичный IPv4 обязателен. В BB2-DIRECT-04 фактический `eth0` address позволил exact bind `78.17.68.165:18100`; IPv6 не слушается. Host firewall уже имел permissive INPUT policy, поэтому новый framework и правило не создавались. Provider ingress наблюдался разрешённым через внешние probes. Публичны только safe diagnostics; listener не означает production readiness.

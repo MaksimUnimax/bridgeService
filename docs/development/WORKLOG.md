@@ -129,3 +129,17 @@ Marker: `BB2_DIRECT_02_COMPLETE`.
 
 Marker: `BB2_DIRECT_03_COMPLETE`.
 Следующий ран: `BB2-DIRECT-04` — public bind/firewall/external reachability; не выполнялся.
+
+## 2026-07-28 — BB2-DIRECT-04 — bounded public IPv4 listener
+
+- Expected base matched `6ba7db7ae7d299e610d4e7b68f640b9f2bc06314`; `main` remained `c426263e6dd00135a0023a0fa08a500273e73e23`. Implementation commits: `cf16289dd60766f67b7a14c56c6f5839e19dc985`, `b4bd13b`; acceptance commit is recorded in the final evidence update.
+- Network inventory found `78.17.68.165/24` locally on `eth0`, source address for the default route and confirmed by two independent IP echo services. Selected exact bind `78.17.68.165:18100`; no NAT inference and no IPv6 listener.
+- Backup completed before mutation at `/var/backups/business-bridge-2-direct/BB2-DIRECT-04-20260728T065830Z/`. Host firewall was already permissive (`INPUT ACCEPT`, UFW/firewalld inactive), so mutation was `NONE`; SSH and legacy rules were unchanged.
+- Direct was upgraded to 0.3.0 with bounded timeout, size, header, backlog, concurrency and in-memory per-source/global rate limits. SQLite schema remained version 1 with the single runtime metadata table.
+- Repository, staging and installed tests: 16 collected, 16 passed, 0 failed, 0 skipped. Wheel metadata is 0.3.0 and source/install hashes match.
+- External check-host probes after deployment and restart: TCP 5/5 and HTTP `/v2/health` 5/5 HTTP 200. Legacy external TCP 18083 was 0/5 success. Limit tests covered 400/404/405/413/414/429/431/503 and timeout.
+- One successful controlled Direct restart changed PID `1664395` to `1664423`, preserved `NRestarts=0` and restored the public listener. A graceful-shutdown correction was required after the first restart attempt exposed a stop deadlock; no legacy mutation occurred.
+- Rollback is Direct-only to the saved 0.2.0 localhost tree/config/unit; firewall inverse is exact rule removal, with no rule added in this run. Limitations: diagnostics/bootstrap only, no identity, pairing, crypto, tasks, reports or production-readiness claim.
+
+Marker: `BB2_DIRECT_04_COMPLETE`.
+Следующий ран: `BB2-DIRECT-05`.

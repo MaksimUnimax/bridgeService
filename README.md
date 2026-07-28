@@ -25,7 +25,7 @@ ChatGPT
 
 ## Состояние проекта
 
-`BB2-DIRECT-03` принят: изолированная служба 0.2.0 работает на `127.0.0.1:18100` с отдельными user, paths и минимальной SQLite DB. Следующий ран — `BB2-DIRECT-04`. Direct ещё не production-ready; public reachability ещё не выполнена. Раны выполняются строго по порядку; в `main` позднее переносится только чистый production release.
+`BB2-DIRECT-04` принят: Direct 0.3.0 доступен на доказанном публичном IPv4 `78.17.68.165:18100`; внешний TCP/HTTP probe успешен, firewall mutation не потребовалась при permissive host policy. Доступны только safe diagnostics; Direct ещё не production-ready. Следующий ран — `BB2-DIRECT-05`.
 
 ## Документация
 

@@ -12,6 +12,6 @@ are never read or restored.
 
 Installer обязан иметь backup Direct state/config, versioned upgrade и обратимый rollback package. Uninstall удаляет только Direct-артефакты по подтверждённой политике и не читает/не меняет legacy. Backup восстанавливается только в Direct paths.
 
-Rollback firewall затрагивает только новый порт `18100`. Identity backup/restore не использует old secrets. Release rollback не переписывает production data и не меняет old DB/token/state.
+BB2-DIRECT-04 backup: `/var/backups/business-bridge-2-direct/BB2-DIRECT-04-20260728T065830Z`; source version `0.2.0`, source bind `127.0.0.1:18100`. Rollback firewall is a point inverse for only a run-owned TCP/18100 rule (this run used `NONE`); provider firewall was not mutated. Restore the saved Direct venv/config/unit, daemon-reload only for unit restore, start Direct, then verify 0.2.0 localhost health and schema. Identity backup/restore does not use old secrets.
 
 Критерии остановки: неверная identity/fingerprint, plaintext sensitive payload, cross-conversation leak, повтор job после retry, неработающий revoke, изменение legacy, secrets в logs/repository, неожиданный listener или невозможность восстановить Direct. После `FAILED/BLOCKED` допускается максимум один FIX1; затем раны останавливаются.

@@ -8,7 +8,7 @@
 | BB2-DIRECT-01 | Архитектурный, продуктовый и совместимый контракт | ACCEPTED / PASS |
 | BB2-DIRECT-02 | Изолированный source baseline | ACCEPTED / PASS |
 | BB2-DIRECT-03 | Минимальная новая служба на localhost | ACCEPTED / PASS |
-| BB2-DIRECT-04 | Публичный bind и внешняя достижимость | NOT STARTED |
+| BB2-DIRECT-04 | Публичный bind и внешняя достижимость | ACCEPTED / PASS |
 | BB2-DIRECT-05 | Instance identity и серверная ключевая пара | NOT STARTED |
 | BB2-DIRECT-06 | Одноразовое pairing | NOT STARTED |
 | BB2-DIRECT-07 | Защищённый прикладной протокол | NOT STARTED |
@@ -31,6 +31,7 @@ BB2_DIRECT_00_READ_ONLY_COMPLETE
 BB2_DIRECT_01_COMPLETE
 BB2_DIRECT_02_COMPLETE
 BB2_DIRECT_03_COMPLETE
+BB2_DIRECT_04_COMPLETE
 ```
 
 ## Правила перехода
@@ -42,4 +43,4 @@ BB2_DIRECT_03_COMPLETE
 - После `FAILED/BLOCKED` допускается один `BB2-DIRECT-XX-FIX1` только для доказанного блокера.
 - Необязательные улучшения записываются как `DEFERRED` и не создают новые раны.
 
-Следующий ран: `BB2-DIRECT-04` — публичный bind и внешняя достижимость.
+Следующий ран: `BB2-DIRECT-05` — instance identity и серверная ключевая пара.

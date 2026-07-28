@@ -1,7 +1,7 @@
 # Business Bridge 2 Direct localhost service
 
 This directory contains the isolated `0.2.0` localhost service accepted by
-`BB2-DIRECT-03`. It uses only Python 3.10 standard-library runtime modules,
+`BB2-DIRECT-04`. It uses only Python 3.10 standard-library runtime modules,
 binds to `127.0.0.1:18100`, and has no legacy Bridge dependency.
 
 ## Identity and layout

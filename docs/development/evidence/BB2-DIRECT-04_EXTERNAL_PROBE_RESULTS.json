@@ -1,0 +1,10 @@
+{
+  "timestamp_utc": "2026-07-28T07:08:00Z",
+  "target": {"ip": "78.17.68.165", "port": 18100, "http_path": "/v2/health"},
+  "provider": "check-host.net",
+  "tcp": {"nodes_requested": 5, "nodes_successful": 5, "nodes": ["fi2", "id2", "ir4", "ir7", "tr2"], "result": "TCP connect success"},
+  "http": {"nodes_requested": 5, "nodes_successful": 5, "nodes": ["fr2", "il2", "it2", "rs1", "tr1"], "status": 200, "result": "HTTP success for /v2/health"},
+  "post_restart": true,
+  "legacy_18083": {"nodes_requested": 5, "nodes_successful": 0, "result": "connection refused"},
+  "request_ids": "redacted"
+}

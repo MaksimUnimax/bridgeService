@@ -6,6 +6,8 @@
 
 ## Threats and controls
 
+В текущем public surface доступны только `GET /v2/health`, `/v2/version` и `/v2/diagnostics/public`; prompts, reports, tasks, identity, pairing и crypto отсутствуют. Direct 0.3.0 применяет timeout 5 s, request line 2048 B, headers 8192 B/32, body 4096 B, concurrency 16, backlog 32, per-source 30/10 s и global 120/10 s. Это базовые DoS controls, но они не делают plaintext HTTP или сервис production-ready.
+
 MITM и подмена сервера — fingerprint, server signature и authenticated key agreement; fingerprint не заменяет шифрование. Replay — nonce, timestamp, expiry, sequence, request ID и replay ledger. Brute force pairing — одноразовый code TTL 5–10 минут, attempt/rate limits и audit. Украденный bundle — expiry/single-use pairing и revoke; bundle не содержит постоянный private key и не является бессрочным credential. Украденное extension storage — отдельная device identity, защищённое storage, revoke и повторное pairing. Изменение ciphertext — AES-GCM authentication. Повтор operation ID — durable idempotency ledger.
 
 Утечки логов предотвращаются redaction prompts/reports/credentials/cookies. Публичный listener ограничивает методы, размер, concurrency, скорость и timeout; DoS остаётся риском доступности и проверяется тестами. Runner изолирован отдельным user/paths и минимальными permissions; модель не получает больше прав, чем CLI пользователя, и криптография не заменяет sandbox/OS controls.
