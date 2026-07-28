@@ -11,7 +11,7 @@
 | BB2-DIRECT-04 | Публичный bind и внешняя достижимость | ACCEPTED / PASS |
 | BB2-DIRECT-05 | Instance identity и серверная ключевая пара | ACCEPTED / PASS |
 | BB2-DIRECT-06 | Одноразовое pairing | ACCEPTED / PASS |
-| BB2-DIRECT-07 | Защищённый прикладной протокол | NOT STARTED |
+| BB2-DIRECT-07 | Защищённый прикладной протокол | ACCEPTED / PASS |
 | BB2-DIRECT-08 | Совместимый task/report API | NOT STARTED |
 | BB2-DIRECT-09 | Durable jobs и восстановление | NOT STARTED |
 | BB2-DIRECT-10 | Connection bundle и CLI output | NOT STARTED |
@@ -34,6 +34,7 @@ BB2_DIRECT_03_COMPLETE
 BB2_DIRECT_04_COMPLETE
 BB2_DIRECT_05_COMPLETE
 BB2_DIRECT_06_COMPLETE
+BB2_DIRECT_07_COMPLETE
 ```
 
 ## Правила перехода
@@ -46,6 +47,14 @@ BB2_DIRECT_06_COMPLETE
 - Необязательные улучшения записываются как `DEFERRED` и не создают новые раны.
 
 Следующий ран: `BB2-DIRECT-07` — защищённый прикладной протокол; он не выполнялся.
+
+## BB2-DIRECT-07
+
+`BB2-DIRECT-07 = ACCEPTED / PASS`. Direct upgraded to 0.6.0 and schema 3; BB2D-P1 handshake/probe, strict canonical wire format, Web Crypto reference, replay/sequence protection, production acceptance, revocation and rollback evidence completed. BB2-DIRECT-08 was not executed.
+
+Marker: `BB2_DIRECT_07_COMPLETE`.
+
+Следующий ран: `BB2-DIRECT-08`.
 
 ## BB2-DIRECT-05-FIX7
 

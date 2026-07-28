@@ -1,5 +1,9 @@
 # Business Bridge 2 Direct — журнал работ
 
+## 2026-07-28 — BB2-DIRECT-07
+
+Реализован и принят BB2D-P1: strict canonical JSON/base64url, ECDSA P-256 low-S P1363, ephemeral ECDH P-256, HKDF-SHA-256, AES-256-GCM, session/probe endpoints, schema 2→3, replay/sequence ledger и browser Web Crypto reference. Exact cryptography 43.0.3 и isolated runtime wheels проверены. Direct 0.6.0 реально развернут на 78.17.68.165:18100; production synthetic pairing, handshake, encrypted probe, tamper/replay rejection, revoke и restart recovery проверены. Legacy Bridge не изменён. Evidence: `docs/development/evidence/BB2-DIRECT-07_*`. BB2-DIRECT-08 не выполнялся.
+
 ## 2026-07-28 — Инициализация репозитория
 
 ### Выполнено

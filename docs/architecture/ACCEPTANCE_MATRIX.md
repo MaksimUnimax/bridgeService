@@ -21,3 +21,6 @@
 | BB2-DIRECT-16 | Installer | Clean install/upgrade/uninstall | Deferred run evidence | Package | NOT TESTED | `BB2_DIRECT_16_COMPLETE` |
 | BB2-DIRECT-17 | Security/failure | Full abuse/failure suite | Deferred run evidence | All | NOT TESTED | `BB2_DIRECT_17_COMPLETE` |
 | BB2-DIRECT-18 | E2E/release | Clean E2E and release checks | Deferred run evidence | Release | NOT TESTED | `BB2_DIRECT_18_COMPLETE` |
+## BB2-DIRECT-07
+
+PASS: `BB2D-P1` is the sole protected application protocol. Only `/v2/protocol/session` and `/v2/protocol/probe` are added; task/report API remains deferred to BB2-DIRECT-08. Acceptance evidence is in `docs/development/evidence/BB2-DIRECT-07_PROTOCOL_EVIDENCE.md`.

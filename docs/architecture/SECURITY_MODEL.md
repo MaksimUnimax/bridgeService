@@ -27,3 +27,6 @@ Direct has a stable UUIDv4 identity and separate ECDSA P-256 signing key in unen
 ### BB2-DIRECT-06 one-time pairing
 
 The operator-only CLI creates a 128-bit random session code and returns it once. The public mutation endpoint accepts only strict JSON `POST` without query parameters; GET returns 405. Successful pairing consumes the session exactly once and creates a separate device UUID/public identity. Invalid, expired, locked, consumed and revoked sessions fail closed. Device revoke is immediate and idempotent. The server never accepts or stores a device private key.
+## BB2-DIRECT-07
+
+The application envelope authenticates method/path/direction, identity, request ID, timestamp, expiry, nonce and sequence as AAD and as a signed transcript. Invalid signature, GCM authentication, replay, revocation, fingerprint or pinning checks fail closed. The protocol has no plaintext fallback. Browser compatibility is provided by the pure `extension/protocol/bb2d-p1.js` Web Crypto reference.
