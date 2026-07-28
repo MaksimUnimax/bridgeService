@@ -1,9 +1,7 @@
 # API compatibility matrix
 
 The following facts are confirmed from the read-only legacy source inventory.
-Legacy health remains source-confirmed. Direct now has a deliberately
-separate public IPv4 diagnostic surface; task/report compatibility remains
-deferred.
+Legacy health remains source-confirmed. Direct has a separate public IPv4 surface with safe diagnostics, bootstrap, one-time pairing and the BB2D-P1 protected protocol. Task/report compatibility remains deferred to BB2-DIRECT-08.
 
 | Function | Legacy source-confirmed endpoint/mechanism | Direct baseline status | Source | Status |
 |---|---|---|---|---|
@@ -11,7 +9,11 @@ deferred.
 | Direct health | — | `GET /v2/health` public, DB-gated | `docs/development/evidence/BB2-DIRECT-04_PUBLIC_REACHABILITY_EVIDENCE.md` | IMPLEMENTED |
 | Direct version | — | `GET /v2/version` public, Direct-only | `docs/development/evidence/BB2-DIRECT-04_PUBLIC_REACHABILITY_EVIDENCE.md` | IMPLEMENTED |
 | Direct diagnostics | — | `GET /v2/diagnostics/public` public, safe diagnostics | `docs/development/evidence/BB2-DIRECT-04_PUBLIC_REACHABILITY_EVIDENCE.md` | IMPLEMENTED |
-| Identity | `GET /v2/identity`, bearer authorization | Runtime deferred | `app/api.py:71-92`, `app/security.py:125-140` | CONFIRMED |
+| Direct bootstrap | — | `GET /v2/bootstrap`, public instance identity, signing key and fingerprint discovery | `docs/development/evidence/BB2-DIRECT-05_INSTANCE_IDENTITY_EVIDENCE.md` | IMPLEMENTED |
+| Direct pairing | — | `POST /v2/pairing/complete`, strict one-time pairing without private-key transfer | `docs/development/evidence/BB2-DIRECT-06_ACCEPTANCE_EVIDENCE.md` | IMPLEMENTED |
+| Direct protocol session | — | `POST /v2/protocol/session`, paired-device signature, ephemeral P-256 ECDH and signed server response | `docs/development/evidence/BB2-DIRECT-07_FIX2_ACCEPTANCE_EVIDENCE.md` | IMPLEMENTED |
+| Direct protected envelope | — | `POST /v2/protocol/probe`, BB2D-P1 authenticated encryption and replay/sequence enforcement; task payloads are not yet implemented | `docs/development/evidence/BB2-DIRECT-07_FIX2_ACCEPTANCE_EVIDENCE.md` | IMPLEMENTED |
+| Identity | `GET /v2/identity`, bearer authorization | Legacy identity semantics are source-confirmed; Direct uses its own bootstrap/pairing/device model rather than bearer compatibility | `app/api.py:71-92`, `app/security.py:125-140` | CONFIRMED |
 | Executor listing | `GET /v2/executors`, database health rows plus health manager definitions | Runtime deferred | `app/api.py:94-125` | CONFIRMED |
 | Executor refresh | `POST /v2/executors/refresh`, refresh manager request | Runtime deferred | `app/api.py:127-137` | CONFIRMED |
 | Chain creation | `POST /v2/chains`, idempotency key and generated chain ID | Runtime deferred | `app/api.py:139-167`, `app/database.py:372-410` | CONFIRMED |
@@ -24,10 +26,6 @@ deferred.
 | Delivery confirmation | `POST /v2/jobs/<job_id>/delivery/confirm` | Runtime deferred | `app/api.py:361-377`, `app/database.py:833-889` | CONFIRMED |
 | Job execution | Supervisor dispatches queued jobs through configured executors | Runtime deferred | `app/executor_supervisor.py:55-322` | CONFIRMED |
 | Executor probing | Registry definitions and refresh manager run configured probes | Runtime deferred | `app/executor_registry.py:22-334` | CONFIRMED |
-| Persistence | SQLite database abstraction with chains, jobs, deliveries and events | Excluded from this baseline | `app/database.py:70-889` | CONFIRMED |
+| Persistence | SQLite database abstraction with chains, jobs, deliveries and events | Direct task/report persistence is deferred to BB2-DIRECT-08/09 and must not reuse the legacy DB | `app/database.py:70-889` | CONFIRMED |
 
-Direct task, report, identity, crypto, executor and extension transport compatibility remains deferred; pairing is implemented by BB2-DIRECT-06 only.
-
-| Direct bootstrap | — | `GET /v2/bootstrap`, public key and fingerprint discovery only | BB2-DIRECT-05 evidence | IMPLEMENTED |
-
-The legacy identity endpoint remains separate and no bearer-compatibility claim is made. `POST /v2/pairing/complete` is Direct-only, one-time, rate-limited and does not accept a private key.
+Direct instance identity, one-time pairing and BB2D-P1 protected transport are implemented and accepted. Task/report API, executor runtime and extension transport integration remain deferred. BB2-DIRECT-08 must establish the exact Direct mapping from the source-confirmed legacy semantics without importing legacy DB, secrets, state or bearer credentials.
