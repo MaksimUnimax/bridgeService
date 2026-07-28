@@ -10,7 +10,7 @@
 | BB2-DIRECT-03 | Минимальная новая служба на localhost | ACCEPTED / PASS |
 | BB2-DIRECT-04 | Публичный bind и внешняя достижимость | ACCEPTED / PASS |
 | BB2-DIRECT-05 | Instance identity и серверная ключевая пара | ACCEPTED / PASS |
-| BB2-DIRECT-06 | Одноразовое pairing | NOT STARTED |
+| BB2-DIRECT-06 | Одноразовое pairing | ACCEPTED / PASS |
 | BB2-DIRECT-07 | Защищённый прикладной протокол | NOT STARTED |
 | BB2-DIRECT-08 | Совместимый task/report API | NOT STARTED |
 | BB2-DIRECT-09 | Durable jobs и восстановление | NOT STARTED |
@@ -33,6 +33,7 @@ BB2_DIRECT_02_COMPLETE
 BB2_DIRECT_03_COMPLETE
 BB2_DIRECT_04_COMPLETE
 BB2_DIRECT_05_COMPLETE
+BB2_DIRECT_06_COMPLETE
 ```
 
 ## Правила перехода
@@ -44,10 +45,17 @@ BB2_DIRECT_05_COMPLETE
 - После `FAILED/BLOCKED` допускается один `BB2-DIRECT-XX-FIX1` только для доказанного блокера.
 - Необязательные улучшения записываются как `DEFERRED` и не создают новые раны.
 
-Следующий ран: `BB2-DIRECT-06` — одноразовое pairing; BB2-DIRECT-06..18 остаются `NOT STARTED`.
+Следующий ран: `BB2-DIRECT-07` — защищённый прикладной протокол; он не выполнялся.
 
 ## BB2-DIRECT-05-FIX7
 
 `BB2-DIRECT-05 = ACCEPTED / PASS`. Marker: `BB2_DIRECT_05_COMPLETE`.
 
 FIX7 завершил permission correction, nested identity metadata migration, exact-wheel deployment, one controlled Direct restart sequence, public bootstrap evidence, rollback proof and legacy safety checks. Следующий ран: `BB2-DIRECT-06`; он не выполнялся.
+
+## BB2-DIRECT-06-FIX1
+
+`BB2-DIRECT-06 = ACCEPTED / PASS`. Реализованы одноразовые pairing sessions, TTL 300–600 s, scrypt verifier/salt без plaintext code, пять попыток, per-source/global limits, durable device identity, revoke и redacted audit. Schema 1→2 мигрирована атомарно с bounded lock retry. Exact wheel 0.5.0 установлен только в Direct; controlled restart завершился `active/running`, `NRestarts=0`, public health 200. Identity и legacy Bridge неизменны. Полная redacted evidence: `docs/development/evidence/BB2-DIRECT-06_ACCEPTANCE_EVIDENCE.md`.
+
+Marker: `BB2_DIRECT_06_COMPLETE`.
+Следующий ран: `BB2-DIRECT-07`; не выполнялся.

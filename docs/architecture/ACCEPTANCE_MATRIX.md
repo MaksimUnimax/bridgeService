@@ -7,8 +7,8 @@
 | BB2-DIRECT-02 | Isolated source baseline | Manifest, package-install and baseline tests | `docs/development/evidence/BB2-DIRECT-02_SOURCE_BASELINE_EVIDENCE.md` | Source | ACCEPTED / PASS | `BB2_DIRECT_02_COMPLETE` |
 | BB2-DIRECT-03 | Local Direct service | systemd/health tests | `docs/development/evidence/BB2-DIRECT-03_LOCAL_SERVICE_EVIDENCE.md` | Server | ACCEPTED / PASS | `BB2_DIRECT_03_COMPLETE` |
 | BB2-DIRECT-04 | Public reachability | External TCP/HTTP and firewall test | `BB2-DIRECT-04_PUBLIC_REACHABILITY_EVIDENCE.md` | Network | ACCEPTED / PASS | `BB2_DIRECT_04_COMPLETE` |
-| BB2-DIRECT-05 | Stable server identity | Restart/fingerprint test | Deferred run evidence | Server | NOT TESTED | `BB2_DIRECT_05_COMPLETE` |
-| BB2-DIRECT-06 | One-time pairing | TTL/reuse/rate/revoke tests | Deferred run evidence | Pairing | NOT TESTED | `BB2_DIRECT_06_COMPLETE` |
+| BB2-DIRECT-05 | Stable server identity | Restart/fingerprint test | `BB2-DIRECT-05_INSTANCE_IDENTITY_EVIDENCE.md` | Server | ACCEPTED / PASS | `BB2_DIRECT_05_COMPLETE` |
+| BB2-DIRECT-06 | One-time pairing | TTL/reuse/rate/revoke, restart and production HTTP tests | `BB2-DIRECT-06_ACCEPTANCE_EVIDENCE.md` | Pairing | ACCEPTED / PASS | `BB2_DIRECT_06_COMPLETE` |
 | BB2-DIRECT-07 | Encrypted protocol | Vectors/MITM/replay tests | Deferred run evidence | Crypto | NOT TESTED | `BB2_DIRECT_07_COMPLETE` |
 | BB2-DIRECT-08 | Task/report compatibility | Create/status/cancel/report tests | Deferred run evidence | API | NOT TESTED | `BB2_DIRECT_08_COMPLETE` |
 | BB2-DIRECT-09 | Durable jobs | Restart/idempotency/reconciliation | Deferred run evidence | Runtime | NOT TESTED | `BB2_DIRECT_09_COMPLETE` |

@@ -26,10 +26,8 @@ deferred.
 | Executor probing | Registry definitions and refresh manager run configured probes | Runtime deferred | `app/executor_registry.py:22-334` | CONFIRMED |
 | Persistence | SQLite database abstraction with chains, jobs, deliveries and events | Excluded from this baseline | `app/database.py:70-889` | CONFIRMED |
 
-Direct task, report, identity, pairing, crypto, executor and extension
-transport compatibility remains deferred; this run does not claim those
-interfaces.
+Direct task, report, identity, crypto, executor and extension transport compatibility remains deferred; pairing is implemented by BB2-DIRECT-06 only.
 
 | Direct bootstrap | — | `GET /v2/bootstrap`, public key and fingerprint discovery only | BB2-DIRECT-05 evidence | IMPLEMENTED |
 
-The legacy identity endpoint remains separate and no bearer-compatibility claim is made. Pairing/device APIs remain deferred to BB2-DIRECT-06.
+The legacy identity endpoint remains separate and no bearer-compatibility claim is made. `POST /v2/pairing/complete` is Direct-only, one-time, rate-limited and does not accept a private key.

@@ -1,0 +1,15 @@
+{
+  "technical_id": "BB2-DIRECT-06-FIX1",
+  "status": "ACCEPTED / PASS",
+  "marker": "BB2_DIRECT_06_COMPLETE",
+  "implementation_commit": "bbbc63de129f5ff763672d2084bacf0f892de4c5",
+  "version": "0.5.0",
+  "wheel_sha256": "b26ea45ff0239449710bfefc872ccdd9f271eec754ec2d48fbd92473cccbaadd5",
+  "tests": {"pytest": "38 passed, 16 subtests passed", "compileall": "PASS", "manifest": "PASS", "systemd_verify": "PASS"},
+  "direct": {"active": true, "restarts": 0, "listener": "78.17.68.165:18100", "schema": 2, "sqlite_integrity": "ok"},
+  "pairing": {"valid_once": "PASS", "reuse_rejected": "PASS", "expired_rejected": "PASS", "wrong_code": "PASS", "attempt_lock": "PASS", "rate_limit": "PASS", "malformed": "PASS", "get_405": "PASS", "separate_device_identity": "PASS", "revoke": "PASS", "repeat_revoke": "PASS", "restart_persistence": "PASS"},
+  "security": {"plaintext_code_storage": "PASS_NO", "url_code": "PASS_NO", "logs_journal_request_body": "PASS_NO", "device_private_key": "PASS_NOT_ACCEPTED", "legacy_mutation": "NONE"},
+  "probes": {"tcp_18100": "5/5", "http_health": "5/5", "legacy_18083_external": "not_published"},
+  "next_expected_run": "BB2-DIRECT-07",
+  "next_run_executed": false
+}
