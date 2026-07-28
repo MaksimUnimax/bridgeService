@@ -1,0 +1,35 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>BB2D-P1 Chrome AES-GCM framing regression</title>
+<script type="module">
+import {aesKey, aesEncryptWire, aesDecryptWire, b64u, unb64, canonical, splitGcm, joinGcm} from '../protocol/bb2d-p1.js';
+
+const hex = async bytes => {
+  const d = new Uint8Array(await globalThis.crypto.subtle.digest('SHA-256', bytes));
+  return [...d].map(x => x.toString(16).padStart(2, '0')).join('');
+};
+
+(async () => {
+  const key = await aesKey(new Uint8Array(32).fill(7));
+  const iv = new Uint8Array(12).fill(9);
+  const aad = canonical({direction: 'client-to-server', sequence: 1});
+  const plaintext = canonical({type: 'protocol_probe', synthetic_payload: 'CHROME_GCM_REGRESSION'});
+  const combined = await aesEncryptWire(key, iv, plaintext, aad);
+  const parts = splitGcm(combined);
+  const restored = joinGcm(parts.ciphertext, parts.tag);
+  const decrypted = new Uint8Array(await aesDecryptWire(key, iv, restored, aad));
+  document.body.textContent = JSON.stringify({
+    browser: 'Google Chrome headless',
+    globalThis_crypto_subtle: Boolean(globalThis.crypto && globalThis.crypto.subtle),
+    combined_length: combined.length,
+    ciphertext_length: parts.ciphertext.length,
+    tag_length: parts.tag.length,
+    combined_sha256: await hex(combined),
+    tag_sha256: await hex(parts.tag),
+    decrypted_sha256: await hex(decrypted),
+    pass: restored.length === combined.length && new TextDecoder().decode(decrypted) === new TextDecoder().decode(plaintext),
+    wire_ciphertext: b64u(restored) === b64u(combined),
+    malformed_split_rejected: (() => { try { splitGcm(new Uint8Array(15)); return false; } catch { return true; } })(),
+  });
+})().catch(error => { document.body.textContent = JSON.stringify({pass: false, error: String(error)}); });
+</script>

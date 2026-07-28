@@ -59,5 +59,12 @@ def hkdf(shared: bytes, salt: bytes, info: bytes) -> bytes:
     return HKDF(algorithm=hashes.SHA256(),length=64,salt=salt,info=info).derive(shared)
 def length_info(parts: list[str]) -> bytes:
     return b''.join(len(p.encode()).to_bytes(4,'big')+p.encode() for p in parts)
+GCM_TAG_BYTES = 16
+def split_gcm(combined: bytes) -> tuple[bytes, bytes]:
+    if len(combined) < GCM_TAG_BYTES: raise ValueError('short_gcm_output')
+    return combined[:-GCM_TAG_BYTES], combined[-GCM_TAG_BYTES:]
+def join_gcm(ciphertext: bytes, tag: bytes) -> bytes:
+    if len(tag) != GCM_TAG_BYTES: raise ValueError('invalid_gcm_tag')
+    return ciphertext + tag
 def aes_encrypt(key: bytes, nonce: bytes, plaintext: bytes, aad: bytes) -> bytes: return AESGCM(key).encrypt(nonce,plaintext,aad)
-def aes_decrypt(key: bytes, nonce: bytes, ciphertext: bytes, aad: bytes) -> bytes: return AESGCM(key).decrypt(nonce,ciphertext,aad)
+def aes_decrypt(key: bytes, nonce: bytes, ciphertext_and_tag: bytes, aad: bytes) -> bytes: return AESGCM(key).decrypt(nonce,ciphertext_and_tag,aad)

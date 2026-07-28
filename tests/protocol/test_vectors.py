@@ -8,3 +8,9 @@ def test_signature_low_s():
     k=ec.generate_private_key(ec.SECP256R1()); s=sign(k,b'BB2D'); verify(k.public_key(),s,b'BB2D'); assert len(unb64(s))==64
 def test_aes_roundtrip():
     k=os.urandom(32); n=os.urandom(12); a=b'aad'; c=aes_encrypt(k,n,b'probe',a); assert aes_decrypt(k,n,c,a)==b'probe'
+def test_webcrypto_combined_ciphertext_tag_contract():
+    k=os.urandom(32); n=os.urandom(12); a=b'canonical-aad'; combined=aes_encrypt(k,n,b'chrome-probe',a)
+    ciphertext,tag=split_gcm(combined)
+    assert len(tag)==16 and len(ciphertext)==len(b'chrome-probe')
+    assert join_gcm(ciphertext,tag)==combined
+    assert aes_decrypt(k,n,join_gcm(ciphertext,tag),a)==b'chrome-probe'
