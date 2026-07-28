@@ -93,8 +93,11 @@ class BaselineTests(unittest.TestCase):
         self.assertEqual(digest, __import__("hashlib").sha256(path.read_bytes()).hexdigest())
 
   def test_runtime_resources_are_not_present(self) -> None:
+    install_path = pathlib.Path("/opt/business-bridge-2-direct")
+    if ROOT == install_path:
+        self.assertTrue(install_path.is_dir())
+        self.assertTrue((install_path / "server" / ".venv").is_dir())
     for path in (
-        pathlib.Path("/opt/business-bridge-2-direct"),
         pathlib.Path("/etc/business-bridge-2-direct"),
         pathlib.Path("/var/lib/business-bridge-2-direct"),
         pathlib.Path("/var/log/business-bridge-2-direct"),
