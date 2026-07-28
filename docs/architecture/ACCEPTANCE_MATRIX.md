@@ -9,7 +9,7 @@
 | BB2-DIRECT-04 | Public reachability | External TCP/HTTP and firewall test | `BB2-DIRECT-04_PUBLIC_REACHABILITY_EVIDENCE.md` | Network | ACCEPTED / PASS | `BB2_DIRECT_04_COMPLETE` |
 | BB2-DIRECT-05 | Stable server identity | Restart/fingerprint test | `BB2-DIRECT-05_INSTANCE_IDENTITY_EVIDENCE.md` | Server | ACCEPTED / PASS | `BB2_DIRECT_05_COMPLETE` |
 | BB2-DIRECT-06 | One-time pairing | TTL/reuse/rate/revoke, restart and production HTTP tests | `BB2-DIRECT-06_ACCEPTANCE_EVIDENCE.md` | Pairing | ACCEPTED / PASS | `BB2_DIRECT_06_COMPLETE` |
-| BB2-DIRECT-07 | Encrypted protocol | Vectors/MITM/replay tests | Deferred run evidence | Crypto | NOT TESTED | `BB2_DIRECT_07_COMPLETE` |
+| BB2-DIRECT-07 | Encrypted protocol | Redacted vectors, real Chrome Web Crypto, GCM framing, replay/tamper and production checks | `BB2-DIRECT-07_FIX2_ACCEPTANCE_EVIDENCE.md` | Crypto | ACCEPTED / PASS | `BB2_DIRECT_07_COMPLETE` |
 | BB2-DIRECT-08 | Task/report compatibility | Create/status/cancel/report tests | Deferred run evidence | API | NOT TESTED | `BB2_DIRECT_08_COMPLETE` |
 | BB2-DIRECT-09 | Durable jobs | Restart/idempotency/reconciliation | Deferred run evidence | Runtime | NOT TESTED | `BB2_DIRECT_09_COMPLETE` |
 | BB2-DIRECT-10 | Bundle | CLI output/import/checksum/expiry | Deferred run evidence | Installer/extension | NOT TESTED | `BB2_DIRECT_10_COMPLETE` |

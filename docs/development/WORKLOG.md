@@ -2,7 +2,7 @@
 
 ## 2026-07-28 — BB2-DIRECT-07
 
-Реализован и принят BB2D-P1: strict canonical JSON/base64url, ECDSA P-256 low-S P1363, ephemeral ECDH P-256, HKDF-SHA-256, AES-256-GCM, session/probe endpoints, schema 2→3, replay/sequence ledger и browser Web Crypto reference. Exact cryptography 43.0.3 и isolated runtime wheels проверены. Direct 0.6.0 реально развернут на 78.17.68.165:18100; production synthetic pairing, handshake, encrypted probe, tamper/replay rejection, revoke и restart recovery проверены. Legacy Bridge не изменён. Evidence: `docs/development/evidence/BB2-DIRECT-07_*`. BB2-DIRECT-08 не выполнялся.
+FIX2 завершил corrective continuation BB2-DIRECT-07. Первопричина AES interoperability была в wire framing: Web Crypto output `ciphertext||tag` попадал в boundary без единого явного split/join contract; Python AESGCM должен получать combined value ровно один раз. Дополнительно production browser module теперь canonicalizes ECDSA low-S и подписывает raw-byte transcript с nonce ровно один раз. Source/wheel/staging suites: 42 passed + 16 subtests; реальный Google Chrome 147 headless использовал `globalThis.crypto.subtle`, production pairing/handshake/Chrome→server AES/server→Chrome AES дали PASS. Wheel SHA-256 `083db710d7251fc40d84833612f10d00d8725c4aac26335482e3559d04a9ceb0`. Direct 0.6.0/schema 3 развернут, один planned restart, identity сохранена, synthetic devices удалены, legacy Bridge не изменён. Evidence: `docs/development/evidence/BB2-DIRECT-07_FIX2_*`. BB2-DIRECT-08 не выполнялся.
 
 ## 2026-07-28 — Инициализация репозитория
 

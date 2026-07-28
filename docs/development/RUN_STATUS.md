@@ -50,7 +50,7 @@ BB2_DIRECT_07_COMPLETE
 
 ## BB2-DIRECT-07
 
-`BB2-DIRECT-07 = ACCEPTED / PASS`. Direct upgraded to 0.6.0 and schema 3; BB2D-P1 handshake/probe, strict canonical wire format, Web Crypto reference, replay/sequence protection, production acceptance, revocation and rollback evidence completed. BB2-DIRECT-08 was not executed.
+`BB2-DIRECT-07 = ACCEPTED / PASS`. FIX2 corrected the proven Web Crypto GCM framing defect and browser byte-transcript issues. Direct 0.6.0/schema 3 passed source, wheel, staging, installed-runtime, real Chrome and production checks. BB2-DIRECT-08 was not executed.
 
 Marker: `BB2_DIRECT_07_COMPLETE`.
 

@@ -30,3 +30,5 @@ The operator-only CLI creates a 128-bit random session code and returns it once.
 ## BB2-DIRECT-07
 
 The application envelope authenticates method/path/direction, identity, request ID, timestamp, expiry, nonce and sequence as AAD and as a signed transcript. Invalid signature, GCM authentication, replay, revocation, fingerprint or pinning checks fail closed. The protocol has no plaintext fallback. Browser compatibility is provided by the pure `extension/protocol/bb2d-p1.js` Web Crypto reference.
+
+BB2-DIRECT-07-FIX2 records the interoperability boundary: AES-GCM carries exactly `ciphertext||tag` (16-byte final tag) in one base64url field. The browser module uses explicit split/join helpers, low-S ECDSA normalization and raw-byte transcript concatenation; Python receives the combined value once. A missing tag, modified tag, modified ciphertext or modified AAD remains fail-closed.
