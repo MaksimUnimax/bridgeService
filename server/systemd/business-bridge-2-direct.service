@@ -1,5 +1,5 @@
 [Unit]
-Description=Business Bridge 2 Direct localhost service
+Description=Business Bridge 2 Direct bounded public IPv4 diagnostics service
 After=network.target
 
 [Service]
@@ -31,6 +31,7 @@ ReadOnlyPaths=/opt/business-bridge-2-direct /etc/business-bridge-2-direct
 ReadWritePaths=/var/lib/business-bridge-2-direct /var/log/business-bridge-2-direct
 TasksMax=64
 LimitNOFILE=1024
+ExecStartPre=/usr/bin/test -x /opt/business-bridge-2-direct/.venv/bin/python
 StandardOutput=journal
 StandardError=journal
 

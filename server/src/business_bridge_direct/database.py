@@ -19,7 +19,7 @@ def initialize_database(path: str) -> None:
         connection.execute("PRAGMA user_version = 1")
         connection.execute("CREATE TABLE IF NOT EXISTS runtime_metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
         connection.execute("INSERT OR REPLACE INTO runtime_metadata(key, value) VALUES (?, ?)", ("schema_version", "1"))
-        connection.execute("INSERT OR REPLACE INTO runtime_metadata(key, value) VALUES (?, ?)", ("service_version", "0.2.0"))
+        connection.execute("INSERT OR REPLACE INTO runtime_metadata(key, value) VALUES (?, ?)", ("service_version", "0.3.0"))
         connection.commit()
         version = connection.execute("PRAGMA user_version").fetchone()[0]
         if version != SCHEMA_VERSION:
@@ -40,7 +40,7 @@ def check_database(path: str) -> bool:
             table = connection.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='runtime_metadata'").fetchone()
             rows = dict(connection.execute("SELECT key, value FROM runtime_metadata").fetchall()) if table else {}
             connection.execute("SELECT 1")
-            return version == SCHEMA_VERSION and table is not None and rows.get("schema_version") == "1" and rows.get("service_version") == "0.2.0"
+            return version == SCHEMA_VERSION and table is not None and rows.get("schema_version") == "1" and rows.get("service_version") == "0.3.0"
         finally:
             connection.close()
     except (OSError, sqlite3.Error, ValueError):

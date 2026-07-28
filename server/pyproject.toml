@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "business-bridge-2-direct"
-version = "0.2.0"
-description = "Business Bridge 2 Direct isolated localhost service"
+version = "0.3.0"
+description = "Business Bridge 2 Direct bounded public IPv4 diagnostics service"
 requires-python = ">=3.10,<3.11"
 dependencies = []
 

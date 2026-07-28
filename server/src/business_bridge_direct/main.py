@@ -1,4 +1,4 @@
-"""Process entrypoint for the isolated localhost-only Direct service."""
+"""Process entrypoint for the isolated bounded public Direct service."""
 
 from __future__ import annotations
 
@@ -11,7 +11,6 @@ from datetime import datetime, timezone
 from . import __version__
 from .config import DirectConfig, load_config
 from .database import initialize_database
-from .http_api import DirectHTTPServer
 
 
 def _event(level: str, event: str, result: str) -> None:
@@ -23,7 +22,8 @@ class DirectService:
         self.database_path = config.database_path
         self.service_name = config.service_name
         self.version = config.service_version
-        self.server = DirectHTTPServer((config.listen_host, config.listen_port), self)
+        from .http_api import BoundedIPv4Server
+        self.server = BoundedIPv4Server((config.listen_host, config.listen_port), self, config)
 
     def run(self) -> None:
         stopping = {"value": False}

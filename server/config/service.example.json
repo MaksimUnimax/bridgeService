@@ -1,8 +1,19 @@
 {
-  "listen_host": "127.0.0.1",
+  "listen_host": "78.17.68.165",
   "listen_port": 18100,
   "database_path": "/var/lib/business-bridge-2-direct/bridge.sqlite3",
   "log_dir": "/var/log/business-bridge-2-direct",
   "service_name": "business-bridge-2-direct",
-  "service_version": "0.2.0"
+  "service_version": "0.3.0",
+  "request_timeout_seconds": 5,
+  "max_request_line_bytes": 2048,
+  "max_header_bytes": 8192,
+  "max_header_count": 32,
+  "max_request_body_bytes": 4096,
+  "max_concurrent_requests": 16,
+  "listen_backlog": 32,
+  "per_source_rate_window_seconds": 10,
+  "per_source_rate_limit": 30,
+  "global_rate_window_seconds": 10,
+  "global_rate_limit": 120
 }

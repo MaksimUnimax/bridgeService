@@ -33,9 +33,9 @@ class BaselineTests(unittest.TestCase):
         "log_dir": "/var/log/business-bridge-2-direct",
         "service_name": "business-bridge-2-direct.service",
         "service_user": "business-bridge-direct",
-        "listen_host": "127.0.0.1",
+        "listen_host": "78.17.68.165",
         "listen_port": 18100,
-        "service_version": "0.2.0",
+        "service_version": "0.3.0",
     })
 
   def test_all_package_modules_import(self) -> None:

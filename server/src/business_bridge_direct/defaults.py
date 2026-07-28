@@ -18,9 +18,9 @@ class DirectDefaults:
     log_dir: str = "/var/log/business-bridge-2-direct"
     service_name: str = "business-bridge-2-direct.service"
     service_user: str = "business-bridge-direct"
-    listen_host: str = "127.0.0.1"
+    listen_host: str = "78.17.68.165"
     listen_port: int = 18100
-    service_version: str = "0.2.0"
+    service_version: str = "0.3.0"
 
 
 DEFAULTS = DirectDefaults()
