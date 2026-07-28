@@ -122,23 +122,30 @@ def validate_metadata(path: Path, group: int | None = None) -> dict[str, Any]:
 
 
 def _public_and_possession(config: Any, key: Path, expected: bytes) -> None:
-    with tempfile.TemporaryDirectory(prefix="bb2-id-", dir=str(key.parent)) as td:
-        public_der = Path(td) / "public.der"
-        public_pem = Path(td) / "public.pem"
-        challenge = Path(td) / "challenge"
-        signature = Path(td) / "signature"
-        public_der.write_bytes(_safe_run(config.openssl_path, ["pkey", "-in", str(key), "-pubout", "-outform", "DER"]))
-        if public_der.read_bytes() != expected:
-            raise IdentityError("IDENTITY_PUBLIC_KEY_MISMATCH")
-        # Inspect only the derived public key. Private scalar output is never requested.
-        curve_info = _safe_run(config.openssl_path, ["pkey", "-pubin", "-inform", "DER", "-in", str(public_der), "-text", "-noout"])
-        if b"ASN1 OID: prime256v1" not in curve_info and b"NIST CURVE: P-256" not in curve_info:
-            raise IdentityError("IDENTITY_CURVE_INVALID")
-        challenge.write_bytes(secrets.token_bytes(32))
-        _safe_run(config.openssl_path, ["pkey", "-in", str(key), "-pubout"], timeout=5)
-        public_pem.write_bytes(_safe_run(config.openssl_path, ["pkey", "-in", str(key), "-pubout"]))
-        signature.write_bytes(_safe_run(config.openssl_path, ["dgst", "-sha256", "-sign", str(key), str(challenge)]))
-        _safe_run(config.openssl_path, ["dgst", "-sha256", "-verify", str(public_pem), "-signature", str(signature), str(challenge)])
+    try:
+        # Validation runs as the unprivileged service and may not write beside
+        # either protected identity file. The default process temporary root is
+        # compatible with systemd PrivateTmp and TemporaryDirectory is 0700.
+        with tempfile.TemporaryDirectory(prefix="bb2-id-") as td:
+            public_der = Path(td) / "public.der"
+            public_pem = Path(td) / "public.pem"
+            challenge = Path(td) / "challenge"
+            signature = Path(td) / "signature"
+            public_der.write_bytes(_safe_run(config.openssl_path, ["pkey", "-in", str(key), "-pubout", "-outform", "DER"]))
+            os.chmod(public_der, 0o600)
+            if public_der.read_bytes() != expected:
+                raise IdentityError("IDENTITY_PUBLIC_KEY_MISMATCH")
+            # Inspect only the derived public key. Private scalar output is never requested.
+            curve_info = _safe_run(config.openssl_path, ["pkey", "-pubin", "-inform", "DER", "-in", str(public_der), "-text", "-noout"])
+            if b"ASN1 OID: prime256v1" not in curve_info and b"NIST CURVE: P-256" not in curve_info:
+                raise IdentityError("IDENTITY_CURVE_INVALID")
+            challenge.write_bytes(secrets.token_bytes(32)); os.chmod(challenge, 0o600)
+            _safe_run(config.openssl_path, ["pkey", "-in", str(key), "-pubout"], timeout=5)
+            public_pem.write_bytes(_safe_run(config.openssl_path, ["pkey", "-in", str(key), "-pubout"])); os.chmod(public_pem, 0o600)
+            signature.write_bytes(_safe_run(config.openssl_path, ["dgst", "-sha256", "-sign", str(key), str(challenge)])); os.chmod(signature, 0o600)
+            _safe_run(config.openssl_path, ["dgst", "-sha256", "-verify", str(public_pem), "-signature", str(signature), str(challenge)])
+    except OSError as exc:
+        raise IdentityError("IDENTITY_SCRATCH_FAILURE") from exc
 
 
 def _fsync(path: Path) -> None:

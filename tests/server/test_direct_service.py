@@ -4,6 +4,9 @@ import json
 import os
 import pathlib
 import socket
+import stat
+import subprocess
+import shutil
 import tempfile
 import threading
 import time
@@ -41,6 +44,39 @@ class DirectServiceTests(unittest.TestCase):
             self.assertEqual(result, "unchanged"); self.assertEqual(first["instance_id"], second["instance_id"]); self.assertEqual(before, (key.read_bytes(), metadata.read_bytes()))
             metadata.write_text(metadata.read_text().replace(first["fingerprint"], "sha256:" + "0" * 64)); os.chmod(metadata, 0o640)
             with self.assertRaises(IdentityError): validate_identity(cfg, os.getgid())
+
+    def test_identity_validation_uses_private_process_scratch_as_service_user(self) -> None:
+        if os.geteuid() != 0:
+            self.skipTest("requires root to establish the production-equivalent ownership boundary")
+        service_uid = 995
+        service_gid = 995
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory); cfg = self._identity_config(root)
+            for parent in (pathlib.Path(cfg.server_signing_private_key_path).parent, pathlib.Path(cfg.identity_metadata_path).parent):
+                os.chown(parent, 0, service_gid)
+            init_identity(cfg, service_gid)
+            for parent in (pathlib.Path(cfg.server_signing_private_key_path).parent, pathlib.Path(cfg.identity_metadata_path).parent):
+                os.chown(parent, 0, service_gid); os.chmod(parent, 0o750)
+            tmp_root = root / "process-tmp"; tmp_root.mkdir(); os.chown(tmp_root, 0, 0); os.chmod(tmp_root, 0o733)
+            os.chmod(root, 0o755)
+            source_root = pathlib.Path(tempfile.mkdtemp(prefix="bb2-test-source-", dir="/var/tmp")); shutil.copytree(pathlib.Path(__file__).parents[2] / "server/src/business_bridge_direct", source_root / "business_bridge_direct")
+            os.chmod(source_root, 0o755); os.chmod(source_root / "business_bridge_direct", 0o755)
+            for source_file in (source_root / "business_bridge_direct").iterdir():
+                if source_file.is_file(): os.chmod(source_file, 0o644)
+            before_key = sorted(pathlib.Path(cfg.server_signing_private_key_path).parent.iterdir())
+            before_meta = sorted(pathlib.Path(cfg.identity_metadata_path).parent.iterdir())
+            script = """import os\nfrom types import SimpleNamespace\nfrom business_bridge_direct.identity import validate_identity\ncfg=SimpleNamespace(server_signing_private_key_path=os.environ['BB_KEY'], identity_metadata_path=os.environ['BB_META'], openssl_path='/usr/bin/openssl')\ndata=validate_identity(cfg, int(os.environ['BB_GID']))\nassert data['rotation_generation'] == 1\nprint('ok')\n"""
+            env = {"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "PYTHONPATH": str(source_root), "TMPDIR": str(tmp_root), "BB_KEY": cfg.server_signing_private_key_path, "BB_META": cfg.identity_metadata_path, "BB_GID": str(service_gid)}
+            result = subprocess.run(["runuser", "-u", "business-bridge-direct", "--", "env", *[f"{key}={value}" for key, value in env.items()], "/usr/bin/python3.10", "-c", script], text=True, capture_output=True, check=False)
+            shutil.rmtree(source_root)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout.strip(), "ok")
+            self.assertEqual(before_key, sorted(pathlib.Path(cfg.server_signing_private_key_path).parent.iterdir()))
+            self.assertEqual(before_meta, sorted(pathlib.Path(cfg.identity_metadata_path).parent.iterdir()))
+            leftovers = [p for p in tmp_root.iterdir() if p.name.startswith("bb2-id-")]
+            self.assertEqual(leftovers, [])
+            for parent in (pathlib.Path(cfg.server_signing_private_key_path).parent, pathlib.Path(cfg.identity_metadata_path).parent):
+                self.assertEqual(stat.S_IMODE(parent.stat().st_mode), 0o750)
 
     def test_identity_partial_symlink_permissions_and_metadata_rules(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
