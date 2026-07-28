@@ -35,6 +35,7 @@ class BaselineTests(unittest.TestCase):
         "service_user": "business-bridge-direct",
         "listen_host": "127.0.0.1",
         "listen_port": 18100,
+        "service_version": "0.2.0",
     })
 
   def test_all_package_modules_import(self) -> None:
@@ -97,13 +98,8 @@ class BaselineTests(unittest.TestCase):
     if ROOT == install_path:
         self.assertTrue(install_path.is_dir())
         self.assertTrue((install_path / ".venv").is_dir())
-    for path in (
-        pathlib.Path("/etc/business-bridge-2-direct"),
-        pathlib.Path("/var/lib/business-bridge-2-direct"),
-        pathlib.Path("/var/log/business-bridge-2-direct"),
-    ):
-        self.assertFalse(path.exists())
-    self.assertFalse(pathlib.Path("/var/lib/business-bridge-2-direct/bridge.sqlite3").exists())
+    # Runtime paths are created by the activation run, never by source import.
+    self.assertFalse(any(path.name in {"service.json", "bridge.sqlite3"} for path in ROOT.rglob("*")))
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
         probe.settimeout(0.5)
         self.assertNotEqual(probe.connect_ex(("127.0.0.1", 18100)), 0)

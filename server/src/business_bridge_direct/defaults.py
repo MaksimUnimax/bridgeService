@@ -20,6 +20,7 @@ class DirectDefaults:
     service_user: str = "business-bridge-direct"
     listen_host: str = "127.0.0.1"
     listen_port: int = 18100
+    service_version: str = "0.2.0"
 
 
 DEFAULTS = DirectDefaults()

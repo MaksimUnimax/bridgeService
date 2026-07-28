@@ -1,8 +1,8 @@
-# Business Bridge 2 Direct source baseline
+# Business Bridge 2 Direct localhost service
 
-This directory is the isolated source baseline for `BB2-DIRECT-02-FIX1`. It
-defines package identity and configuration defaults without activating a
-service, listener, database, runtime directories, or subprocess execution.
+This directory contains the isolated `0.2.0` localhost service accepted by
+`BB2-DIRECT-03`. It uses only Python 3.10 standard-library runtime modules,
+binds to `127.0.0.1:18100`, and has no legacy Bridge dependency.
 
 ## Identity and layout
 
@@ -20,7 +20,7 @@ The planned service is `business-bridge-2-direct.service`, user is
 
 ## Isolated build and tests
 
-The supported interpreter for this baseline is Python 3.10.12. Create an
+The supported interpreter is Python 3.10.12. Create an
 isolated environment with `python3 -m venv .venv`; system site packages are
 not permitted. Inside that environment, bootstrap the build toolchain with:
 
@@ -53,10 +53,11 @@ imported here: their runtime coupling and data access require later scoped
 runs. No legacy data, virtual environment, configuration values, secrets,
 database, logs, reports, or state are reused.
 
-BB2-DIRECT-03 is the boundary for service activation, runtime entrypoint,
-listener, and process management. This run intentionally creates none of
-those objects. Rollback removes only the exact FIX1 staging or target tree
-after ownership and marker checks; legacy resources remain untouched.
+The runtime entrypoint is `python -m business_bridge_direct.main --config
+.../service.json`. The service exposes only health, version, and safe public
+diagnostics. Pairing, identity, crypto, tasks, reports, and extension
+transport remain out of scope. Rollback removes only Direct resources after
+ownership and marker checks; legacy resources remain untouched.
 
 ## Security policy
 
