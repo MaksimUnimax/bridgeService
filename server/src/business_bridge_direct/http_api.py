@@ -130,6 +130,7 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
             target = parts[1].split(b"?", 1)[0]
             service = self.server.service  # type: ignore[attr-defined]
             ready = check_database(service.database_path)
+            identity = getattr(service, "identity", None)
             if target == b"/v2/health":
                 if ready:
                     self._send(200, {"status": "ok", "service": service.service_name, "version": service.version})
@@ -138,7 +139,12 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
             elif target == b"/v2/version":
                 self._send(200, {"service": service.service_name, "version": service.version, "api_version": "v2", "transport": "direct-http-bootstrap"})
             elif target == b"/v2/diagnostics/public":
-                self._send(200 if ready else 503, {"service": service.service_name, "version": service.version, "status": "ready" if ready else "unavailable", "listener_scope": "public", "database": "ready" if ready else "unavailable", "identity": "not_configured", "pairing": "disabled", "crypto": "disabled", "tasks": "disabled"})
+                self._send(200 if ready else 503, {"service": service.service_name, "version": service.version, "status": "ready" if ready else "unavailable", "listener_scope": "public", "database": "ready" if ready else "unavailable", "identity": "ready" if identity else "unavailable", "pairing": "disabled", "crypto": "disabled", "tasks": "disabled"})
+            elif target == b"/v2/bootstrap":
+                if not ready or not identity:
+                    self._send(503, {"error": "unavailable"})
+                else:
+                    self._send(200, {"service": service.service_name, "version": service.version, "api_version": "v2", "bootstrap_version": 1, "instance_id": identity["instance_id"], "server_signing_algorithm": identity["signing_algorithm"], "server_public_key_format": identity["public_key_format"], "server_public_key": identity["public_key_spki"], "server_fingerprint": identity["fingerprint"], "rotation_generation": identity["rotation_generation"]})
             else:
                 self._send(404, {"error": "not_found"})
         except (socket.timeout, TimeoutError, OSError, UnicodeError):

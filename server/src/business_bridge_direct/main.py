@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from . import __version__
 from .config import DirectConfig, load_config
 from .database import initialize_database
+from .identity import IdentityError, validate_identity
 
 
 def _event(level: str, event: str, result: str) -> None:
@@ -23,6 +24,8 @@ class DirectService:
         self.database_path = config.database_path
         self.service_name = config.service_name
         self.version = config.service_version
+        import grp
+        self.identity = validate_identity(config, grp.getgrnam("business-bridge-direct").gr_gid)
         from .http_api import BoundedIPv4Server
         self.server = BoundedIPv4Server((config.listen_host, config.listen_port), self, config)
 

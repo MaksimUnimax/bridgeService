@@ -30,9 +30,12 @@ class DirectConfig:
     per_source_rate_limit: int
     global_rate_window_seconds: int
     global_rate_limit: int
+    identity_metadata_path: str
+    server_signing_private_key_path: str
+    openssl_path: str
 
 
-_FIELDS = {"listen_host", "listen_port", "database_path", "log_dir", "service_name", "service_version", "request_timeout_seconds", "max_request_line_bytes", "max_header_bytes", "max_header_count", "max_request_body_bytes", "max_concurrent_requests", "listen_backlog", "per_source_rate_window_seconds", "per_source_rate_limit", "global_rate_window_seconds", "global_rate_limit"}
+_FIELDS = {"listen_host", "listen_port", "database_path", "log_dir", "service_name", "service_version", "identity_metadata_path", "server_signing_private_key_path", "openssl_path", "request_timeout_seconds", "max_request_line_bytes", "max_header_bytes", "max_header_count", "max_request_body_bytes", "max_concurrent_requests", "listen_backlog", "per_source_rate_window_seconds", "per_source_rate_limit", "global_rate_window_seconds", "global_rate_limit"}
 _LIMITS = {
     "request_timeout_seconds": (1, 5), "max_request_line_bytes": (512, 2048),
     "max_header_bytes": (2048, 8192), "max_header_count": (8, 32),
@@ -67,10 +70,20 @@ def load_config(path: str | os.PathLike[str]) -> DirectConfig:
         raise ValueError("unsupported IPv4 bind")
     if type(data["listen_port"]) is not int or data["listen_port"] != 18100:
         raise ValueError("invalid port")
-    if not isinstance(data["database_path"], str) or not _inside(Path(data["database_path"]), Path(DEFAULTS.state_dir)):
+    if not isinstance(data["database_path"], str) or not _inside(Path(data["database_path"]), Path(DEFAULTS.state_dir)) or Path(data["database_path"]).is_symlink():
         raise ValueError("foreign database path")
     if not isinstance(data["log_dir"], str) or Path(data["log_dir"]).resolve() != Path(DEFAULTS.log_dir).resolve():
         raise ValueError("foreign log path")
+    if data["identity_metadata_path"] != DEFAULTS.identity_metadata_path or not _inside(Path(data["identity_metadata_path"]), Path(DEFAULTS.state_dir)):
+        raise ValueError("foreign identity path")
+    if data["server_signing_private_key_path"] != DEFAULTS.server_signing_private_key_path or not _inside(Path(data["server_signing_private_key_path"]), Path(DEFAULTS.secrets_dir)):
+        raise ValueError("foreign secrets path")
+    openssl = Path(data["openssl_path"])
+    if not openssl.is_absolute() or openssl.is_symlink() or not openssl.is_file() or not os.access(openssl, os.X_OK):
+        raise ValueError("invalid openssl executable")
+    st = openssl.stat()
+    if st.st_uid != 0 or st.st_mode & 0o022:
+        raise ValueError("unsafe openssl executable")
     if not all(isinstance(data[key], str) for key in ("service_name", "service_version")):
         raise ValueError("invalid config types")
     if data["service_name"] != "business-bridge-2-direct" or data["service_version"] != __version__:

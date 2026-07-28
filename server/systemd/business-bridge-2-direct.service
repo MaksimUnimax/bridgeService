@@ -1,5 +1,5 @@
 [Unit]
-Description=Business Bridge 2 Direct bounded public IPv4 diagnostics service
+Description=Business Bridge 2 Direct stable server identity service
 After=network.target
 
 [Service]
@@ -32,6 +32,7 @@ ReadWritePaths=/var/lib/business-bridge-2-direct /var/log/business-bridge-2-dire
 TasksMax=64
 LimitNOFILE=1024
 ExecStartPre=/usr/bin/test -x /opt/business-bridge-2-direct/.venv/bin/python
+ExecStartPre=/opt/business-bridge-2-direct/.venv/bin/python -m business_bridge_direct.identity_cli verify --config /etc/business-bridge-2-direct/service.json
 StandardOutput=journal
 StandardError=journal
 
