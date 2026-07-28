@@ -6,6 +6,7 @@ import argparse
 import json
 import signal
 import sys
+import threading
 from datetime import datetime, timezone
 
 from . import __version__
@@ -31,7 +32,7 @@ class DirectService:
         def stop(_signum: int, _frame: object) -> None:
             if not stopping["value"]:
                 stopping["value"] = True
-                self.server.shutdown()
+                threading.Thread(target=self.server.shutdown, name="direct-shutdown", daemon=True).start()
 
         signal.signal(signal.SIGTERM, stop)
         signal.signal(signal.SIGINT, stop)
