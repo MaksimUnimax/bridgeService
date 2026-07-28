@@ -114,7 +114,7 @@ mechanisms; no endpoint or behavior was invented.
 | `server/src/business_bridge_direct/__init__.py` | 170 | `9f2d502b62ae43c7d85525d3dc6c1f0eb56d7bbd154cf4f84f2dcdca92689005` |
 | `server/src/business_bridge_direct/defaults.py` | 884 | `2e06b0a94c3843368442a67d39a321cd926effee3da918512d66e116d04602d5` |
 | `server/src/business_bridge_direct/py.typed` | 0 | `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855` |
-| `tests/server/test_baseline.py` | 5061 | recorded in repository commit and source tree |
+| `tests/server/test_baseline.py` | 4932 | `45df8d214c7590670ee1b8fd24fb9e7fde512acab2c75c5e9a8b36c9ca481b69` |
 
 `server/FILE_MANIFEST.sha256` is sorted, uses relative POSIX paths, has 6
 entries, excludes itself, cache, venv and wheel artifacts, and verifies PASS.
@@ -230,5 +230,5 @@ Direct path, no runtime activation, and next run. Service activation,
 listener, user, database, secrets, pairing, crypto, task runtime and
 extension integration remain deferred to their explicitly numbered runs.
 
-Evidence commit: recorded after this file is committed.
+Evidence publication commit: `547edda7ed4a6269de26c10311613f7d11fbe3af`.
 Final marker: `BB2_DIRECT_02_COMPLETE`.
