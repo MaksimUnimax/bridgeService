@@ -90,3 +90,29 @@ BB2_DIRECT_00_READ_ONLY_COMPLETE
 Документационный follow-up исправил явность product/network/security/API/rollback contract в разрешённых файлах. Runtime Business Bridge 2 Direct не создавался и не запускался; действующий legacy Bridge не изменялся и не перезапускался. Commit SHA финальной публикации будет зафиксирован в evidence после обычного follow-up commit; следующий ран остаётся `BB2-DIRECT-02`.
 
 Marker: `BB2_DIRECT_01_COMPLETE`.
+
+## 2026-07-28 — BB2-DIRECT-02-FIX1 — isolated source baseline
+
+### Контекст и исправление
+
+- Первоначальная попытка BB2-DIRECT-02 была `BLOCKED` с ошибкой `invalid command 'bdist_wheel'`.
+- Причина: isolated staging environment не содержал пакет `wheel`, а packaging path вызывал legacy `bdist_wheel`.
+- FIX1 ограничен этим blocker: объявлен PEP 517 backend `setuptools.build_meta`, build requirements `setuptools>=65` и `wheel>=0.40`, а toolchain установлен только в Direct staging venv.
+- `wheel` импортирован из staging venv; установка и wheel build выполнены через `python -m pip` с `--no-build-isolation` без прямого вызова setup.py.
+
+### Baseline и безопасность
+
+- Создана canonical source tree `server/src/business_bridge_direct/` с distribution `business-bridge-2-direct`.
+- Включён только side-effect-free configuration defaults; legacy API, SQLite, secrets, executor subprocesses, scheduler и service activation исключены и документированы.
+- Staging установлен атомарно в `/opt/business-bridge-2-direct`; service, user, process, listener, DB и runtime directories не создавались.
+- Legacy Bridge оставался healthy, его PID/start time/NRestarts не изменились; legacy source читался только read-only.
+
+### Проверки и публикация
+
+- Repository, staging и final-tree baseline tests: 7 collected, 7 passed, 0 failed, 0 skipped.
+- Manifest SHA-256 verification: PASS; source/install hash comparison: PASS.
+- Evidence фиксирует resolved toolchain, source inventory, hashes, acceptance criteria и final safety state.
+- Commit и remote publication SHA зафиксированы в evidence.
+
+Marker: `BB2_DIRECT_02_COMPLETE`.
+Следующий ран: `BB2-DIRECT-03`.

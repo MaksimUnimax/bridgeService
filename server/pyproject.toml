@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=65", "wheel>=0.40"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "business-bridge-2-direct"
+version = "0.1.0"
+description = "Business Bridge 2 Direct source baseline"
+requires-python = ">=3.10,<3.11"
+dependencies = []
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+business_bridge_direct = ["py.typed"]
