@@ -24,7 +24,7 @@ LIMITS = {"request_timeout_seconds": 5, "max_request_line_bytes": 2048, "max_hea
 
 
 def values(**changes: object) -> dict[str, object]:
-    result: dict[str, object] = {"listen_host": "78.17.68.165", "listen_port": 18100, "database_path": "/var/lib/business-bridge-2-direct/bridge.sqlite3", "log_dir": "/var/log/business-bridge-2-direct", "service_name": "business-bridge-2-direct", "service_version": "0.5.0", **LIMITS}
+    result: dict[str, object] = {"listen_host": "78.17.68.165", "listen_port": 18100, "database_path": "/var/lib/business-bridge-2-direct/bridge.sqlite3", "log_dir": "/var/log/business-bridge-2-direct", "service_name": "business-bridge-2-direct", "service_version": "0.6.0", **LIMITS}
     result.update(changes)
     return result
 
@@ -133,7 +133,7 @@ class DirectServiceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory); cfg = self._identity_config(root); identity, result = init_identity(cfg, os.getgid()); self.assertEqual(result, "created")
             db = root / "bridge.sqlite3"; initialize_database(str(db))
-            service = SimpleNamespace(database_path=str(db), service_name="business-bridge-2-direct", version="0.5.0", identity=identity)
+            service = SimpleNamespace(database_path=str(db), service_name="business-bridge-2-direct", version="0.6.0", identity=identity)
             cfg.database_path = str(db)
             server = BoundedIPv4Server(("127.0.0.1", 0), service, cfg); thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
             try:
@@ -146,11 +146,11 @@ class DirectServiceTests(unittest.TestCase):
             finally:
                 server.shutdown(); thread.join(2); server.server_close()
     def test_version_and_valid_exact_config(self) -> None:
-        self.assertEqual(__version__, "0.5.0")
+        self.assertEqual(__version__, "0.6.0")
         with tempfile.TemporaryDirectory() as directory:
             path = pathlib.Path(directory) / "service.json"
             path.write_text(json.dumps(values()), encoding="utf-8"); os.chmod(path, 0o640)
-            self.assertEqual(config.load_config(path).service_version, "0.5.0")
+            self.assertEqual(config.load_config(path).service_version, "0.6.0")
 
     def test_valid_wildcard_config(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -193,15 +193,15 @@ class DirectServiceTests(unittest.TestCase):
             path = pathlib.Path(directory) / "bridge.sqlite3"; initialize_database(str(path)); initialize_database(str(path))
             import sqlite3
             with sqlite3.connect(path) as connection:
-                self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 2)
+                self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 3)
                 names = {r[0] for r in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")}
                 self.assertTrue({"runtime_metadata", "pairing_sessions", "paired_devices", "pairing_audit_events"} <= names)
-                self.assertEqual(dict(connection.execute("SELECT key, value FROM runtime_metadata")), {"schema_version": "2", "service_version": "0.5.0"})
+                self.assertEqual(dict(connection.execute("SELECT key, value FROM runtime_metadata")), {"schema_version": "3", "service_version": "0.6.0"})
             self.assertTrue(check_database(str(path)))
 
     def _server(self, **changes: object):
         directory = tempfile.TemporaryDirectory(); path = pathlib.Path(directory.name) / "bridge.sqlite3"; initialize_database(str(path))
-        service = SimpleNamespace(database_path=str(path), service_name="business-bridge-2-direct", version="0.5.0", identity={"instance_id":"00000000-0000-4000-8000-000000000000", "signing_algorithm":"ECDSA_P256_SHA256", "public_key_format":"SPKI_DER_BASE64URL", "public_key_spki":"AQ", "fingerprint":"sha256:" + "0" * 64, "rotation_generation":1})
+        service = SimpleNamespace(database_path=str(path), service_name="business-bridge-2-direct", version="0.6.0", identity={"instance_id":"00000000-0000-4000-8000-000000000000", "signing_algorithm":"ECDSA_P256_SHA256", "public_key_format":"SPKI_DER_BASE64URL", "public_key_spki":"AQ", "fingerprint":"sha256:" + "0" * 64, "rotation_generation":1})
         cfg_values = values(**changes); cfg_values["database_path"] = str(path)
         cfg = SimpleNamespace(**cfg_values)
         server = BoundedIPv4Server(("127.0.0.1", 0), service, cfg); thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
@@ -214,7 +214,7 @@ class DirectServiceTests(unittest.TestCase):
     def test_exact_public_contracts_headers_and_connection_close(self) -> None:
         directory, server, thread = self._server()
         try:
-            for path, body in ((b"/v2/health", b'{"status":"ok","service":"business-bridge-2-direct","version":"0.5.0"}'), (b"/v2/version", b'{"service":"business-bridge-2-direct","version":"0.5.0","api_version":"v2","transport":"direct-http-bootstrap"}'), (b"/v2/diagnostics/public", b'{"service":"business-bridge-2-direct","version":"0.5.0","status":"ready","listener_scope":"public","database":"ready","identity":"ready","pairing":"enabled","crypto":"disabled","tasks":"disabled"}')):
+            for path, body in ((b"/v2/health", b'{"status":"ok","service":"business-bridge-2-direct","version":"0.6.0"}'), (b"/v2/version", b'{"service":"business-bridge-2-direct","version":"0.6.0","api_version":"v2","transport":"direct-http-bootstrap"}'), (b"/v2/diagnostics/public", b'{"service":"business-bridge-2-direct","version":"0.6.0","status":"ready","listener_scope":"public","database":"ready","identity":"ready","pairing":"enabled","crypto":"BB2D-P1","tasks":"disabled"}')):
                 response = self._raw(server, b"GET " + path + b" HTTP/1.1\r\nHost: test\r\n\r\n"); self.assertIn(b"HTTP/1.1 200", response); self.assertTrue(response.endswith(body)); self.assertIn(b"Connection: close", response); self.assertIn(b"Content-Length: " + str(len(body)).encode(), response)
             self.assertIn(b"HTTP/1.1 404", self._raw(server, b"GET /unknown HTTP/1.1\r\nHost: test\r\n\r\n"))
             self.assertIn(b"HTTP/1.1 405", self._raw(server, b"POST /v2/health HTTP/1.1\r\nHost: test\r\nContent-Length: 0\r\n\r\n"))

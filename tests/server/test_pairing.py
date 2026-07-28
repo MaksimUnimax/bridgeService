@@ -16,7 +16,7 @@ class PairingTests(unittest.TestCase):
         return json.dumps({"pairing_version":"1","pairing_session_id":sid,"pairing_code":code,"device_public_key":key or self.key(),"device_public_key_format":"SPKI_DER_BASE64URL"},separators=(",",":")).encode()
     def test_fresh_schema_and_idempotent_initialize(self):
         initialize_database(self.db); import sqlite3
-        with sqlite3.connect(self.db) as c: self.assertEqual(c.execute("PRAGMA user_version").fetchone()[0],2)
+        with sqlite3.connect(self.db) as c: self.assertEqual(c.execute("PRAGMA user_version").fetchone()[0],3)
     def test_code_is_not_plaintext_and_salts_differ(self):
         a,ca,_=create_session(self.db); b,cb,_=create_session(self.db); import sqlite3
         with sqlite3.connect(self.db) as c:
@@ -73,12 +73,12 @@ class PairingTests(unittest.TestCase):
         code = "import sys; sys.path.insert(0, sys.argv[1]); sys.argv=sys.argv[2:]; exec(open(sys.argv[0]).read(), {'__name__':'__main__'})"
         result = subprocess.run(["runuser", "-u", "business-bridge-direct", "--", "python3", "-c", code, wheel, str(probe), str(db)], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
-        with sqlite3.connect(db) as c: self.assertEqual(c.execute("PRAGMA user_version").fetchone()[0], 2)
+        with sqlite3.connect(db) as c: self.assertEqual(c.execute("PRAGMA user_version").fetchone()[0], 3)
 
     def test_http_pairing_contract_is_single_use_and_get_is_safe(self):
         key = self.key(); sid, code, _ = create_session(self.db)
         identity = {"instance_id":"00000000-0000-4000-8000-000000000000"}
-        service = SimpleNamespace(database_path=self.db, service_name="business-bridge-2-direct", version="0.5.0", identity=identity)
+        service = SimpleNamespace(database_path=self.db, service_name="business-bridge-2-direct", version="0.6.0", identity=identity)
         cfg = SimpleNamespace(request_timeout_seconds=5, max_header_bytes=8192, max_request_line_bytes=2048, max_request_body_bytes=4096, max_header_count=32, max_concurrent_requests=16, listen_backlog=4, per_source_rate_window_seconds=10, per_source_rate_limit=30, global_rate_window_seconds=10, global_rate_limit=120)
         server = BoundedIPv4Server(("127.0.0.1", 0), service, cfg); thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
         def request(method, path, body=b""):

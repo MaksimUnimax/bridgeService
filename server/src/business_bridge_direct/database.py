@@ -11,7 +11,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 MAX_ATTEMPTS = 5
 DEFAULT_TTL_SECONDS = 600
 
@@ -78,14 +78,30 @@ def _migrate(c: sqlite3.Connection) -> None:
         if version == 1:
             _create_pairing_tables(c)
             c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('schema_version','2')")
-            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.5.0')")
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.6.0')")
             c.execute("PRAGMA user_version=2")
-        elif version != 2:
+            version = 2
+        if version == 2:
+            c.execute("""CREATE TABLE IF NOT EXISTS protocol_sessions (
+              session_id TEXT PRIMARY KEY, device_id TEXT NOT NULL, protocol_version TEXT NOT NULL CHECK(protocol_version='BB2D-P1'),
+              created_at TEXT NOT NULL, expires_at TEXT NOT NULL, handshake_request_id TEXT NOT NULL UNIQUE,
+              status TEXT NOT NULL CHECK(status IN ('ACTIVE','EXPIRED','REKEY_REQUIRED','CLOSED')),
+              receive_sequence INTEGER NOT NULL DEFAULT 0 CHECK(receive_sequence>=0), sent_sequence INTEGER NOT NULL DEFAULT 0,
+              FOREIGN KEY(device_id) REFERENCES paired_devices(device_id))""")
+            c.execute("""CREATE TABLE IF NOT EXISTS protocol_replay (
+              session_id TEXT NOT NULL, direction TEXT NOT NULL CHECK(direction IN ('c2s','s2c')),
+              request_id TEXT NOT NULL, nonce_hash TEXT NOT NULL, sequence INTEGER NOT NULL,
+              accepted_at TEXT NOT NULL, PRIMARY KEY(session_id,direction,request_id), UNIQUE(session_id,direction,nonce_hash), UNIQUE(session_id,direction,sequence),
+              FOREIGN KEY(session_id) REFERENCES protocol_sessions(session_id))""")
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('schema_version','3')")
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.6.0')")
+            c.execute("PRAGMA user_version=3"); version=3
+        if version != 3:
             raise ValueError("unsupported schema")
         else:
             _create_pairing_tables(c)
-            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('schema_version','2')")
-            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.5.0')")
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('schema_version','3')")
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.6.0')")
         c.commit()
     except Exception:
         c.rollback()
@@ -119,7 +135,7 @@ def check_database(path: str) -> bool:
         rows = dict(c.execute("SELECT key,value FROM runtime_metadata"))
         tables = {r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         c.close()
-        return version == 2 and rows.get("schema_version") == "2" and rows.get("service_version") == "0.5.0" and {"pairing_sessions","paired_devices","pairing_audit_events"} <= tables
+        return version == 3 and rows.get("schema_version") == "3" and rows.get("service_version") == "0.6.0" and {"pairing_sessions","paired_devices","pairing_audit_events","protocol_sessions","protocol_replay"} <= tables
     except (OSError, sqlite3.Error, ValueError):
         return False
 

@@ -11,6 +11,7 @@ from typing import Callable
 
 from .database import check_database
 from .pairing import pair
+from .protocol import PV
 
 
 class RateLimiter:
@@ -127,7 +128,9 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
             else:
                 body = bytearray()
             target_raw = parts[1]
-            is_pairing = target_raw.split(b"?", 1)[0] == b"/v2/pairing/complete"
+            path = target_raw.split(b"?", 1)[0]
+            is_pairing = path == b"/v2/pairing/complete"
+            is_protocol = path in (b"/v2/protocol/session", b"/v2/protocol/probe")
             if is_pairing:
                 if not self.server.pairing_limiter.allow(self.client_address[0], 60, 10, 60, 60):  # type: ignore[attr-defined]
                     self._send(429, {"error": "rate_limited"}, 10); return
@@ -135,7 +138,7 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
                 limiter = self.server.limiter  # type: ignore[attr-defined]
                 if not limiter.allow(self.client_address[0], config.per_source_rate_window_seconds, config.per_source_rate_limit, config.global_rate_window_seconds, config.global_rate_limit):
                     self._send(429, {"error": "rate_limited"}, 10); return
-            if parts[0] != b"GET" and not is_pairing:
+            if parts[0] != b"GET" and not is_pairing and not is_protocol:
                 self._send(405, {"error": "method_not_allowed"})
                 return
             if is_pairing:
@@ -149,6 +152,17 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
                     data["instance_id"] = self.server.service.identity["instance_id"]  # type: ignore[attr-defined]
                     self._send(201, data); return
                 self._send(403, {"error":"pairing_rejected"}); return
+            if is_protocol:
+                service = self.server.service  # type: ignore[attr-defined]
+                if parts[0] != b"POST": self._send(405,{"error":"method_not_allowed"}); return
+                if headers.get("content-type","").lower() != "application/json": self._send(415,{"error":"unsupported_media_type"}); return
+                try:
+                    status, data = (service.protocol.session(bytes(body)) if path == b"/v2/protocol/session" else service.protocol.probe(bytes(body)))
+                    self._send(status,data); return
+                except ValueError as exc:
+                    error=str(exc) if str(exc) in {'malformed_request','unsupported_protocol_version','unknown_device','device_revoked','invalid_signature','wrong_curve','expired_message','invalid_timestamp','unknown_session','rekey_required','sequence_violation','replay_detected','nonce_reuse','authentication_failed','invalid_plaintext'} else 'malformed_request'
+                    status=403 if error in {'invalid_signature','device_revoked','unknown_device','authentication_failed','replay_detected','sequence_violation','rekey_required'} else 400
+                    self._send(status,{"error":error}); return
             target = target_raw.split(b"?", 1)[0]
             service = self.server.service  # type: ignore[attr-defined]
             ready = check_database(service.database_path)
@@ -161,7 +175,7 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
             elif target == b"/v2/version":
                 self._send(200, {"service": service.service_name, "version": service.version, "api_version": "v2", "transport": "direct-http-bootstrap"})
             elif target == b"/v2/diagnostics/public":
-                self._send(200 if ready else 503, {"service": service.service_name, "version": service.version, "status": "ready" if ready else "unavailable", "listener_scope": "public", "database": "ready" if ready else "unavailable", "identity": "ready" if identity else "unavailable", "pairing": "enabled", "crypto": "disabled", "tasks": "disabled"})
+                self._send(200 if ready else 503, {"service": service.service_name, "version": service.version, "status": "ready" if ready else "unavailable", "listener_scope": "public", "database": "ready" if ready else "unavailable", "identity": "ready" if identity else "unavailable", "pairing": "enabled", "crypto": "BB2D-P1", "tasks": "disabled"})
             elif target == b"/v2/bootstrap":
                 if not ready or not identity:
                     self._send(503, {"error": "unavailable"})

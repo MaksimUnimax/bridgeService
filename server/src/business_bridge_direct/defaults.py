@@ -20,7 +20,7 @@ class DirectDefaults:
     service_user: str = "business-bridge-direct"
     listen_host: str = "78.17.68.165"
     listen_port: int = 18100
-    service_version: str = "0.5.0"
+    service_version: str = "0.6.0"
     identity_metadata_path: str = "/var/lib/business-bridge-2-direct/identity/identity.json"
     server_signing_private_key_path: str = "/etc/business-bridge-2-direct/secrets/server_signing_private_key.pem"
     openssl_path: str = "/usr/bin/openssl"

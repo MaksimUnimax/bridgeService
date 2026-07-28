@@ -21,11 +21,14 @@ def _event(level: str, event: str, result: str) -> None:
 
 class DirectService:
     def __init__(self, config: DirectConfig) -> None:
+        self.config = config
         self.database_path = config.database_path
         self.service_name = config.service_name
         self.version = config.service_version
         import grp
         self.identity = validate_identity(config, grp.getgrnam("business-bridge-direct").gr_gid)
+        from .protocol import Protocol
+        self.protocol = Protocol(self)
         from .http_api import BoundedIPv4Server
         self.server = BoundedIPv4Server((config.listen_host, config.listen_port), self, config)
 
