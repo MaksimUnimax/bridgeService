@@ -20,7 +20,7 @@ from business_bridge_direct.http_api import BoundedIPv4Server, RateLimiter
 from business_bridge_direct.identity import IdentityError, init_identity, validate_identity
 
 
-LIMITS = {"request_timeout_seconds": 5, "max_request_line_bytes": 2048, "max_header_bytes": 8192, "max_header_count": 32, "max_request_body_bytes": 4096, "max_concurrent_requests": 16, "listen_backlog": 32, "per_source_rate_window_seconds": 10, "per_source_rate_limit": 30, "global_rate_window_seconds": 10, "global_rate_limit": 120, "identity_metadata_path": "/var/lib/business-bridge-2-direct/identity.json", "server_signing_private_key_path": "/etc/business-bridge-2-direct/secrets/server_signing_private_key.pem", "openssl_path": "/usr/bin/openssl"}
+LIMITS = {"request_timeout_seconds": 5, "max_request_line_bytes": 2048, "max_header_bytes": 8192, "max_header_count": 32, "max_request_body_bytes": 4096, "max_concurrent_requests": 16, "listen_backlog": 32, "per_source_rate_window_seconds": 10, "per_source_rate_limit": 30, "global_rate_window_seconds": 10, "global_rate_limit": 120, "identity_metadata_path": "/var/lib/business-bridge-2-direct/identity/identity.json", "server_signing_private_key_path": "/etc/business-bridge-2-direct/secrets/server_signing_private_key.pem", "openssl_path": "/usr/bin/openssl"}
 
 
 def values(**changes: object) -> dict[str, object]:
@@ -31,8 +31,8 @@ def values(**changes: object) -> dict[str, object]:
 
 class DirectServiceTests(unittest.TestCase):
     def _identity_config(self, root: pathlib.Path):
-        data = values(database_path=str(root / "bridge.sqlite3"), identity_metadata_path=str(root / "state" / "identity.json"), server_signing_private_key_path=str(root / "secrets" / "server_signing_private_key.pem"))
-        (root / "state").mkdir(); (root / "secrets").mkdir(); os.chmod(root / "state", 0o750); os.chmod(root / "secrets", 0o750)
+        data = values(database_path=str(root / "bridge.sqlite3"), identity_metadata_path=str(root / "identity" / "identity.json"), server_signing_private_key_path=str(root / "secrets" / "server_signing_private_key.pem"))
+        (root / "identity").mkdir(); (root / "secrets").mkdir(); os.chmod(root / "identity", 0o750); os.chmod(root / "secrets", 0o750)
         from types import SimpleNamespace
         return SimpleNamespace(**data)
 
@@ -108,6 +108,27 @@ class DirectServiceTests(unittest.TestCase):
             source = (pathlib.Path(__file__).parents[2] / "server/src/business_bridge_direct/identity.py").read_text()
             self.assertNotIn('"pkey", "-in", str(key), "-text"', source)
 
+    def test_identity_boundary_rejects_symlink_and_hardlink_metadata(self) -> None:
+        if os.geteuid() != 0:
+            self.skipTest("requires root for ownership boundary")
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory); cfg = self._identity_config(root); init_identity(cfg, os.getgid())
+            identity_dir = pathlib.Path(cfg.identity_metadata_path).parent
+            metadata = pathlib.Path(cfg.identity_metadata_path)
+            moved = root / "metadata-copy"; metadata.rename(moved); metadata.symlink_to(moved)
+            with self.assertRaises(IdentityError): validate_identity(cfg, os.getgid())
+            metadata.unlink(); os.link(moved, metadata)
+            with self.assertRaises(IdentityError): validate_identity(cfg, os.getgid())
+
+    def test_identity_boundary_rejects_non_root_or_wrong_mode_parent(self) -> None:
+        if os.geteuid() != 0:
+            self.skipTest("requires root for ownership boundary")
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory); cfg = self._identity_config(root); init_identity(cfg, os.getgid())
+            identity_dir = pathlib.Path(cfg.identity_metadata_path).parent
+            os.chmod(identity_dir, 0o770)
+            with self.assertRaises(IdentityError): validate_identity(cfg, os.getgid())
+
     def test_real_bootstrap_http_contract_and_determinism(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory); cfg = self._identity_config(root); identity, result = init_identity(cfg, os.getgid()); self.assertEqual(result, "created")
@@ -142,6 +163,19 @@ class DirectServiceTests(unittest.TestCase):
             with self.subTest(change=change), tempfile.TemporaryDirectory() as directory:
                 path = pathlib.Path(directory) / "service.json"; path.write_text(json.dumps(values(**change))); os.chmod(path, 0o640)
                 with self.assertRaises(ValueError): config.load_config(path)
+
+    def test_config_accepts_only_exact_nested_identity_path(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory); path = root / "service.json"
+            for candidate in (
+                "/var/lib/business-bridge-2-direct/identity.json",
+                "/var/lib/business-bridge-2-direct/other/identity.json",
+                "var/lib/business-bridge-2-direct/identity/identity.json",
+            ):
+                path.write_text(json.dumps(values(identity_metadata_path=candidate))); os.chmod(path, 0o640)
+                with self.assertRaises(ValueError): config.load_config(path)
+            path.write_text(json.dumps(values())); os.chmod(path, 0o640)
+            self.assertEqual(config.load_config(path).identity_metadata_path, "/var/lib/business-bridge-2-direct/identity/identity.json")
 
     def test_config_rejects_unknown_missing_symlink_and_unsafe(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

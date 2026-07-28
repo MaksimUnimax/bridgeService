@@ -74,7 +74,9 @@ def load_config(path: str | os.PathLike[str]) -> DirectConfig:
         raise ValueError("foreign database path")
     if not isinstance(data["log_dir"], str) or Path(data["log_dir"]).resolve() != Path(DEFAULTS.log_dir).resolve():
         raise ValueError("foreign log path")
-    if data["identity_metadata_path"] != DEFAULTS.identity_metadata_path or not _inside(Path(data["identity_metadata_path"]), Path(DEFAULTS.state_dir)):
+    identity_path = Path(data["identity_metadata_path"])
+    identity_dir = Path(DEFAULTS.state_dir) / "identity"
+    if data["identity_metadata_path"] != DEFAULTS.identity_metadata_path or identity_path.parent != identity_dir or not identity_path.is_absolute() or identity_path.is_symlink() or identity_path.parent.is_symlink():
         raise ValueError("foreign identity path")
     if data["server_signing_private_key_path"] != DEFAULTS.server_signing_private_key_path or not _inside(Path(data["server_signing_private_key_path"]), Path(DEFAULTS.secrets_dir)):
         raise ValueError("foreign secrets path")

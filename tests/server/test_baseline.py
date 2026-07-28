@@ -36,7 +36,7 @@ class BaselineTests(unittest.TestCase):
         "listen_host": "78.17.68.165",
         "listen_port": 18100,
         "service_version": "0.4.0",
-        "identity_metadata_path": "/var/lib/business-bridge-2-direct/identity.json",
+        "identity_metadata_path": "/var/lib/business-bridge-2-direct/identity/identity.json",
         "server_signing_private_key_path": "/etc/business-bridge-2-direct/secrets/server_signing_private_key.pem",
         "openssl_path": "/usr/bin/openssl",
     })

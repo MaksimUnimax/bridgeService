@@ -173,7 +173,7 @@ def _write_exclusive(path: Path, data: bytes, mode: int) -> None:
 def validate_identity(config: Any, group: int | None = None) -> dict[str, Any]:
     key, metadata = Path(config.server_signing_private_key_path), Path(config.identity_metadata_path)
     _safe_parent(key.parent, 0, group if group is not None else key.parent.stat().st_gid, 0o750, exact=True)
-    _safe_parent(metadata.parent, metadata.parent.stat().st_uid, group if group is not None else metadata.parent.stat().st_gid, metadata.parent.stat().st_mode & 0o777)
+    _safe_parent(metadata.parent, 0, group if group is not None else metadata.parent.stat().st_gid, 0o750, exact=True)
     if not os.path.lexists(key) or not os.path.lexists(metadata):
         raise IdentityError("IDENTITY_PARTIAL_STATE")
     data = validate_metadata(metadata, group)
