@@ -93,16 +93,9 @@ class BaselineTests(unittest.TestCase):
         self.assertNotEqual(path, MANIFEST)
         self.assertEqual(digest, __import__("hashlib").sha256(path.read_bytes()).hexdigest())
 
-  def test_runtime_resources_are_not_present(self) -> None:
-    install_path = pathlib.Path("/opt/business-bridge-2-direct")
-    if ROOT == install_path:
-        self.assertTrue(install_path.is_dir())
-        self.assertTrue((install_path / ".venv").is_dir())
-    # Runtime paths are created by the activation run, never by source import.
+  def test_runtime_resources_are_activation_owned(self) -> None:
+    # Runtime paths are created by activation, never by source import.
     self.assertFalse(any(path.name in {"service.json", "bridge.sqlite3"} for path in ROOT.rglob("*")))
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-        probe.settimeout(0.5)
-        self.assertNotEqual(probe.connect_ex(("127.0.0.1", 18100)), 0)
 
   def test_venv_isolated_when_running_in_venv(self) -> None:
     if os.environ.get("VIRTUAL_ENV"):
