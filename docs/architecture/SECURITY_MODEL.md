@@ -16,4 +16,4 @@ MITM и подмена сервера — fingerprint, server signature и authe
 
 ## Lifecycle
 
-Pairing code одноразовый; server/device revoke немедленно блокирует session. Rotation имеет metadata и требует fingerprint confirmation; при identity change extension предупреждает и не принимает сервер молча. Secret storage — отдельные права Direct; old Bridge secrets не читаются и не переиспользуются.
+Pairing code одноразовый; server/device revoke немедленно блокирует session. Rotation имеет metadata и требует fingerprint confirmation; backup boundary для identity keys проходит только по отдельным Direct backup/restore, при identity change extension предупреждает и не принимает сервер молча. Permanent secret в connection bundle не допускается. Secret storage — отдельные права Direct; old Bridge secrets не читаются и не переиспользуются.

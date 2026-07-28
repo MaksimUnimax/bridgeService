@@ -4,7 +4,7 @@
 
 Цель — дать расширению Chrome прямой защищённый канал к CLI-окружению на VPS клиента при сохранении бизнес-семантики legacy Bridge. В scope входят extension-профили, Direct server, installer, pairing, device identity, versioned connection bundle, application-layer encryption, jobs/reports, reconnect/recovery, multi-server и тесты.
 
-Out of scope: relay/control plane разработчика, SaaS, VPN, tunnel, обязательный домен, обязательный сторонний аккаунт, desktop-программа, изменение legacy Bridge, его DB/secrets/state/logs, реализация в BB2-DIRECT-01 и перенос в `main`.
+Out of scope: vendor relay, сторонний relay/control plane разработчика, SaaS, VPN, PowerShell/SSH tunnel, обязательный домен, обязательный сторонний аккаунт, desktop-программа, изменение legacy Bridge, его DB/secrets/state/logs, реализация в BB2-DIRECT-01 и перенос в `main`.
 
 ## 2. Компоненты и ресурсы
 

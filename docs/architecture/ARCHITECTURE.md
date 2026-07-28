@@ -2,7 +2,7 @@
 
 ## Legacy и Direct
 
-Legacy: ChatGPT → extension → существующий Bridge transport → `business-bridge-2.service` (`127.0.0.1:18083`) → CLI. Direct: ChatGPT → extension → прямой публичный IPv4 VPS клиента → `business-bridge-2-direct.service` → CLI. Между браузером и VPS нет relay/control plane разработчика, tunnel, VPN или обязательного домена.
+Legacy: ChatGPT → extension → существующий Bridge transport → `business-bridge-2.service` (`127.0.0.1:18083`) → CLI. Direct: ChatGPT → extension → прямой публичный IPv4 VPS клиента → `business-bridge-2-direct.service` → CLI. Между браузером и VPS нет vendor relay, стороннего relay/control plane разработчика, PowerShell/SSH tunnel, VPN или обязательного домена.
 
 ## Компоненты и ownership
 
@@ -18,4 +18,4 @@ Legacy: ChatGPT → extension → существующий Bridge transport → 
 
 ## Deployment и bind
 
-Публичный IPv4 обязателен, первый стенд — `78.17.68.165`. Разрешены bind конкретного интерфейсного адреса или `0.0.0.0:18100`; окончательный выбор и firewall проверяются только в BB2-DIRECT-04. В этом ране listener и служба не создаются.
+Публичный IPv4 обязателен, первый стенд — `78.17.68.165`. Перед bind порт `18100` повторно проверяется; выбор делается по фактической конфигурации между `78.17.68.165:18100` и `0.0.0.0:18100`, а наличие public IPv4 на интерфейсе не предполагается. Firewall меняется только в BB2-DIRECT-04; внешний provider firewall/security group проверяется отдельно. В этом ране listener и служба не создаются.

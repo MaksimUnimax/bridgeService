@@ -84,3 +84,9 @@ BB2_DIRECT_00_READ_ONLY_COMPLETE
 `BB2_DIRECT_01_COMPLETE`.
 
 Следующий ран: `BB2-DIRECT-02` — изолированный source baseline.
+
+## BB2-DIRECT-01-FIX1 — controlled acceptance continuation
+
+Документационный follow-up исправил явность product/network/security/API/rollback contract в разрешённых файлах. Runtime Business Bridge 2 Direct не создавался и не запускался; действующий legacy Bridge не изменялся и не перезапускался. Commit SHA финальной публикации будет зафиксирован в evidence после обычного follow-up commit; следующий ран остаётся `BB2-DIRECT-02`.
+
+Marker: `BB2_DIRECT_01_COMPLETE`.

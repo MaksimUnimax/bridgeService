@@ -21,7 +21,7 @@ ChatGPT
 - доступный входящий TCP-порт;
 - Chrome/Chromium;
 - Codex или другая поддерживаемая CLI;
-- без Cloudflare Tunnel, Tailscale, Ngrok, VPN, внешнего relay и обязательного домена.
+- без vendor relay, стороннего relay, Cloudflare Tunnel, Tailscale, Ngrok, VPN, PowerShell/SSH tunnel и обязательного домена.
 
 ## Состояние проекта
 
