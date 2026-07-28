@@ -1,8 +1,8 @@
-# Business Bridge 2 Direct localhost service
+# Business Bridge 2 Direct public service
 
-This directory contains the isolated `0.2.0` localhost service accepted by
-`BB2-DIRECT-04`. It uses only Python 3.10 standard-library runtime modules,
-binds to `127.0.0.1:18100`, and has no legacy Bridge dependency.
+This directory contains the isolated `0.4.0` Direct service accepted by
+`BB2-DIRECT-05`. It uses only Python 3.10 standard-library runtime modules,
+binds to `78.17.68.165:18100`, and has no legacy Bridge dependency.
 
 ## Identity and layout
 
@@ -16,7 +16,7 @@ The planned Direct paths are `/opt/business-bridge-2-direct`,
 `/etc/business-bridge-2-direct`, `/etc/business-bridge-2-direct/secrets`,
 `/var/lib/business-bridge-2-direct`, and `/var/log/business-bridge-2-direct`.
 The planned service is `business-bridge-2-direct.service`, user is
-`business-bridge-direct`, and the reserved listener is `127.0.0.1:18100`.
+`business-bridge-direct`, and the reserved listener is `78.17.68.165:18100`.
 
 ## Isolated build and tests
 
@@ -54,10 +54,13 @@ runs. No legacy data, virtual environment, configuration values, secrets,
 database, logs, reports, or state are reused.
 
 The runtime entrypoint is `python -m business_bridge_direct.main --config
-.../service.json`. The service exposes only health, version, and safe public
-diagnostics. Pairing, identity, crypto, tasks, reports, and extension
-transport remain out of scope. Rollback removes only Direct resources after
-ownership and marker checks; legacy resources remain untouched.
+.../service.json`. Identity is explicitly provisioned with the identity CLI;
+startup validates the existing PKCS#8 key and metadata, performs public-only
+P-256 inspection and synthetic sign/verify, and only then binds. The service
+exposes health, version, diagnostics, and deterministic public bootstrap.
+Pairing, device identity, crypto, tasks, reports, and extension transport
+remain out of scope. Rollback removes only Direct resources after ownership
+and marker checks; legacy resources remain untouched.
 
 ## Security policy
 

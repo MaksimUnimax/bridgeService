@@ -51,6 +51,43 @@ class DirectServiceTests(unittest.TestCase):
             with self.assertRaises(IdentityError): validate_identity(cfg, os.getgid())
             key.unlink();
             with self.assertRaises(IdentityError): validate_identity(cfg, os.getgid())
+
+    def test_identity_fail_closed_cases_and_public_only_source(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory); cfg = self._identity_config(root); init_identity(cfg, os.getgid())
+            key = pathlib.Path(cfg.server_signing_private_key_path); meta = pathlib.Path(cfg.identity_metadata_path)
+            original = meta.read_text()
+            for bad in (original.replace('"rotation_generation":1', '"rotation_generation":2'), original.replace('"rotation_reason":null', '"unexpected":null,"rotation_reason":null'), original.replace('"rotation_reason":null', '"rotation_reason":"x"'), original.replace('"created_at":"', '"created_at":"not-')):
+                meta.write_text(bad); os.chmod(meta, 0o640)
+                with self.assertRaises(IdentityError): validate_identity(cfg, os.getgid())
+            meta.write_text(original); os.chmod(meta, 0o640)
+            os.chmod(key, 0o660)
+            with self.assertRaises(IdentityError): validate_identity(cfg, os.getgid())
+            os.chmod(key, 0o640)
+            linked = root / "key-link"; os.link(key, linked)
+            with self.assertRaises(IdentityError): validate_identity(cfg, os.getgid())
+            linked.unlink()
+            key.rename(root / "moved-key"); key.symlink_to(root / "moved-key")
+            with self.assertRaises(IdentityError): validate_identity(cfg, os.getgid())
+            source = (pathlib.Path(__file__).parents[2] / "server/src/business_bridge_direct/identity.py").read_text()
+            self.assertNotIn('"pkey", "-in", str(key), "-text"', source)
+
+    def test_real_bootstrap_http_contract_and_determinism(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory); cfg = self._identity_config(root); identity, result = init_identity(cfg, os.getgid()); self.assertEqual(result, "created")
+            db = root / "bridge.sqlite3"; initialize_database(str(db))
+            service = SimpleNamespace(database_path=str(db), service_name="business-bridge-2-direct", version="0.4.0", identity=identity)
+            cfg.database_path = str(db)
+            server = BoundedIPv4Server(("127.0.0.1", 0), service, cfg); thread = threading.Thread(target=server.serve_forever, daemon=True); thread.start()
+            try:
+                response = self._raw(server, b"GET /v2/bootstrap HTTP/1.1\r\nHost: test\r\n\r\n")
+                self.assertIn(b"HTTP/1.1 200", response); body = json.loads(response.split(b"\r\n\r\n", 1)[1])
+                self.assertEqual(tuple(body), ("service", "version", "api_version", "bootstrap_version", "instance_id", "server_signing_algorithm", "server_public_key_format", "server_public_key", "server_fingerprint", "rotation_generation"))
+                self.assertEqual(body["instance_id"], identity["instance_id"]); self.assertEqual(body["server_fingerprint"], identity["fingerprint"])
+                self.assertEqual(response, self._raw(server, b"GET /v2/bootstrap HTTP/1.1\r\nHost: test\r\n\r\n"))
+                self.assertIn(b"HTTP/1.1 405", self._raw(server, b"POST /v2/bootstrap HTTP/1.1\r\nHost: test\r\nContent-Length: 0\r\n\r\n"))
+            finally:
+                server.shutdown(); thread.join(2); server.server_close()
     def test_version_and_valid_exact_config(self) -> None:
         self.assertEqual(__version__, "0.4.0")
         with tempfile.TemporaryDirectory() as directory:
