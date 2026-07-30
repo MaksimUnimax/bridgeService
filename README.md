@@ -25,7 +25,7 @@ ChatGPT
 
 ## Состояние проекта
 
-`BB2-DIRECT-08` принят. Direct `0.7.0/schema 4` имеет защищённый `BB2D-P1` task/report API: создание задания, status, cancel, report, immutable operation ID, canonical idempotency, payload conflict и повторное получение отчёта. Source, installed-wheel, rollback и production acceptance прошли; независимый Chromium/Web Crypto probe прошёл 6/6 запусков. Legacy Bridge не изменён. Следующий ран — `BB2-DIRECT-09`, durable jobs and recovery.
+`BB2-DIRECT-09` принят. Direct `0.8.0/schema 5` имеет защищённый `BB2D-P1` task/report API и durable job lifecycle: immutable operation ledger, состояния `CREATED/QUEUED/ACCEPTED/RUNNING/SUCCEEDED/FAILED/CANCEL_REQUESTED/CANCELLED/UNKNOWN/EXPIRED`, one-winner leases, stale-owner rejection, startup recovery, no blind retry, internal reconciliation и immutable reports. Source, installed-wheel, rollback, permission-boundary и production restart acceptance прошли. Legacy Bridge не изменён. Следующий ран — `BB2-DIRECT-10`, connection bundle.
 
 ## Документация
 
