@@ -13,7 +13,7 @@
 | BB2-DIRECT-06 | Одноразовое pairing | ACCEPTED / PASS |
 | BB2-DIRECT-07 | Защищённый прикладной протокол | ACCEPTED / PASS |
 | BB2-DIRECT-08 | Совместимый task/report API | ACCEPTED / PASS |
-| BB2-DIRECT-09 | Durable jobs и восстановление | NOT STARTED |
+| BB2-DIRECT-09 | Durable jobs и восстановление | ACCEPTED / PASS |
 | BB2-DIRECT-10 | Connection bundle и CLI output | NOT STARTED |
 | BB2-DIRECT-11 | Профили серверов в расширении | NOT STARTED |
 | BB2-DIRECT-12 | Direct transport adapter расширения | NOT STARTED |
@@ -36,6 +36,7 @@ BB2_DIRECT_05_COMPLETE
 BB2_DIRECT_06_COMPLETE
 BB2_DIRECT_07_COMPLETE
 BB2_DIRECT_08_COMPLETE
+BB2_DIRECT_09_COMPLETE
 ```
 
 ## Правила перехода
@@ -47,7 +48,23 @@ BB2_DIRECT_08_COMPLETE
 - Единичные defects исправляются под тем же technical ID без создания `FIX1/FIX2/FIX3`.
 - Необязательные улучшения записываются как `DEFERRED` и не создают новые раны.
 
-Следующий ран: `BB2-DIRECT-09` — durable jobs and recovery; он не выполнялся.
+Следующий ран: `BB2-DIRECT-10` — connection bundle; он не выполнялся.
+
+## BB2-DIRECT-09
+
+`BB2-DIRECT-09 = ACCEPTED / PASS`.
+
+Приняты implementation commit `46ed6317b03ba9b84e52042cdd068379d02ad1b7` и server evidence commit `168f80f3f9b3c3dcd27219c5f93aa15a2bb10236`. Direct `0.8.0/schema 5` реализует durable operation ledger, утверждённый ten-state lifecycle, one-winner leases, stale-owner rejection, startup recovery, `RUNNING→UNKNOWN` без blind retry, internal proof-gated reconciliation, cancellation, expiry и immutable durable reports.
+
+Попытка 2 выявила production permission defect. Corrective attempt 3 добавил complete no-follow staging inventory, safe ownership/modes, unsafe type/hardlink/escape rejection, service-user imports и staged identity verification до activation. Source, protocol, three-build wheel, installed-wheel, rollback, production activation и production restart acceptance прошли.
+
+Final Direct: active/running, `NRestarts=0`, health 200, version `0.8.0`, schema `5`, listener `78.17.68.165:18100`, identity/service user/group/system Python unchanged. Legacy Bridge остался неизменным и не перезапускался.
+
+Independent audit: `docs/development/evidence/BB2-DIRECT-09_CHATGPT_AUDIT.md`.
+
+Marker: `BB2_DIRECT_09_COMPLETE`.
+
+Следующий ран: `BB2-DIRECT-10`.
 
 ## BB2-DIRECT-08
 
