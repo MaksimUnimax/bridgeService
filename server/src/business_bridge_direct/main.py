@@ -31,6 +31,9 @@ class DirectService:
         self.protocol = Protocol(self)
         from .http_api import BoundedIPv4Server
         self.server = BoundedIPv4Server((config.listen_host, config.listen_port), self, config)
+        from .worker import DurableWorker
+        self.stop_event = threading.Event()
+        self.worker = DurableWorker(self.database_path, self.stop_event)
 
     def run(self) -> None:
         stopping = {"value": False}
@@ -38,14 +41,18 @@ class DirectService:
         def stop(_signum: int, _frame: object) -> None:
             if not stopping["value"]:
                 stopping["value"] = True
+                self.stop_event.set()
                 threading.Thread(target=self.server.shutdown, name="direct-shutdown", daemon=True).start()
 
         signal.signal(signal.SIGTERM, stop)
         signal.signal(signal.SIGINT, stop)
         _event("INFO", "service_started", "ok")
         try:
+            self.worker.start()
             self.server.serve_forever(poll_interval=0.1)
         finally:
+            self.stop_event.set()
+            self.worker.join(5.0)
             self.server.server_close()
             _event("INFO", "service_stopped", "ok")
 
@@ -57,6 +64,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         config = load_config(args.config)
         initialize_database(config.database_path)
+        from .tasks import recover
+        recover(config.database_path)
         service = DirectService(config)
         service.run()
         return 0

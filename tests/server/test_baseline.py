@@ -38,7 +38,7 @@ class BaselineTests(unittest.TestCase):
         "service_user": "business-bridge-direct",
         "listen_host": "78.17.68.165",
         "listen_port": 18100,
-        "service_version": "0.7.0",
+        "service_version": "0.8.0",
         "identity_metadata_path": "/var/lib/business-bridge-2-direct/identity/identity.json",
         "server_signing_private_key_path": "/etc/business-bridge-2-direct/secrets/server_signing_private_key.pem",
         "openssl_path": "/usr/bin/openssl",
@@ -117,13 +117,13 @@ class BaselineTests(unittest.TestCase):
 
   def test_schema_constant_and_database_contract(self) -> None:
     from business_bridge_direct import database
-    self.assertEqual(database.SCHEMA_VERSION, 4)
+    self.assertEqual(database.SCHEMA_VERSION, 5)
     with __import__("tempfile").TemporaryDirectory() as directory:
       fresh = pathlib.Path(directory) / "fresh.sqlite3"
       database.initialize_database(str(fresh))
       with sqlite3.connect(fresh) as connection:
-        self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 4)
-        self.assertEqual(dict(connection.execute("SELECT key,value FROM runtime_metadata")), {"schema_version": "4", "service_version": "0.7.0"})
+        self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 5)
+        self.assertEqual(dict(connection.execute("SELECT key,value FROM runtime_metadata")), {"schema_version": "5", "service_version": "0.8.0"})
       self.assertTrue(database.check_database(str(fresh)))
       migrated = pathlib.Path(directory) / "migrated.sqlite3"
       with sqlite3.connect(migrated) as connection:
@@ -132,12 +132,12 @@ class BaselineTests(unittest.TestCase):
         connection.execute("CREATE TABLE protocol_sessions(session_id TEXT PRIMARY KEY, device_id TEXT NOT NULL, protocol_version TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, handshake_request_id TEXT NOT NULL UNIQUE, status TEXT NOT NULL, receive_sequence INTEGER NOT NULL DEFAULT 0, sent_sequence INTEGER NOT NULL DEFAULT 0)")
         connection.execute("CREATE TABLE protocol_replay(session_id TEXT NOT NULL,direction TEXT NOT NULL,request_id TEXT NOT NULL,nonce_hash TEXT NOT NULL,sequence INTEGER NOT NULL,accepted_at TEXT NOT NULL)")
         connection.execute("INSERT INTO runtime_metadata VALUES('schema_version','3')")
-        connection.execute("INSERT INTO runtime_metadata VALUES('service_version','0.7.0')")
+        connection.execute("INSERT INTO runtime_metadata VALUES('service_version','0.8.0')")
         connection.execute("PRAGMA user_version=3")
       database.initialize_database(str(migrated))
       with sqlite3.connect(migrated) as connection:
-        self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 4)
-        self.assertEqual(dict(connection.execute("SELECT key,value FROM runtime_metadata"))["schema_version"], "4")
+        self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 5)
+        self.assertEqual(dict(connection.execute("SELECT key,value FROM runtime_metadata"))["schema_version"], "5")
       self.assertTrue(database.check_database(str(migrated)))
     self.assertNotIn("SCHEMA_VERSION = 3", (PACKAGE / "database.py").read_text(encoding="utf-8"))
 

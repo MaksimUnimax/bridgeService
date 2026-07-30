@@ -36,7 +36,7 @@ class DirectTaskV07Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"task_not_found"): tasks.lookup(self.db,"00000000-0000-4000-8000-000000000003",first["task_id"])
     def test_schema_foreign_keys_and_failed_migration_rollback(self):
         with sqlite3.connect(self.db) as c:
-            self.assertEqual(c.execute("pragma user_version").fetchone()[0],4); self.assertEqual(c.execute("pragma integrity_check").fetchone()[0],"ok"); self.assertEqual(c.execute("pragma foreign_key_check").fetchall(),[])
+            self.assertEqual(c.execute("pragma user_version").fetchone()[0],5); self.assertEqual(c.execute("pragma integrity_check").fetchone()[0],"ok"); self.assertEqual(c.execute("pragma foreign_key_check").fetchall(),[])
         p=Path(self.tmp.name)/"v3.sqlite3"
         with sqlite3.connect(p) as c:
             c.execute("create table runtime_metadata(key text primary key,value text not null)"); c.execute("insert into runtime_metadata values('schema_version','3')"); c.execute("insert into runtime_metadata values('service_version','0.6.0')"); c.execute("create table task_operations(bad text)"); c.execute("pragma user_version=3")
