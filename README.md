@@ -25,7 +25,7 @@ ChatGPT
 
 ## Состояние проекта
 
-`BB2-DIRECT-04` принят: Direct 0.3.0 доступен на доказанном публичном IPv4 `78.17.68.165:18100`; внешний TCP/HTTP probe успешен, firewall mutation не потребовалась при permissive host policy. Доступны только safe diagnostics; Direct ещё не production-ready. Следующий ран — `BB2-DIRECT-05`.
+`BB2-DIRECT-08` принят. Direct `0.7.0/schema 4` имеет защищённый `BB2D-P1` task/report API: создание задания, status, cancel, report, immutable operation ID, canonical idempotency, payload conflict и повторное получение отчёта. Source, installed-wheel, rollback и production acceptance прошли; независимый Chromium/Web Crypto probe прошёл 6/6 запусков. Legacy Bridge не изменён. Следующий ран — `BB2-DIRECT-09`, durable jobs and recovery.
 
 ## Документация
 
