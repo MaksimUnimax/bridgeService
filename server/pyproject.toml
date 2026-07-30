@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "business-bridge-2-direct"
-version = "0.8.0"
+version = "0.9.0"
 description = "Business Bridge 2 Direct protected task/report API service"
 requires-python = ">=3.10,<3.11"
 dependencies = ["cryptography==43.0.3"]

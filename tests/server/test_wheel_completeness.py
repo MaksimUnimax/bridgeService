@@ -15,6 +15,8 @@ SERVER = ROOT / "server"
 REQUIRED = {
     "business_bridge_direct/__init__.py",
     "business_bridge_direct/config.py",
+    "business_bridge_direct/bundle.py",
+    "business_bridge_direct/bundle_cli.py",
     "business_bridge_direct/database.py",
     "business_bridge_direct/defaults.py",
     "business_bridge_direct/deployment.py",
@@ -35,7 +37,7 @@ class WheelCompletenessTests(unittest.TestCase):
     def test_clean_wheel_contains_complete_runtime_package(self) -> None:
         wheel = pathlib.Path(os.environ["BB2_WHEEL_UNDER_TEST"])
         self.assertTrue(wheel.is_file())
-        self.assertEqual(wheel.name, "business_bridge_2_direct-0.8.0-py3-none-any.whl")
+        self.assertEqual(wheel.name, "business_bridge_2_direct-0.9.0-py3-none-any.whl")
         with zipfile.ZipFile(wheel) as archive:
             self.assertEqual(archive.testzip(), None)
             names = set(archive.namelist())
@@ -58,7 +60,7 @@ class WheelCompletenessTests(unittest.TestCase):
     def test_installed_wheel_imports_runtime_modules_and_contract(self) -> None:
         wheel = pathlib.Path(os.environ["BB2_WHEEL_UNDER_TEST"])
         with __import__("tempfile").TemporaryDirectory() as directory:
-            result = subprocess.run([sys.executable, "-m", "pip", "install", "--no-index", "--no-deps", "--target", directory, str(wheel)], capture_output=True, text=True)
+            result = subprocess.run([sys.executable, "-m", "pip", "install", "--ignore-requires-python", "--no-index", "--no-deps", "--target", directory, str(wheel)], capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
-            probe = subprocess.run([sys.executable, "-c", "import sys;sys.path.insert(0,sys.argv[1]);import business_bridge_direct, business_bridge_direct.database as d, business_bridge_direct.tasks, business_bridge_direct.deployment, business_bridge_direct.protocol;assert business_bridge_direct.__version__=='0.8.0';assert d.SCHEMA_VERSION==5", directory], capture_output=True, text=True)
+            probe = subprocess.run([sys.executable, "-c", "import sys;sys.path.insert(0,sys.argv[1]);import business_bridge_direct, business_bridge_direct.bundle, business_bridge_direct.bundle_cli, business_bridge_direct.database as d, business_bridge_direct.tasks, business_bridge_direct.deployment, business_bridge_direct.protocol;assert business_bridge_direct.__version__=='0.9.0';assert d.SCHEMA_VERSION==5", directory], capture_output=True, text=True)
             self.assertEqual(probe.returncode, 0, probe.stderr)

@@ -11,7 +11,10 @@ import uuid
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
+from . import __version__
+
 SCHEMA_VERSION = 5
+SERVICE_VERSION = __version__
 MAX_ATTEMPTS = 5
 DEFAULT_TTL_SECONDS = 600
 STATES = {"CREATED", "QUEUED", "ACCEPTED", "RUNNING", "SUCCEEDED", "FAILED", "CANCEL_REQUESTED", "CANCELLED", "UNKNOWN", "EXPIRED"}
@@ -95,13 +98,13 @@ def _migrate(c: sqlite3.Connection) -> None:
         v=int(c.execute("PRAGMA user_version").fetchone()[0])
         if v==0:
             c.execute("CREATE TABLE IF NOT EXISTS runtime_metadata(key TEXT PRIMARY KEY,value TEXT NOT NULL)"); c.execute("PRAGMA user_version=1"); v=1
-        if v==1: _create_pairing_tables(c); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('schema_version','2')"); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('service_version','0.8.0')"); c.execute("PRAGMA user_version=2"); v=2
-        if v==2: _create_protocol_tables(c); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('schema_version','3')"); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('service_version','0.8.0')"); c.execute("PRAGMA user_version=3"); v=3
-        if v==3: _create_v4_tasks(c); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('schema_version','4')"); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('service_version','0.8.0')"); c.execute("PRAGMA user_version=4"); v=4
+        if v==1: _create_pairing_tables(c); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('schema_version','2')"); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('service_version',?)", (SERVICE_VERSION,)); c.execute("PRAGMA user_version=2"); v=2
+        if v==2: _create_protocol_tables(c); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('schema_version','3')"); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('service_version',?)", (SERVICE_VERSION,)); c.execute("PRAGMA user_version=3"); v=3
+        if v==3: _create_v4_tasks(c); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('schema_version','4')"); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('service_version',?)", (SERVICE_VERSION,)); c.execute("PRAGMA user_version=4"); v=4
         if v==4: _upgrade_tasks_4_to_5(c); v=5
         if v!=5: raise ValueError("unsupported schema")
         _create_pairing_tables(c); _create_protocol_tables(c)
-        c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('schema_version','5')"); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('service_version','0.8.0')"); c.execute("PRAGMA user_version=5")
+        c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('schema_version','5')"); c.execute("INSERT OR REPLACE INTO runtime_metadata VALUES('service_version',?)", (SERVICE_VERSION,)); c.execute("PRAGMA user_version=5")
         c.commit()
     except Exception:
         c.rollback(); raise
@@ -121,7 +124,7 @@ def check_database(path: str) -> bool:
         if db.is_symlink() or not db.is_file(): return False
         with sqlite3.connect(db) as c:
             v=c.execute("PRAGMA user_version").fetchone()[0]; rows=dict(c.execute("SELECT key,value FROM runtime_metadata")); tables={x[0] for x in c.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-        return v==5 and rows.get('schema_version')=='5' and rows.get('service_version')=='0.8.0' and {'pairing_sessions','paired_devices','protocol_sessions','task_operations','tasks','task_reports','task_transitions'} <= tables
+        return v==5 and rows.get('schema_version')=='5' and rows.get('service_version')==SERVICE_VERSION and {'pairing_sessions','paired_devices','protocol_sessions','task_operations','tasks','task_reports','task_transitions'} <= tables
     except (OSError,sqlite3.Error,ValueError): return False
 
 def _verifier(code: str, salt: bytes) -> bytes: return hashlib.scrypt(code.encode('ascii'),salt=salt,n=2**14,r=8,p=1,dklen=32)
