@@ -44,3 +44,15 @@ The error boundary is explicit:
 - after successful authentication/decryption, application failures are returned as signed/encrypted status-bound `task_error` envelopes.
 
 Source, installed-wheel and production negative matrices verified wrong signatures, modified ciphertext/tag, stale/replayed/invalid sequence cases, authenticated application errors and secret absence. Independent Chromium verification passed 6/6 runs with real `globalThis.crypto.subtle`, 15 published canonical/AAD/domain checks, ECDSA P-256, ECDH P-256, HKDF-SHA-256, AES-256-GCM and tamper rejection. No production secrets were used or published.
+
+## BB2-DIRECT-09
+
+Durable jobs use an immutable `(device_id, operation_id)` ledger, a constrained ten-state lifecycle and one durable report per task. Equivalent duplicate requests resolve to the same task; a different canonical payload under the same operation ID fails as conflict. Concurrent creation and claim races are serialized by SQLite transactions.
+
+Worker ownership uses a random process identity and a random lease token whose raw value is memory-only; only its SHA-256 hash is persisted. Completion requires the exact current state, owner, token hash and attempt number. A stale owner or token fails closed. Transition history contains only safe identifiers, states, timestamps and reason codes, never task payload or report content.
+
+After restart, `RUNNING` without a proven durable result becomes `UNKNOWN`, active lease data is cleared and automatic requeue is forbidden. Internal reconciliation is conditional, proof-gated, transactional and idempotent. It may resolve `UNKNOWN` to `SUCCEEDED`, `FAILED` or `CANCELLED`; absent proof, the state remains `UNKNOWN`. No public reconciliation endpoint was added in this run.
+
+The installed-runtime boundary is fail-closed. Production activation requires a same-filesystem staging tree, complete `lstat`/no-follow inventory, rejection of unsafe types, hardlinks and escapes, root/service-group ownership, bounded modes, preserved interpreter targets, imports from the staged venv as `business-bridge-direct`, and staged identity verification. The systemd unit, service user/group, Direct identity, secrets and system Python remained unchanged.
+
+Source, installed-wheel, rollback and production restart acceptance verified migration `4→5`, state transitions, duplicate/lease races, stale-owner rejection, startup recovery, no blind retry, reconciliation, cancellation, expiry, immutable repeated reports and cleanup. Legacy Bridge remained unchanged and was not restarted.
