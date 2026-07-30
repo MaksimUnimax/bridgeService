@@ -1,5 +1,18 @@
 # Business Bridge 2 Direct — журнал работ
 
+## 2026-07-30 — BB2-DIRECT-08 — compatible task/report API
+
+- Server implementation commit `ba9614dcd722fd77bf118f78427737f85bed2f6c` and evidence commit `92f622cbda5103c918af430b32c49f9d7762b44a` were published linearly from base `517dd10166ef1014dec3a3ef9fab49deadc0d51f`. `main` remained `c426263e6dd00135a0023a0fa08a500273e73e23`.
+- Direct `0.7.0`, SQLite schema `4`, implements protected `task_create`, `task_status`, `task_cancel` and `task_report`, immutable operation IDs, canonical-payload idempotency, deterministic payload conflict and repeatable reports.
+- The attempt-12 blocker was classified as PROCESS: the acceptance harness incorrectly attempted to decrypt a generic pre-authentication error. The harness now accepts strict non-sensitive JSON before authentication/decryption and still requires signed/encrypted status-bound `task_error` envelopes after authenticated application processing. Server runtime bytes did not change for this correction.
+- Clean candidate tests passed: compileall, protocol suite and server suite `58 passed + 21 subtests`. The reproducible wheel SHA-256 is `142764858e13896b7e74186e9f2a519b0e1d82f5b70cbd16b86daf62dfa8e7a8`.
+- Source TCP, installed-wheel TCP, negative matrices, isolated rollback rehearsal and production task/report acceptance passed. Production package members already matched, therefore Direct package mutation and restart were both `NO`.
+- Final Direct remained PID `1823652`, active/running, `NRestarts=0`, public listener `78.17.68.165:18100`, health 200, version 0.7.0 and schema 4. System Python and Direct identity were unchanged.
+- Legacy remained PID `1619365`, start time `Mon 2026-07-27 13:16:29 MSK`, `NRestarts=0`, listener `127.0.0.1:18083`, health 200, `MODIFIED=NO`, `RESTARTED=NO`.
+- Independent ChatGPT Chromium verification used Chromium `144.0.7559.96` and real `globalThis.crypto.subtle`. Six of six secure-context runs passed 15 published canonical/AAD/domain vector groups plus ECDSA P-256, ECDH P-256, HKDF-SHA-256, AES-256-GCM, tag split/join and tamper rejection. Evidence: `docs/development/evidence/BB2-DIRECT-08_CHATGPT_CHROMIUM_EVIDENCE.md`.
+- Marker: `BB2_DIRECT_08_COMPLETE`.
+- Следующий ран: `BB2-DIRECT-09` — durable jobs and recovery.
+
 ## 2026-07-28 — BB2-DIRECT-07
 
 FIX2 завершил corrective continuation BB2-DIRECT-07. Первопричина AES interoperability была в wire framing: Web Crypto output `ciphertext||tag` попадал в boundary без единого явного split/join contract; Python AESGCM должен получать combined value ровно один раз. Дополнительно production browser module теперь canonicalizes ECDSA low-S и подписывает raw-byte transcript с nonce ровно один раз. Source/wheel/staging suites: 42 passed + 16 subtests; реальный Google Chrome 147 headless использовал `globalThis.crypto.subtle`, production pairing/handshake/Chrome→server AES/server→Chrome AES дали PASS. Wheel SHA-256 `083db710d7251fc40d84833612f10d00d8725c4aac26335482e3559d04a9ceb0`. Direct 0.6.0/schema 3 развернут, один planned restart, identity сохранена, synthetic devices удалены, legacy Bridge не изменён. Evidence: `docs/development/evidence/BB2-DIRECT-07_FIX2_*`. BB2-DIRECT-08 не выполнялся.
@@ -127,7 +140,7 @@ Marker: `BB2_DIRECT_02_COMPLETE`.
 - Installed `/opt/business-bridge-2-direct` version 0.2.0, config `/etc/business-bridge-2-direct/service.json`, state `/var/lib/business-bridge-2-direct`, log contract `/var/log/business-bridge-2-direct`, empty secrets directory, and unit `business-bridge-2-direct.service`.
 - Dedicated system user/group `business-bridge-direct` (UID/GID 995), nologin, locked password, no privileged groups. Listener is exactly `127.0.0.1:18100`; endpoints are GET health, version and public diagnostics only.
 - SQLite is owned by the Direct user, mode 0600, `PRAGMA user_version=1`, one `runtime_metadata` table, and schema/service metadata only. No legacy database, state, logs, secrets or venv were reused.
-- Repository, staging and final installed tests passed: 13 collected, 13 passed, 0 failed, 0 skipped. Wheel/package metadata and manifest verification passed; systemd-analyze verify passed; installed unit is byte-equivalent to the repository template.
+- Repository, staging и final installed tests passed: 13 collected, 13 passed, 0 failed, 0 skipped. Wheel/package metadata and manifest verification passed; systemd-analyze verify passed; installed unit is byte-equivalent to the repository template.
 - One controlled Direct SIGKILL restart-policy test was executed. PID changed from 1661755 to 1661953; NRestarts increased from 20 to 24; service recovered active/running with health 200 and persistent DB schema. Legacy before/after remained PID 1619365, start `Mon 2026-07-27 13:16:29 MSK`, NRestarts 0, localhost listener and health 200.
 - Two pre-activation Direct staging attempts were rolled back safely; the final deployment remained within Direct scope. No legacy mutation occurred. Evidence is redacted and contains no secrets, tokens, DB rows or full journal.
 
