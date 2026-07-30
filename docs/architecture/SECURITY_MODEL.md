@@ -14,7 +14,7 @@ MITM и подмена сервера — fingerprint, server signature и authe
 
 ## Cryptographic baseline
 
-Предпочтительный baseline: ECDH P-256; ECDSA P-256; HKDF-SHA-256; AES-256-GCM; SHA-256; nonce; timestamp; expiry; sequence; request ID; replay ledger. Envelope versioned, signature-checked и browser/server-compatible. Реализация и test vectors относятся к BB2-DIRECT-07.
+Предпочтительный baseline: ECDH P-256; ECDSA P-256; HKDF-SHA-256; AES-256-GCM; SHA-256; nonce; timestamp; expiry; sequence; request ID; replay ledger. Envelope versioned, signature-checked и browser/server-compatible. Базовый протокол принят в BB2-DIRECT-07; task/report canonical, AAD и domain-separation vectors расширены и независимо проверены в BB2-DIRECT-08.
 
 ## Lifecycle
 
@@ -27,8 +27,20 @@ Direct has a stable UUIDv4 identity and separate ECDSA P-256 signing key in unen
 ### BB2-DIRECT-06 one-time pairing
 
 The operator-only CLI creates a 128-bit random session code and returns it once. The public mutation endpoint accepts only strict JSON `POST` without query parameters; GET returns 405. Successful pairing consumes the session exactly once and creates a separate device UUID/public identity. Invalid, expired, locked, consumed and revoked sessions fail closed. Device revoke is immediate and idempotent. The server never accepts or stores a device private key.
+
 ## BB2-DIRECT-07
 
-The application envelope authenticates method/path/direction, identity, request ID, timestamp, expiry, nonce and sequence as AAD and as a signed transcript. Invalid signature, GCM authentication, replay, revocation, fingerprint or pinning checks fail closed. The protocol has no plaintext fallback. Browser compatibility is provided by the pure `extension/protocol/bb2d-p1.js` Web Crypto reference.
+The application envelope authenticates method/path/direction, identity, request ID, timestamp, expiry, nonce and sequence as AAD and as a signed transcript. Invalid signature, GCM authentication, replay, revocation, fingerprint or pinning checks fail closed. The protocol has no plaintext application fallback. Browser compatibility is provided by the pure `extension/protocol/bb2d-p1.js` Web Crypto reference.
 
 BB2-DIRECT-07-FIX2 records the interoperability boundary: AES-GCM carries exactly `ciphertext||tag` (16-byte final tag) in one base64url field. The browser module uses explicit split/join helpers, low-S ECDSA normalization and raw-byte transcript concatenation; Python receives the combined value once. A missing tag, modified tag, modified ciphertext or modified AAD remains fail-closed.
+
+## BB2-DIRECT-08
+
+Task create, status, cancel and report are application messages inside the existing `BB2D-P1` protected channel. Operation ID is immutable and idempotency is based on canonical payload; a different payload under the same operation ID is rejected as conflict. A repeated report request does not repeat execution.
+
+The error boundary is explicit:
+
+- before successful authentication/decryption, the listener returns only a strict generic non-sensitive HTTP JSON error and does not create a misleading trusted response envelope;
+- after successful authentication/decryption, application failures are returned as signed/encrypted status-bound `task_error` envelopes.
+
+Source, installed-wheel and production negative matrices verified wrong signatures, modified ciphertext/tag, stale/replayed/invalid sequence cases, authenticated application errors and secret absence. Independent Chromium verification passed 6/6 runs with real `globalThis.crypto.subtle`, 15 published canonical/AAD/domain checks, ECDSA P-256, ECDH P-256, HKDF-SHA-256, AES-256-GCM and tamper rejection. No production secrets were used or published.
