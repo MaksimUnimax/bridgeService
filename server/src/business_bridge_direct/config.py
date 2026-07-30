@@ -30,12 +30,16 @@ class DirectConfig:
     per_source_rate_limit: int
     global_rate_window_seconds: int
     global_rate_limit: int
+    max_task_payload_bytes: int
+    max_task_nesting_depth: int
+    max_task_string_bytes: int
+    max_task_collection_items: int
     identity_metadata_path: str
     server_signing_private_key_path: str
     openssl_path: str
 
 
-_FIELDS = {"listen_host", "listen_port", "database_path", "log_dir", "service_name", "service_version", "identity_metadata_path", "server_signing_private_key_path", "openssl_path", "request_timeout_seconds", "max_request_line_bytes", "max_header_bytes", "max_header_count", "max_request_body_bytes", "max_concurrent_requests", "listen_backlog", "per_source_rate_window_seconds", "per_source_rate_limit", "global_rate_window_seconds", "global_rate_limit"}
+_FIELDS = {"listen_host", "listen_port", "database_path", "log_dir", "service_name", "service_version", "identity_metadata_path", "server_signing_private_key_path", "openssl_path", "request_timeout_seconds", "max_request_line_bytes", "max_header_bytes", "max_header_count", "max_request_body_bytes", "max_concurrent_requests", "listen_backlog", "per_source_rate_window_seconds", "per_source_rate_limit", "global_rate_window_seconds", "global_rate_limit", "max_task_payload_bytes", "max_task_nesting_depth", "max_task_string_bytes", "max_task_collection_items"}
 _LIMITS = {
     "request_timeout_seconds": (1, 5), "max_request_line_bytes": (512, 2048),
     "max_header_bytes": (2048, 8192), "max_header_count": (8, 32),
@@ -43,6 +47,8 @@ _LIMITS = {
     "listen_backlog": (1, 32), "per_source_rate_window_seconds": (1, 10),
     "per_source_rate_limit": (1, 30), "global_rate_window_seconds": (1, 10),
     "global_rate_limit": (1, 120),
+    "max_task_payload_bytes": (256, 2048), "max_task_nesting_depth": (1, 16),
+    "max_task_string_bytes": (64, 1024), "max_task_collection_items": (1, 128),
 }
 
 

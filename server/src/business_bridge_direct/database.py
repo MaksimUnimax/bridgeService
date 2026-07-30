@@ -78,7 +78,7 @@ def _migrate(c: sqlite3.Connection) -> None:
         if version == 1:
             _create_pairing_tables(c)
             c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('schema_version','2')")
-            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.6.0')")
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.7.0')")
             c.execute("PRAGMA user_version=2")
             version = 2
         if version == 2:
@@ -94,14 +94,28 @@ def _migrate(c: sqlite3.Connection) -> None:
               accepted_at TEXT NOT NULL, PRIMARY KEY(session_id,direction,request_id), UNIQUE(session_id,direction,nonce_hash), UNIQUE(session_id,direction,sequence),
               FOREIGN KEY(session_id) REFERENCES protocol_sessions(session_id))""")
             c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('schema_version','3')")
-            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.6.0')")
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.7.0')")
             c.execute("PRAGMA user_version=3"); version=3
-        if version != 3:
+        if version == 3:
+            statements = (
+                """CREATE TABLE task_operations (device_id TEXT NOT NULL REFERENCES paired_devices(device_id), operation_id TEXT NOT NULL, canonical_request_sha256 TEXT NOT NULL, task_id TEXT NOT NULL UNIQUE, created_at TEXT NOT NULL, PRIMARY KEY(device_id,operation_id))""",
+                """CREATE TABLE tasks (task_id TEXT PRIMARY KEY, device_id TEXT NOT NULL REFERENCES paired_devices(device_id), operation_id TEXT NOT NULL, state TEXT NOT NULL CHECK(state IN ('ACCEPTED','SUCCEEDED','CANCELLED')), task_payload_sha256 TEXT NOT NULL, execution_mode TEXT NOT NULL CHECK(execution_mode IN ('complete_immediately','remain_pending')), execution_count INTEGER NOT NULL CHECK(execution_count IN (0,1)), accepted_at TEXT NOT NULL, updated_at TEXT NOT NULL, completed_at TEXT, UNIQUE(device_id,operation_id), FOREIGN KEY(device_id,operation_id) REFERENCES task_operations(device_id,operation_id))""",
+                """CREATE TABLE task_reports (report_id TEXT PRIMARY KEY, task_id TEXT NOT NULL UNIQUE REFERENCES tasks(task_id), device_id TEXT NOT NULL REFERENCES paired_devices(device_id), content_hash TEXT NOT NULL, report_json TEXT NOT NULL, created_at TEXT NOT NULL)""",
+                "CREATE INDEX task_operations_lookup ON task_operations(device_id,operation_id)",
+                "CREATE INDEX tasks_lookup ON tasks(device_id,task_id)",
+                "CREATE INDEX task_reports_lookup ON task_reports(device_id,task_id)",
+            )
+            for statement in statements:
+                c.execute(statement)
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('schema_version','4')")
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.7.0')")
+            c.execute("PRAGMA user_version=4"); version=4
+        if version != 4:
             raise ValueError("unsupported schema")
         else:
             _create_pairing_tables(c)
-            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('schema_version','3')")
-            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.6.0')")
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('schema_version','4')")
+            c.execute("INSERT OR REPLACE INTO runtime_metadata(key,value) VALUES('service_version','0.7.0')")
         c.commit()
     except Exception:
         c.rollback()
@@ -135,7 +149,7 @@ def check_database(path: str) -> bool:
         rows = dict(c.execute("SELECT key,value FROM runtime_metadata"))
         tables = {r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         c.close()
-        return version == 3 and rows.get("schema_version") == "3" and rows.get("service_version") == "0.6.0" and {"pairing_sessions","paired_devices","pairing_audit_events","protocol_sessions","protocol_replay"} <= tables
+        return version == 4 and rows.get("schema_version") == "4" and rows.get("service_version") == "0.7.0" and {"pairing_sessions","paired_devices","pairing_audit_events","protocol_sessions","protocol_replay","task_operations","tasks","task_reports"} <= tables
     except (OSError, sqlite3.Error, ValueError):
         return False
 
