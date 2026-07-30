@@ -1,0 +1,37 @@
+{
+  "technical_id": "BB2-DIRECT-09-SRV",
+  "recovery": {
+    "backup": "/var/backups/business-bridge-2-direct/BB2-DIRECT-09-SRV-ATTEMPT3-20260730T104559Z/",
+    "backup_mode_owner": "0700 root:root",
+    "backup_sqlite_integrity": "ok",
+    "backup_foreign_key_check": 0,
+    "backup_schema": 4,
+    "isolated_restore": "PASS",
+    "unsafe_staging_fail_closed": true,
+    "production_package_restore_needed": false,
+    "production_config_restore_needed": false,
+    "production_database_restore_needed": false,
+    "identity_unchanged": true,
+    "system_python_hash": "7d51cd6b48b521277f5caa4610a82126e315fa2be4df069823a8b1eeb5bd4a86",
+    "system_python_final_mode": "0600",
+    "direct_final": {"version":"0.8.0","schema":5,"health":200,"pending_tasks":0,"active_leases":0},
+    "legacy_final": {"same_pid":true,"same_start_time":true,"same_nrestarts":true,"modified":false,"restarted":false}
+  },
+  "durable_recovery": {
+    "migration_4_to_5":"PASS",
+    "migration_failure_rollback":"PASS",
+    "startup_recovery":"PASS",
+    "running_to_unknown":"PASS",
+    "unknown_no_blind_retry":"PASS",
+    "stale_worker_completion_rejected":"PASS",
+    "repeated_report_identity":"PASS",
+    "cancellation":"PASS",
+    "expiry":"PASS"
+  },
+  "synthetic_restart": {
+    "pending_task_survived":true,
+    "execution_count_unchanged":true,
+    "duplicate_execution":false,
+    "cleanup_complete":true
+  }
+}
