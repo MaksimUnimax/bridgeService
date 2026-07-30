@@ -1,0 +1,230 @@
+{
+  "technical_id": "BB2-DIRECT-10-SRV",
+  "parent_run": "BB2-DIRECT-10",
+  "attempt": 4,
+  "execution_mode": "ACCEPTANCE_ONLY_CONTINUATION",
+  "status": "PASS",
+  "base": {
+    "expected_development_sha": "17f4ecc87848d75a73dbdf09a3e49b63f037ba62",
+    "expected_main_sha": "c426263e6dd00135a0023a0fa08a500273e73e23",
+    "marker_09": "PRESENT",
+    "marker_10": "ABSENT"
+  },
+  "process_defect": {
+    "type": "PROCESS",
+    "signature": "premature_execution_termination_after_local_candidate",
+    "root_cause": "The execution stopped after local candidate checks instead of continuing through production, evidence, and publication phases.",
+    "previous_root_cause_model_incomplete": true,
+    "mechanism_replaced": "IMMUTABLE CANDIDATE -> COMPLETE PHASE LEDGER -> FIRST REAL FAILURE OR FULL PASS",
+    "premature_stop_repeated": true,
+    "resolved": true
+  },
+  "candidate": {
+    "expected_sha": "c902e10058e1ac76ff5400dd43bc03dfdb3238ff",
+    "actual_sha": "c902e10058e1ac76ff5400dd43bc03dfdb3238ff",
+    "parent": "17f4ecc87848d75a73dbdf09a3e49b63f037ba62",
+    "tree": "69028f505b9af25c2dd3284e167a7c5543666717",
+    "commit_message": "BB2-DIRECT-10-SRV: add BB2D1 bundle contract",
+    "worktree": "/tmp/bb2-direct-10-srv-corrected-wt-20260730-1",
+    "clean_detached": true,
+    "worktree_clean": true,
+    "recovered_from": "exact candidate commit object"
+  },
+  "changed_paths": [
+    "server/FILE_MANIFEST.sha256",
+    "server/config/service.example.json",
+    "server/pyproject.toml",
+    "server/src/business_bridge_direct/__init__.py",
+    "server/src/business_bridge_direct/bundle.py",
+    "server/src/business_bridge_direct/bundle_cli.py",
+    "server/src/business_bridge_direct/database.py",
+    "server/src/business_bridge_direct/defaults.py",
+    "tests/fixtures/BB2D1_BUNDLE_VECTORS.json",
+    "tests/server/test_baseline.py",
+    "tests/server/test_bundle.py",
+    "tests/server/test_bundle_cli.py",
+    "tests/server/test_direct_service.py",
+    "tests/server/test_wheel_completeness.py"
+  ],
+  "base_blob_equality": {
+    "tasks_py": true,
+    "protocol_py": true,
+    "protocol_crypto_py": true,
+    "pairing_py": true,
+    "pairing_cli_py": true,
+    "deployment_py": true,
+    "test_install_permissions": true,
+    "test_pairing": true,
+    "extension_tree": true,
+    "installer_tree": true,
+    "governance_tree": true
+  },
+  "source_tests": {
+    "compileall": {
+      "command": "python -m compileall -q server/src/business_bridge_direct",
+      "exit_code": 0
+    },
+    "pytest": {
+      "command": "pytest -q tests/protocol tests/server",
+      "exit_code": 0,
+      "passed": 72,
+      "subtests_passed": 59
+    }
+  },
+  "wheel": {
+    "oracle_sha256": "537d8be5f70f882e36ec0c3dd7e75f48356d5e61be114dd543d0bc194d298cc4",
+    "filename": "business_bridge_2_direct-0.9.0-py3-none-any.whl",
+    "version": "0.9.0",
+    "build_count": 3,
+    "byte_identical": true,
+    "member_count": 22,
+    "zip_integrity": "PASS",
+    "repository_paths_absent": true
+  },
+  "installed_wheel": {
+    "target": "/var/tmp/bb2-direct-10-artifacts/venv",
+    "version": "0.9.0",
+    "schema": 5,
+    "service_user_imports": true,
+    "module_paths_inside_target": true,
+    "repository_imports_absent": true,
+    "secret_scan": "PASS"
+  },
+  "rollback_rehearsal": {
+    "result": "PASS",
+    "package_restored": true,
+    "config_restored": true,
+    "database_restored": true,
+    "version_restored": "0.8.0",
+    "schema_restored": 5,
+    "integrity_check": "ok",
+    "identity_unchanged": true,
+    "system_python_unchanged": true,
+    "foreign_resources_unchanged": true,
+    "legacy_unchanged": true
+  },
+  "production": {
+    "backup": "/var/backups/business-bridge-2-direct/BB2-DIRECT-10-SRV-ATTEMPT4-20260730T134112Z",
+    "backup_verified": true,
+    "pre_activation": {
+      "version": "0.8.0",
+      "schema": 5,
+      "health": 200,
+      "listener": "78.17.68.165:18100"
+    },
+    "wheel_sha256": "537d8be5f70f882e36ec0c3dd7e75f48356d5e61be114dd543d0bc194d298cc4",
+    "activated": true,
+    "config_updated": true,
+    "unit_changed": false,
+    "activation_restart": true,
+    "execstartpre": "PASS",
+    "health": 200,
+    "version": "0.9.0",
+    "schema": 5,
+    "listener": "78.17.68.165:18100",
+    "service_user": "business-bridge-direct",
+    "service_group": "business-bridge-direct",
+    "nrestarts_before": 0,
+    "nrestarts_after": 0,
+    "stability_window_seconds": 15
+  },
+  "production_bundle": {
+    "generated": true,
+    "one_line": true,
+    "empty_stderr": true,
+    "max_length_ok": true,
+    "strict_decode": true,
+    "checksum_verified": true,
+    "host_port_verified": true,
+    "identity_match": true,
+    "ttl": 600,
+    "plaintext_code_db": "NO",
+    "plaintext_code_log": "NO",
+    "bundle_in_public_log": "NO",
+    "live_bundle_published": "NO"
+  },
+  "production_pairing": {
+    "first_use": true,
+    "session_consumed": true,
+    "reuse_rejected": true,
+    "private_device_key_sent": "NO",
+    "private_device_key_stored": "NO",
+    "device_revoked": true,
+    "session_revoked": true,
+    "temp_bundle_removed": true,
+    "temp_key_removed": true,
+    "synthetic_resources_zero": true
+  },
+  "direct_final": {
+    "pid": 1931659,
+    "start_time": "Thu 2026-07-30 16:47:18 MSK",
+    "nrestarts": 0,
+    "state": "active/running",
+    "health": 200,
+    "version": "0.9.0",
+    "schema": 5,
+    "listener": "78.17.68.165:18100",
+    "listener_owner": "business-bridge-direct",
+    "service_user": "business-bridge-direct",
+    "service_group": "business-bridge-direct",
+    "sqlite_integrity": "ok",
+    "foreign_keys": 0,
+    "synthetic_tasks": 0,
+    "active_leases": 0,
+    "active_synthetic_pairing": 0
+  },
+  "legacy_final": {
+    "pid_before": 1619365,
+    "pid_after": 1619365,
+    "start_before": "Mon 2026-07-27 13:16:29 MSK",
+    "start_after": "Mon 2026-07-27 13:16:29 MSK",
+    "nrestarts_before": 0,
+    "nrestarts_after": 0,
+    "state": "active/running",
+    "health": 200,
+    "listener": "127.0.0.1:18083",
+    "same_pid": true,
+    "same_start": true,
+    "same_nrestarts": true,
+    "modified": false,
+    "restarted": false
+  },
+  "security": {
+    "secrets_printed": false,
+    "live_bundle_published": false,
+    "pairing_code_published": false,
+    "session_id_published": false,
+    "device_id_published": false,
+    "private_keys_published": false,
+    "production_db_published": false,
+    "legacy_secrets_read": false,
+    "legacy_database_read": false
+  },
+  "github": {
+    "transport": "ssh://git@ssh.github.com:443",
+    "implementation_commit": "c902e10058e1ac76ff5400dd43bc03dfdb3238ff",
+    "implementation_parent": "17f4ecc87848d75a73dbdf09a3e49b63f037ba62",
+    "implementation_tree": "69028f505b9af25c2dd3284e167a7c5543666717",
+    "evidence_commit": null,
+    "evidence_parent": "c902e10058e1ac76ff5400dd43bc03dfdb3238ff",
+    "remote_head_after": null,
+    "fast_forward": null,
+    "changed_paths_in_scope": true,
+    "main_sha_after": "c426263e6dd00135a0023a0fa08a500273e73e23",
+    "main_unchanged": true,
+    "marker_10_present": false
+  },
+  "gate_ledger": {
+    "pass_count": 57,
+    "failed_count": 0,
+    "not_run_count": 0,
+    "deferred_count": 0,
+    "first_failure": null
+  },
+  "limitations": [
+    "real Codex/CLI subprocess execution remains outside this run",
+    "extension parser remains BB2-DIRECT-10-EXT",
+    "no future-run work performed"
+  ]
+}
+

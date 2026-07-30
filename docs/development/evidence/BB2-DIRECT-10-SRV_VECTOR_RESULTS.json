@@ -1,0 +1,54 @@
+{
+  "format_version": "BB2D1",
+  "fixture_sha256": "bcf21bc5ab55313cf0119c5971e6191d10db46508da21f7c4ff45163d18c0a4c",
+  "fixture_path": "tests/fixtures/BB2D1_BUNDLE_VECTORS.json",
+  "positive": {
+    "count": 1,
+    "passed": true,
+    "fields": [
+      "bundle_version",
+      "checksum_b64url",
+      "checksum_domain_input_hex",
+      "checksum_sha256_hex",
+      "decoded_object",
+      "expected_bundle",
+      "payload_b64url",
+      "payload_hex",
+      "payload_string"
+    ]
+  },
+  "negative": {
+    "count": 38,
+    "passed": true
+  },
+  "independent_decoder": {
+    "passed": true,
+    "strict_decode": true,
+    "constant_time_checksum_compare": true,
+    "side_effect_free": true
+  },
+  "cli": {
+    "success_stdout_one_line": true,
+    "success_stderr_empty": true,
+    "failure_stdout_empty": true,
+    "failure_stderr_generic_json": true,
+    "failure_exit_code": 1,
+    "session_revoked_on_failure": true
+  },
+  "coverage": {
+    "bundle_version": "BB2D1",
+    "canonical_json": true,
+    "duplicate_keys_rejected": true,
+    "unknown_fields_rejected": true,
+    "missing_fields_rejected": true,
+    "positive_vector_passed": true,
+    "negative_vector_passed": true
+  },
+  "redaction": {
+    "live_bundle": false,
+    "pairing_code": false,
+    "session_id": false,
+    "device_id": false,
+    "private_key": false
+  }
+}
