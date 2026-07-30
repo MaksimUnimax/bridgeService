@@ -193,3 +193,21 @@ Marker: `BB2_DIRECT_05_COMPLETE`.
 - Implementation commit `bbbc63de129f5ff763672d2084bacf0f892de4c5` добавил pairing session state machine, 128-bit one-time code, TTL 300–600 секунд, five-attempt lock, pairing-specific rate limits, separate device public identity, revoke, safe audit и schema 1→2 migration. Code хранится только через scrypt verifier/salt; device private key не принимается.
 - Реальная причина предыдущего production restart loop была скрыта generic startup exception; controlled schema migration могла проиграть краткой SQLite lock race. Исправление ограничено Direct startup: bounded retry только `database is locked`; restart policy не ослаблялась.
 - Exact wheel `business_bridge_2_direct-0.5.0-py3-none-any.whl`, SHA-256 `b26ea45ff0239449710bfefc872ccdd9f271eec754ec2d48fbd92473cccbaadd5`; metadata/RECORD/ZIP/runtime scan PASS. Full source/wheel/staging/installed suite: 38 passed, 16 subtests passed; compileall, manifest и systemd verify PASS.
+- Pre-mutation root-only backup: `/var/backups/business-bridge-2-direct/BB2-DIRECT-06-FIX1-pre-20260728T114412Z/`; dirty repository snapshot, Direct tree/config/unit, SQLite backup API и identity/private-key pair сохранены без вывода содержимого.
+- Direct 0.5.0 deployed only to public `78.17.68.165:18100`; migration produced `user_version=2`, integrity `ok`, final service active/running with `NRestarts=0`. Valid/reuse/expiry/wrong/attempt/rate/malformed/GET/revoke/restart persistence acceptance passed. TCP and HTTP probes 5/5.
+- Server instance ID, fingerprint, rotation generation and private key metadata remained unchanged. Legacy PID `1619365`, start time, NRestarts `0`, localhost listener `127.0.0.1:18083` and health remained unchanged. No legacy service or state was mutated.
+- Redacted evidence: `docs/development/evidence/BB2-DIRECT-06_ACCEPTANCE_EVIDENCE.md` and `.json`. Marker: `BB2_DIRECT_06_COMPLETE`.
+
+Следующий ран: `BB2-DIRECT-07` — не выполнялся.
+
+## 2026-07-28 — BB2-DIRECT-05-FIX7 — complete identity deployment
+
+- Permission blocker reproduced: restrictive wheel-install umask left package directories/files inaccessible to the service user; package presence and root import were confirmed. Deterministic root-owned/readable/non-writable normalization corrected the Direct tree.
+- Exact tested wheel `business_bridge_2_direct-0.4.0-py3-none-any.whl`, SHA-256 `5ab039200e396b6557b83593682d928a408fbcdba88b8ae40ea48f9118b472a0`.
+- Existing identity was preserved: instance `73515b73-a4d3-41c7-b143-624ce2a42eb5`, fingerprint `sha256:b0adfb05bd25e9684279494aa8054191dca70784fab416a29ec699b737111bc4`, generation 1. Metadata migrated atomically to the nested path; private key was not replaced.
+- Fresh backup `/var/backups/business-bridge-2-direct/BB2-DIRECT-05-FIX7-20260728T103143Z/`; scratch identity and SQLite restore validation PASS.
+- Full tests 29/29 PASS; active Direct service is non-root, version 0.4.0, exact public listener and stable bootstrap. One manual controlled restart was issued; a Direct-only TIME_WAIT bind defect was corrected with `allow_reuse_address=True`, after which the same systemd recovery sequence became active/running. No second manual restart was issued.
+- Legacy remained PID `1619365`, start `Mon 2026-07-27 13:16:29 MSK`, NRestarts 0, listener `127.0.0.1:18083`, health 200, unchanged and not restarted. Main remains unchanged.
+- Evidence: `BB2-DIRECT-05_INSTANCE_IDENTITY_EVIDENCE.md`, `BB2-DIRECT-05_BOOTSTRAP_RESULTS.json`, `BB2-DIRECT-05_PERMISSION_TEST_RESULTS.json`. Acceptance marker: `BB2_DIRECT_05_COMPLETE`.
+
+Следующий ран: `BB2-DIRECT-06` — одноразовое pairing; не выполнялся.
