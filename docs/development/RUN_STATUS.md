@@ -62,6 +62,8 @@ Final Direct: active/running, `NRestarts=0`, health 200, version `0.8.0`, schema
 
 Independent audit: `docs/development/evidence/BB2-DIRECT-09_CHATGPT_AUDIT.md`.
 
+Governance integrity check: `WORKLOG.md` сохранён полностью; исторические записи не удалены.
+
 Marker: `BB2_DIRECT_09_COMPLETE`.
 
 Следующий ран: `BB2-DIRECT-10`.
