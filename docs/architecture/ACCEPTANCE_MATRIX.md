@@ -10,7 +10,7 @@
 | BB2-DIRECT-05 | Stable server identity | Restart/fingerprint test | `BB2-DIRECT-05_INSTANCE_IDENTITY_EVIDENCE.md` | Server | ACCEPTED / PASS | `BB2_DIRECT_05_COMPLETE` |
 | BB2-DIRECT-06 | One-time pairing | TTL/reuse/rate/revoke, restart and production HTTP tests | `BB2-DIRECT-06_ACCEPTANCE_EVIDENCE.md` | Pairing | ACCEPTED / PASS | `BB2_DIRECT_06_COMPLETE` |
 | BB2-DIRECT-07 | Encrypted protocol | Redacted vectors, real Chrome Web Crypto, GCM framing, replay/tamper and production checks | `BB2-DIRECT-07_FIX2_ACCEPTANCE_EVIDENCE.md` | Crypto | ACCEPTED / PASS | `BB2_DIRECT_07_COMPLETE` |
-| BB2-DIRECT-08 | Task/report compatibility | Create/status/cancel/report tests | Deferred run evidence | API | NOT TESTED | `BB2_DIRECT_08_COMPLETE` |
+| BB2-DIRECT-08 | Task/report compatibility | Source, installed-wheel and production create/status/cancel/report; duplicate/conflict; protected errors; independent Chromium Web Crypto | `BB2-DIRECT-08-SRV_ACCEPTANCE_EVIDENCE.md`, `BB2-DIRECT-08_CHATGPT_CHROMIUM_EVIDENCE.md` | API | ACCEPTED / PASS | `BB2_DIRECT_08_COMPLETE` |
 | BB2-DIRECT-09 | Durable jobs | Restart/idempotency/reconciliation | Deferred run evidence | Runtime | NOT TESTED | `BB2_DIRECT_09_COMPLETE` |
 | BB2-DIRECT-10 | Bundle | CLI output/import/checksum/expiry | Deferred run evidence | Installer/extension | NOT TESTED | `BB2_DIRECT_10_COMPLETE` |
 | BB2-DIRECT-11 | Extension profiles | Pair/connect/revoke/legacy UI | Deferred run evidence | Extension | NOT TESTED | `BB2_DIRECT_11_COMPLETE` |
@@ -21,6 +21,11 @@
 | BB2-DIRECT-16 | Installer | Clean install/upgrade/uninstall | Deferred run evidence | Package | NOT TESTED | `BB2_DIRECT_16_COMPLETE` |
 | BB2-DIRECT-17 | Security/failure | Full abuse/failure suite | Deferred run evidence | All | NOT TESTED | `BB2_DIRECT_17_COMPLETE` |
 | BB2-DIRECT-18 | E2E/release | Clean E2E and release checks | Deferred run evidence | Release | NOT TESTED | `BB2_DIRECT_18_COMPLETE` |
+
 ## BB2-DIRECT-07
 
-PASS: `BB2D-P1` is the sole protected application protocol. Only `/v2/protocol/session` and `/v2/protocol/probe` are added; task/report API remains deferred to BB2-DIRECT-08. Acceptance evidence is in `docs/development/evidence/BB2-DIRECT-07_PROTOCOL_EVIDENCE.md`.
+PASS: `BB2D-P1` is the sole protected application protocol. Session and probe interoperability were accepted with real Chrome Web Crypto, including the exact combined AES-GCM `ciphertext||tag` boundary.
+
+## BB2-DIRECT-08
+
+PASS: Direct `0.7.0`, schema `4`, implements protected task create/status/cancel/report operations, immutable operation IDs, canonical idempotency, deterministic payload conflict and repeatable reports. Source, installed-wheel, rollback and production acceptance passed. Pre-authentication failures return strict generic non-sensitive JSON; authenticated application failures return signed/encrypted status-bound `task_error` envelopes. Independent Chromium `globalThis.crypto.subtle` verification passed 6/6 runs against the published canonical, AAD and domain-separation vectors.
