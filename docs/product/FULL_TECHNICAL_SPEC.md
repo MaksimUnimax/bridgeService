@@ -18,9 +18,13 @@ BB2-DIRECT-07 принял протокол `BB2D-P1`: paired-device/server ECDS
 
 ## 4. Server API и бизнес-механика
 
-API обязан сохранить создание задания, operation ID, idempotency, статусы, отмену, timeout, получение и повторное получение отчёта. Source-confirmed legacy mapping включает chains/jobs и delivery lifecycle; точный Direct mapping утверждается и реализуется в BB2-DIRECT-08 без копирования legacy DB, secrets, state или bearer credentials.
+API сохраняет создание задания, immutable operation ID, canonical-payload idempotency, статусы, отмену, получение и повторное получение отчёта. BB2-DIRECT-08 принял Direct mapping без копирования legacy DB, secrets, state или bearer credentials.
 
-Jobs имеют durable lifecycle и request ID; reports сохраняются до политики retention. Повтор запроса отчёта не повторяет выполнение. Ambiguous state после сбоя проходит reconciliation, а не безусловный повтор запуска. BB2-DIRECT-08 реализует совместимый task/report API; crash/restart durability и reconciliation остаются scope BB2-DIRECT-09.
+Direct `0.7.0`, SQLite schema `4`, поддерживает `task_create`, `task_status`, `task_cancel` и `task_report` только через `/v2/protocol/tasks` внутри `BB2D-P1`. Эквивалентный повтор operation ID не запускает задание второй раз; тот же operation ID с другим canonical payload возвращает deterministic conflict; повторный запрос готового отчёта возвращает тот же результат.
+
+Ошибки до успешной authentication/decryption возвращаются как strict generic non-sensitive HTTP JSON и не изображают доверенный encrypted response. Прикладные ошибки после успешной authentication/decryption возвращаются только внутри подписанного и зашифрованного status-bound `task_error` envelope.
+
+Jobs имеют durable lifecycle и request ID; reports сохраняются до политики retention. Повтор запроса отчёта не повторяет выполнение. Ambiguous state после сбоя проходит reconciliation, а не безусловный повтор запуска. Crash/restart durability, leases и reconciliation остаются scope BB2-DIRECT-09.
 
 ## 5. Pairing, identity и bundle
 
@@ -32,13 +36,13 @@ BB2-DIRECT-05 и BB2-DIRECT-06 приняли стабильную server identi
 
 Accepted baseline: ECDH P-256, ECDSA P-256, HKDF-SHA-256, AES-256-GCM, SHA-256, nonce, timestamp, expiry, sequence, request ID и replay ledger. Envelope versioned, authenticated и подписан; fingerprint проверяется отдельно и не заменяет шифрование. BB2-DIRECT-07 implementation, real-browser vectors, tamper/replay rejection и plaintext-absence evidence приняты; threat model — [SECURITY_MODEL](../architecture/SECURITY_MODEL.md).
 
-Task/report endpoints BB2-DIRECT-08 обязаны работать только внутри BB2D-P1 protected envelopes. Публичный plaintext fallback, bearer compatibility и секреты в URL/logs запрещены.
+Task/report endpoints работают только внутри `BB2D-P1` protected envelopes. Публичный plaintext fallback, bearer compatibility и секреты в URL/logs запрещены. Pre-auth error может содержать только generic non-sensitive code; task/report application payload и application error доступны только после успешной authentication/decryption внутри protected envelope.
 
 ## 7. Runtime, storage, permissions и logs
 
 Runner запускает только разрешённые CLI-операции с минимальными правами и отдельным пользователем. DB, secrets, state и logs Direct не пересекаются с legacy. Секреты хранятся с ограниченными правами; логи редактируют payload, credentials и cookies. Listener ограничивает размер, concurrency, скорость и время обработки; DoS считается эксплуатационным риском.
 
-Direct SQLite schema 3 хранит runtime metadata, pairing/device state и безопасные protocol session/replay metadata. Task/report schema добавляется контролируемой migration в BB2-DIRECT-08; durable restart recovery расширяется в BB2-DIRECT-09.
+Direct SQLite schema `4` хранит runtime metadata, pairing/device state, protocol session/replay metadata и task/report state BB2-DIRECT-08. Durable restart recovery расширяется в BB2-DIRECT-09.
 
 ## 8. Installation, update, uninstall
 
@@ -52,10 +56,12 @@ Direct SQLite schema 3 хранит runtime metadata, pairing/device state и б
 
 Требуются unit/protocol vectors, API compatibility, pairing abuse, replay/MITM/ciphertext/signature, size/timeout/DoS, restart, duplicate, revoke, two-server/two-conversation и E2E tests. При сбое Direct отключается отдельно, extension возвращается к legacy profile; legacy остаётся fallback до BB2-DIRECT-18. Полная матрица — [ACCEPTANCE_MATRIX](../architecture/ACCEPTANCE_MATRIX.md).
 
+BB2-DIRECT-08 прошёл source, installed-wheel, isolated rollback и production task/report acceptance. Независимая проверка Chromium выполнила 6/6 запусков с реальным `globalThis.crypto.subtle`, опубликованными canonical/AAD/domain vectors, ECDSA, ECDH, HKDF и AES-256-GCM.
+
 Каждый принятый ран обязан иметь source/wheel/staging/installed и применимые production evidence, Direct-only rollback и неизменность legacy Bridge. Sensitive payload, private keys, pairing codes, traffic keys и production DB не публикуются.
 
 ## 11. Deliverables и Definition of Done
 
 Deliverables: исходники extension/server/installer, тесты, migration-managed Direct state, user guide, bundle flow, release evidence и документация. DoD: все 19 ранов приняты строго по порядку, Direct E2E доказан, legacy не изменён, security/failure tests PASS, чистый production release подготовлен в `main` только после принятия BB2-DIRECT-18.
 
-Текущее принятое состояние заканчивается BB2-DIRECT-07: Direct 0.6.0/schema 3, stable identity, one-time pairing и BB2D-P1 protected protocol. Первый непринятый основной ран — BB2-DIRECT-08, совместимый task/report API. До его принятия Direct не выполняет пользовательские задания и не выдаёт пользовательские отчёты.
+Текущее принятое состояние заканчивается BB2-DIRECT-08: Direct `0.7.0/schema 4`, stable identity, one-time pairing, `BB2D-P1` protected protocol и совместимый task/report API. Первый непринятый основной ран — BB2-DIRECT-09, durable jobs and recovery.
