@@ -11,7 +11,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 MAX_ATTEMPTS = 5
 DEFAULT_TTL_SECONDS = 600
 

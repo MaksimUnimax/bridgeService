@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import importlib
+import hashlib
+import json
 import os
 import pathlib
 import pkgutil
 import socket
+import sqlite3
 import subprocess
 import sys
 import unittest
@@ -89,12 +92,54 @@ class BaselineTests(unittest.TestCase):
     self.assertTrue(MANIFEST.is_file())
     entries = [line.split("  ", 1) for line in MANIFEST.read_text(encoding="utf-8").splitlines() if line.strip()]
     self.assertTrue(entries)
+    paths = [relative for _, relative in entries]
+    self.assertEqual(paths, sorted(paths))
+    self.assertNotIn("./FILE_MANIFEST.sha256", paths)
+    self.assertFalse(any(part in {".git", ".venv", "venv", "__pycache__", ".pytest_cache", "build", "dist"} for relative in paths for part in pathlib.PurePosixPath(relative).parts))
+    self.assertFalse(any(relative.endswith(('.pyc', '.pyo', '.whl')) or '.egg-info' in relative for relative in paths))
+    tracked = subprocess.check_output(["git", "ls-files", "server"], cwd=ROOT, text=True).splitlines()
+    expected = sorted("./" + relative.removeprefix("server/") for relative in tracked if relative != "server/FILE_MANIFEST.sha256" and "__pycache__" not in relative and not relative.endswith(('.pyc', '.pyo')))
+    self.assertEqual(paths, expected)
     for digest, relative in entries:
         path = SERVER / relative
         self.assertEqual(len(digest), 64)
-        self.assertTrue(path.is_file())
+        self.assertTrue(path.is_file() and not path.is_symlink())
+        self.assertEqual(path.stat().st_nlink, 1)
         self.assertNotEqual(path, MANIFEST)
         self.assertEqual(digest, __import__("hashlib").sha256(path.read_bytes()).hexdigest())
+
+  def test_manifest_ignores_generated_files_and_regenerates_identically(self) -> None:
+    before = MANIFEST.read_bytes()
+    with subprocess.Popen([sys.executable, "-m", "compileall", "-q", str(PACKAGE)], env={**os.environ, "PYTHONPYCACHEPREFIX": "/tmp/bb2-direct-08-pyc"}) as process:
+      self.assertEqual(process.wait(), 0)
+    self.assertEqual(before, MANIFEST.read_bytes())
+    self.assertFalse(any("__pycache__" in relative or relative.endswith((".pyc", ".pyo")) for _, relative in [line.split("  ", 1) for line in MANIFEST.read_text(encoding="utf-8").splitlines()]))
+
+  def test_schema_constant_and_database_contract(self) -> None:
+    from business_bridge_direct import database
+    self.assertEqual(database.SCHEMA_VERSION, 4)
+    with __import__("tempfile").TemporaryDirectory() as directory:
+      fresh = pathlib.Path(directory) / "fresh.sqlite3"
+      database.initialize_database(str(fresh))
+      with sqlite3.connect(fresh) as connection:
+        self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 4)
+        self.assertEqual(dict(connection.execute("SELECT key,value FROM runtime_metadata")), {"schema_version": "4", "service_version": "0.7.0"})
+      self.assertTrue(database.check_database(str(fresh)))
+      migrated = pathlib.Path(directory) / "migrated.sqlite3"
+      with sqlite3.connect(migrated) as connection:
+        connection.execute("CREATE TABLE runtime_metadata(key TEXT PRIMARY KEY,value TEXT NOT NULL)")
+        database._create_pairing_tables(connection)
+        connection.execute("CREATE TABLE protocol_sessions(session_id TEXT PRIMARY KEY, device_id TEXT NOT NULL, protocol_version TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, handshake_request_id TEXT NOT NULL UNIQUE, status TEXT NOT NULL, receive_sequence INTEGER NOT NULL DEFAULT 0, sent_sequence INTEGER NOT NULL DEFAULT 0)")
+        connection.execute("CREATE TABLE protocol_replay(session_id TEXT NOT NULL,direction TEXT NOT NULL,request_id TEXT NOT NULL,nonce_hash TEXT NOT NULL,sequence INTEGER NOT NULL,accepted_at TEXT NOT NULL)")
+        connection.execute("INSERT INTO runtime_metadata VALUES('schema_version','3')")
+        connection.execute("INSERT INTO runtime_metadata VALUES('service_version','0.7.0')")
+        connection.execute("PRAGMA user_version=3")
+      database.initialize_database(str(migrated))
+      with sqlite3.connect(migrated) as connection:
+        self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 4)
+        self.assertEqual(dict(connection.execute("SELECT key,value FROM runtime_metadata"))["schema_version"], "4")
+      self.assertTrue(database.check_database(str(migrated)))
+    self.assertNotIn("SCHEMA_VERSION = 3", (PACKAGE / "database.py").read_text(encoding="utf-8"))
 
   def test_runtime_resources_are_activation_owned(self) -> None:
     # Runtime paths are created by activation, never by source import.

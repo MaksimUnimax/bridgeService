@@ -1,0 +1,365 @@
+{
+  "schema": "BB2-DIRECT-08-SRV-BROWSER-VECTORS-1",
+  "safety": "synthetic non-secret values only",
+  "application_messages": [
+    {
+      "name": "task_create",
+      "canonical": {
+        "type": "task_create",
+        "operation_id": "00000000-0000-4000-8000-000000000001",
+        "task_payload": {
+          "action": "synthetic_probe",
+          "value": "browser-vector"
+        },
+        "execution_mode": "complete_immediately"
+      },
+      "canonical_utf8_hex": "7b22657865637574696f6e5f6d6f6465223a22636f6d706c6574655f696d6d6564696174656c79222c226f7065726174696f6e5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303031222c227461736b5f7061796c6f6164223a7b22616374696f6e223a2273796e7468657469635f70726f6265222c2276616c7565223a2262726f777365722d766563746f72227d2c2274797065223a227461736b5f637265617465227d",
+      "canonical_base64url": "eyJleGVjdXRpb25fbW9kZSI6ImNvbXBsZXRlX2ltbWVkaWF0ZWx5Iiwib3BlcmF0aW9uX2lkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwidGFza19wYXlsb2FkIjp7ImFjdGlvbiI6InN5bnRoZXRpY19wcm9iZSIsInZhbHVlIjoiYnJvd3Nlci12ZWN0b3IifSwidHlwZSI6InRhc2tfY3JlYXRlIn0",
+      "byte_length": 185,
+      "sha256": "68a23906e4e46738363d2ed9a3dffc5dd4b6bbdca61c9b9137b033c4ad64ff46",
+      "expected_field_set": [
+        "execution_mode",
+        "operation_id",
+        "task_payload",
+        "type"
+      ]
+    },
+    {
+      "name": "task_status",
+      "canonical": {
+        "type": "task_status",
+        "task_id": "00000000-0000-4000-8000-000000000002"
+      },
+      "canonical_utf8_hex": "7b227461736b5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303032222c2274797065223a227461736b5f737461747573227d",
+      "canonical_base64url": "eyJ0YXNrX2lkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwidHlwZSI6InRhc2tfc3RhdHVzIn0",
+      "byte_length": 71,
+      "sha256": "af4f089423dcebcc8a6977a7df32ee88a9e0c8b1c62f5fa5c73afa4503ad3877",
+      "expected_field_set": [
+        "task_id",
+        "type"
+      ]
+    },
+    {
+      "name": "task_cancel",
+      "canonical": {
+        "type": "task_cancel",
+        "task_id": "00000000-0000-4000-8000-000000000002"
+      },
+      "canonical_utf8_hex": "7b227461736b5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303032222c2274797065223a227461736b5f63616e63656c227d",
+      "canonical_base64url": "eyJ0YXNrX2lkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwidHlwZSI6InRhc2tfY2FuY2VsIn0",
+      "byte_length": 71,
+      "sha256": "6d793a673e8771284ed291fc0c03353f275434a5f4e29a80d84e66223a4cd5ef",
+      "expected_field_set": [
+        "task_id",
+        "type"
+      ]
+    },
+    {
+      "name": "task_report",
+      "canonical": {
+        "type": "task_report",
+        "task_id": "00000000-0000-4000-8000-000000000002"
+      },
+      "canonical_utf8_hex": "7b227461736b5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303032222c2274797065223a227461736b5f7265706f7274227d",
+      "canonical_base64url": "eyJ0YXNrX2lkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwidHlwZSI6InRhc2tfcmVwb3J0In0",
+      "byte_length": 71,
+      "sha256": "2758afcc30eed98732ca5eb3698a20660493583c64ead3e9d0aa09aa2017bf08",
+      "expected_field_set": [
+        "task_id",
+        "type"
+      ]
+    },
+    {
+      "name": "successful_task_response",
+      "canonical": {
+        "type": "task_response",
+        "result": {
+          "task_id": "00000000-0000-4000-8000-000000000002",
+          "operation_id": "00000000-0000-4000-8000-000000000001",
+          "state": "SUCCEEDED",
+          "task_payload_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "execution_count": 1,
+          "accepted_at": "2026-01-01T00:00:00Z",
+          "updated_at": "2026-01-01T00:00:00Z",
+          "completed_at": "2026-01-01T00:00:00Z"
+        }
+      },
+      "canonical_utf8_hex": "7b22726573756c74223a7b2261636365707465645f6174223a22323032362d30312d30315430303a30303a30305a222c22636f6d706c657465645f6174223a22323032362d30312d30315430303a30303a30305a222c22657865637574696f6e5f636f756e74223a312c226f7065726174696f6e5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303031222c227374617465223a22535543434545444544222c227461736b5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303032222c227461736b5f7061796c6f61645f736861323536223a2230303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030222c22757064617465645f6174223a22323032362d30312d30315430303a30303a30305a227d2c2274797065223a227461736b5f726573706f6e7365227d",
+      "canonical_base64url": "eyJyZXN1bHQiOnsiYWNjZXB0ZWRfYXQiOiIyMDI2LTAxLTAxVDAwOjAwOjAwWiIsImNvbXBsZXRlZF9hdCI6IjIwMjYtMDEtMDFUMDA6MDA6MDBaIiwiZXhlY3V0aW9uX2NvdW50IjoxLCJvcGVyYXRpb25faWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDEiLCJzdGF0ZSI6IlNVQ0NFRURFRCIsInRhc2tfaWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDIiLCJ0YXNrX3BheWxvYWRfc2hhMjU2IjoiMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCIsInVwZGF0ZWRfYXQiOiIyMDI2LTAxLTAxVDAwOjAwOjAwWiJ9LCJ0eXBlIjoidGFza19yZXNwb25zZSJ9",
+      "byte_length": 378,
+      "sha256": "56b008916354925e59a57561fe6148b515af412cd9d62b076eac8945d16f6fe6",
+      "expected_field_set": [
+        "result",
+        "type"
+      ]
+    },
+    {
+      "name": "operation_payload_conflict",
+      "canonical": {
+        "type": "task_error",
+        "error": "operation_payload_conflict"
+      },
+      "canonical_utf8_hex": "7b226572726f72223a226f7065726174696f6e5f7061796c6f61645f636f6e666c696374222c2274797065223a227461736b5f6572726f72227d",
+      "canonical_base64url": "eyJlcnJvciI6Im9wZXJhdGlvbl9wYXlsb2FkX2NvbmZsaWN0IiwidHlwZSI6InRhc2tfZXJyb3IifQ",
+      "byte_length": 58,
+      "sha256": "7ca7cf237c88af87145e7c3b2c3e0791e187e897c5affa7e398a2b37212095b5",
+      "expected_field_set": [
+        "error",
+        "type"
+      ]
+    },
+    {
+      "name": "task_not_found",
+      "canonical": {
+        "type": "task_error",
+        "error": "task_not_found"
+      },
+      "canonical_utf8_hex": "7b226572726f72223a227461736b5f6e6f745f666f756e64222c2274797065223a227461736b5f6572726f72227d",
+      "canonical_base64url": "eyJlcnJvciI6InRhc2tfbm90X2ZvdW5kIiwidHlwZSI6InRhc2tfZXJyb3IifQ",
+      "byte_length": 46,
+      "sha256": "f5403da67577ec670caeb5a2c3779f44bc45fb71daa2f8bcef4c19b3bd3f5eb1",
+      "expected_field_set": [
+        "error",
+        "type"
+      ]
+    },
+    {
+      "name": "not_cancellable",
+      "canonical": {
+        "type": "task_error",
+        "error": "not_cancellable"
+      },
+      "canonical_utf8_hex": "7b226572726f72223a226e6f745f63616e63656c6c61626c65222c2274797065223a227461736b5f6572726f72227d",
+      "canonical_base64url": "eyJlcnJvciI6Im5vdF9jYW5jZWxsYWJsZSIsInR5cGUiOiJ0YXNrX2Vycm9yIn0",
+      "byte_length": 47,
+      "sha256": "1ecf826750ae1b72fb79df522e165b0d101420c2c5c8cb6f90e9f6ad240ddddf",
+      "expected_field_set": [
+        "error",
+        "type"
+      ]
+    },
+    {
+      "name": "report_not_available",
+      "canonical": {
+        "type": "task_error",
+        "error": "report_not_available"
+      },
+      "canonical_utf8_hex": "7b226572726f72223a227265706f72745f6e6f745f617661696c61626c65222c2274797065223a227461736b5f6572726f72227d",
+      "canonical_base64url": "eyJlcnJvciI6InJlcG9ydF9ub3RfYXZhaWxhYmxlIiwidHlwZSI6InRhc2tfZXJyb3IifQ",
+      "byte_length": 52,
+      "sha256": "e802d6df3d9893610fb9949e9bd643fdaa2e3084c492a857bb3583ebd169ce3b",
+      "expected_field_set": [
+        "error",
+        "type"
+      ]
+    }
+  ],
+  "client_aad": {
+    "name": "client_tasks_aad",
+    "canonical": {
+      "direction": "client-to-server",
+      "method": "POST",
+      "path": "/v2/protocol/tasks",
+      "protocol_version": "BB2D-P1",
+      "session_id": "00000000-0000-4000-8000-000000000010",
+      "device_id": "00000000-0000-4000-8000-000000000011",
+      "request_id": "00000000-0000-4000-8000-000000000012",
+      "sequence": 1,
+      "timestamp": "2026-01-01T00:00:00Z",
+      "expires_at": "2026-01-01T00:01:00Z",
+      "nonce": "AAECAwQFBgcICQoL"
+    },
+    "canonical_utf8_hex": "7b226465766963655f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303131222c22646972656374696f6e223a22636c69656e742d746f2d736572766572222c22657870697265735f6174223a22323032362d30312d30315430303a30313a30305a222c226d6574686f64223a22504f5354222c226e6f6e6365223a2241414543417751464267634943516f4c222c2270617468223a222f76322f70726f746f636f6c2f7461736b73222c2270726f746f636f6c5f76657273696f6e223a22424232442d5031222c22726571756573745f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303132222c2273657175656e6365223a312c2273657373696f6e5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303130222c2274696d657374616d70223a22323032362d30312d30315430303a30303a30305a227d",
+    "canonical_base64url": "eyJkZXZpY2VfaWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTEiLCJkaXJlY3Rpb24iOiJjbGllbnQtdG8tc2VydmVyIiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDFUMDA6MDE6MDBaIiwibWV0aG9kIjoiUE9TVCIsIm5vbmNlIjoiQUFFQ0F3UUZCZ2NJQ1FvTCIsInBhdGgiOiIvdjIvcHJvdG9jb2wvdGFza3MiLCJwcm90b2NvbF92ZXJzaW9uIjoiQkIyRC1QMSIsInJlcXVlc3RfaWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTIiLCJzZXF1ZW5jZSI6MSwic2Vzc2lvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAxMCIsInRpbWVzdGFtcCI6IjIwMjYtMDEtMDFUMDA6MDA6MDBaIn0",
+    "byte_length": 371,
+    "sha256": "9c34ba3465ad437860104af4768eb29e8909d348ecb85d4bbc35f7259b518bc2",
+    "expected_field_set": [
+      "device_id",
+      "direction",
+      "expires_at",
+      "method",
+      "nonce",
+      "path",
+      "protocol_version",
+      "request_id",
+      "sequence",
+      "session_id",
+      "timestamp"
+    ]
+  },
+  "server_aad_statuses": [
+    {
+      "name": "200",
+      "canonical": {
+        "direction": "server-to-client",
+        "method": "POST",
+        "path": "/v2/protocol/tasks",
+        "protocol_version": "BB2D-P1",
+        "session_id": "00000000-0000-4000-8000-000000000010",
+        "device_id": "00000000-0000-4000-8000-000000000011",
+        "request_id": "00000000-0000-4000-8000-000000000012",
+        "sequence": 1,
+        "timestamp": "2026-01-01T00:00:00Z",
+        "expires_at": "2026-01-01T00:01:00Z",
+        "nonce": "DA0ODxAREhMUFRYX",
+        "status": 200
+      },
+      "canonical_utf8_hex": "7b226465766963655f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303131222c22646972656374696f6e223a227365727665722d746f2d636c69656e74222c22657870697265735f6174223a22323032362d30312d30315430303a30313a30305a222c226d6574686f64223a22504f5354222c226e6f6e6365223a224441304f4478415245684d5546525958222c2270617468223a222f76322f70726f746f636f6c2f7461736b73222c2270726f746f636f6c5f76657273696f6e223a22424232442d5031222c22726571756573745f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303132222c2273657175656e6365223a312c2273657373696f6e5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303130222c22737461747573223a3230302c2274696d657374616d70223a22323032362d30312d30315430303a30303a30305a227d",
+      "canonical_base64url": "eyJkZXZpY2VfaWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTEiLCJkaXJlY3Rpb24iOiJzZXJ2ZXItdG8tY2xpZW50IiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDFUMDA6MDE6MDBaIiwibWV0aG9kIjoiUE9TVCIsIm5vbmNlIjoiREEwT0R4QVJFaE1VRlJZWCIsInBhdGgiOiIvdjIvcHJvdG9jb2wvdGFza3MiLCJwcm90b2NvbF92ZXJzaW9uIjoiQkIyRC1QMSIsInJlcXVlc3RfaWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTIiLCJzZXF1ZW5jZSI6MSwic2Vzc2lvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAxMCIsInN0YXR1cyI6MjAwLCJ0aW1lc3RhbXAiOiIyMDI2LTAxLTAxVDAwOjAwOjAwWiJ9",
+      "byte_length": 384,
+      "sha256": "a4d32d71b922b66504da358aa9443c892a0dfa5deb564c3e4fbb6e69cf5bbefd",
+      "expected_field_set": [
+        "device_id",
+        "direction",
+        "expires_at",
+        "method",
+        "nonce",
+        "path",
+        "protocol_version",
+        "request_id",
+        "sequence",
+        "session_id",
+        "status",
+        "timestamp"
+      ]
+    },
+    {
+      "name": "400",
+      "canonical": {
+        "direction": "server-to-client",
+        "method": "POST",
+        "path": "/v2/protocol/tasks",
+        "protocol_version": "BB2D-P1",
+        "session_id": "00000000-0000-4000-8000-000000000010",
+        "device_id": "00000000-0000-4000-8000-000000000011",
+        "request_id": "00000000-0000-4000-8000-000000000012",
+        "sequence": 1,
+        "timestamp": "2026-01-01T00:00:00Z",
+        "expires_at": "2026-01-01T00:01:00Z",
+        "nonce": "DA0ODxAREhMUFRYX",
+        "status": 400
+      },
+      "canonical_utf8_hex": "7b226465766963655f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303131222c22646972656374696f6e223a227365727665722d746f2d636c69656e74222c22657870697265735f6174223a22323032362d30312d30315430303a30313a30305a222c226d6574686f64223a22504f5354222c226e6f6e6365223a224441304f4478415245684d5546525958222c2270617468223a222f76322f70726f746f636f6c2f7461736b73222c2270726f746f636f6c5f76657273696f6e223a22424232442d5031222c22726571756573745f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303132222c2273657175656e6365223a312c2273657373696f6e5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303130222c22737461747573223a3430302c2274696d657374616d70223a22323032362d30312d30315430303a30303a30305a227d",
+      "canonical_base64url": "eyJkZXZpY2VfaWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTEiLCJkaXJlY3Rpb24iOiJzZXJ2ZXItdG8tY2xpZW50IiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDFUMDA6MDE6MDBaIiwibWV0aG9kIjoiUE9TVCIsIm5vbmNlIjoiREEwT0R4QVJFaE1VRlJZWCIsInBhdGgiOiIvdjIvcHJvdG9jb2wvdGFza3MiLCJwcm90b2NvbF92ZXJzaW9uIjoiQkIyRC1QMSIsInJlcXVlc3RfaWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTIiLCJzZXF1ZW5jZSI6MSwic2Vzc2lvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAxMCIsInN0YXR1cyI6NDAwLCJ0aW1lc3RhbXAiOiIyMDI2LTAxLTAxVDAwOjAwOjAwWiJ9",
+      "byte_length": 384,
+      "sha256": "ca56f77b101c5dd0d9eab4653163532b1861bc03e21c5bf95ce391b6f764a526",
+      "expected_field_set": [
+        "device_id",
+        "direction",
+        "expires_at",
+        "method",
+        "nonce",
+        "path",
+        "protocol_version",
+        "request_id",
+        "sequence",
+        "session_id",
+        "status",
+        "timestamp"
+      ]
+    },
+    {
+      "name": "404",
+      "canonical": {
+        "direction": "server-to-client",
+        "method": "POST",
+        "path": "/v2/protocol/tasks",
+        "protocol_version": "BB2D-P1",
+        "session_id": "00000000-0000-4000-8000-000000000010",
+        "device_id": "00000000-0000-4000-8000-000000000011",
+        "request_id": "00000000-0000-4000-8000-000000000012",
+        "sequence": 1,
+        "timestamp": "2026-01-01T00:00:00Z",
+        "expires_at": "2026-01-01T00:01:00Z",
+        "nonce": "DA0ODxAREhMUFRYX",
+        "status": 404
+      },
+      "canonical_utf8_hex": "7b226465766963655f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303131222c22646972656374696f6e223a227365727665722d746f2d636c69656e74222c22657870697265735f6174223a22323032362d30312d30315430303a30313a30305a222c226d6574686f64223a22504f5354222c226e6f6e6365223a224441304f4478415245684d5546525958222c2270617468223a222f76322f70726f746f636f6c2f7461736b73222c2270726f746f636f6c5f76657273696f6e223a22424232442d5031222c22726571756573745f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303132222c2273657175656e6365223a312c2273657373696f6e5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303130222c22737461747573223a3430342c2274696d657374616d70223a22323032362d30312d30315430303a30303a30305a227d",
+      "canonical_base64url": "eyJkZXZpY2VfaWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTEiLCJkaXJlY3Rpb24iOiJzZXJ2ZXItdG8tY2xpZW50IiwiZXhwaXJlc19hdCI6IjIwMjYtMDEtMDFUMDA6MDE6MDBaIiwibWV0aG9kIjoiUE9TVCIsIm5vbmNlIjoiREEwT0R4QVJFaE1VRlJZWCIsInBhdGgiOiIvdjIvcHJvdG9jb2wvdGFza3MiLCJwcm90b2NvbF92ZXJzaW9uIjoiQkIyRC1QMSIsInJlcXVlc3RfaWQiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMTIiLCJzZXF1ZW5jZSI6MSwic2Vzc2lvbl9pZCI6IjAwMDAwMDAwLTAwMDAtNDAwMC04MDAwLTAwMDAwMDAwMDAxMCIsInN0YXR1cyI6NDA0LCJ0aW1lc3RhbXAiOiIyMDI2LTAxLTAxVDAwOjAwOjAwWiJ9",
+      "byte_length": 384,
+      "sha256": "5785d588c619064b11b7b1be0ef94d6c986dd62124312e5ac2315c48fef23d47",
+      "expected_field_set": [
+        "device_id",
+        "direction",
+        "expires_at",
+        "method",
+        "nonce",
+        "path",
+        "protocol_version",
+        "request_id",
+        "sequence",
+        "session_id",
+        "status",
+        "timestamp"
+      ]
+    }
+  ],
+  "domain_separation": [
+    {
+      "prefix": "BB2D-P1/client-tasks",
+      "prefix_utf8_hex": "424232442d50312f636c69656e742d7461736b73",
+      "separator_hex": "00",
+      "transcript": {
+        "client_aad": {
+          "direction": "client-to-server",
+          "method": "POST",
+          "path": "/v2/protocol/tasks",
+          "protocol_version": "BB2D-P1",
+          "session_id": "00000000-0000-4000-8000-000000000010",
+          "device_id": "00000000-0000-4000-8000-000000000011",
+          "request_id": "00000000-0000-4000-8000-000000000012",
+          "sequence": 1,
+          "timestamp": "2026-01-01T00:00:00Z",
+          "expires_at": "2026-01-01T00:01:00Z",
+          "nonce": "AAECAwQFBgcICQoL"
+        },
+        "application": {
+          "type": "task_create",
+          "operation_id": "00000000-0000-4000-8000-000000000001",
+          "task_payload": {
+            "action": "synthetic_probe",
+            "value": "browser-vector"
+          },
+          "execution_mode": "complete_immediately"
+        },
+        "server_status": 200
+      },
+      "bytes_hex": "424232442d50312f636c69656e742d7461736b73007b226170706c69636174696f6e223a7b22657865637574696f6e5f6d6f6465223a22636f6d706c6574655f696d6d6564696174656c79222c226f7065726174696f6e5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303031222c227461736b5f7061796c6f6164223a7b22616374696f6e223a2273796e7468657469635f70726f6265222c2276616c7565223a2262726f777365722d766563746f72227d2c2274797065223a227461736b5f637265617465227d2c22636c69656e745f616164223a7b226465766963655f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303131222c22646972656374696f6e223a22636c69656e742d746f2d736572766572222c22657870697265735f6174223a22323032362d30312d30315430303a30313a30305a222c226d6574686f64223a22504f5354222c226e6f6e6365223a2241414543417751464267634943516f4c222c2270617468223a222f76322f70726f746f636f6c2f7461736b73222c2270726f746f636f6c5f76657273696f6e223a22424232442d5031222c22726571756573745f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303132222c2273657175656e6365223a312c2273657373696f6e5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303130222c2274696d657374616d70223a22323032362d30312d30315430303a30303a30305a227d2c227365727665725f737461747573223a3230307d",
+      "byte_length": 627,
+      "sha256": "ce90eb1eb085744beeee3ba8b4f9d9a43e71641607695876e934cffc5850f270"
+    },
+    {
+      "prefix": "BB2D-P1/server-tasks",
+      "prefix_utf8_hex": "424232442d50312f7365727665722d7461736b73",
+      "separator_hex": "00",
+      "transcript": {
+        "client_aad": {
+          "direction": "client-to-server",
+          "method": "POST",
+          "path": "/v2/protocol/tasks",
+          "protocol_version": "BB2D-P1",
+          "session_id": "00000000-0000-4000-8000-000000000010",
+          "device_id": "00000000-0000-4000-8000-000000000011",
+          "request_id": "00000000-0000-4000-8000-000000000012",
+          "sequence": 1,
+          "timestamp": "2026-01-01T00:00:00Z",
+          "expires_at": "2026-01-01T00:01:00Z",
+          "nonce": "AAECAwQFBgcICQoL"
+        },
+        "application": {
+          "type": "task_create",
+          "operation_id": "00000000-0000-4000-8000-000000000001",
+          "task_payload": {
+            "action": "synthetic_probe",
+            "value": "browser-vector"
+          },
+          "execution_mode": "complete_immediately"
+        },
+        "server_status": 200
+      },
+      "bytes_hex": "424232442d50312f7365727665722d7461736b73007b226170706c69636174696f6e223a7b22657865637574696f6e5f6d6f6465223a22636f6d706c6574655f696d6d6564696174656c79222c226f7065726174696f6e5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303031222c227461736b5f7061796c6f6164223a7b22616374696f6e223a2273796e7468657469635f70726f6265222c2276616c7565223a2262726f777365722d766563746f72227d2c2274797065223a227461736b5f637265617465227d2c22636c69656e745f616164223a7b226465766963655f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303131222c22646972656374696f6e223a22636c69656e742d746f2d736572766572222c22657870697265735f6174223a22323032362d30312d30315430303a30313a30305a222c226d6574686f64223a22504f5354222c226e6f6e6365223a2241414543417751464267634943516f4c222c2270617468223a222f76322f70726f746f636f6c2f7461736b73222c2270726f746f636f6c5f76657273696f6e223a22424232442d5031222c22726571756573745f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303132222c2273657175656e6365223a312c2273657373696f6e5f6964223a2230303030303030302d303030302d343030302d383030302d303030303030303030303130222c2274696d657374616d70223a22323032362d30312d30315430303a30303a30305a227d2c227365727665725f737461747573223a3230307d",
+      "byte_length": 627,
+      "sha256": "f0329b432a6489249553ccf944d07a1da29b00e96141522a38685296fded0159"
+    }
+  ]
+}
