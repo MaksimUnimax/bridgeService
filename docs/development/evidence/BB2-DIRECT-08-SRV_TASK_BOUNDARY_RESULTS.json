@@ -1,0 +1,14 @@
+{
+  "technical_id": "BB2-DIRECT-08-SRV",
+  "boundary": "task/report protected TCP acceptance",
+  "source": {
+    "happy_path": "PASS",
+    "preauth": {"cases": 5, "response": "strict generic JSON only", "envelope_decrypt_called": false, "sensitive_plaintext": false},
+    "authenticated_application": {"cases": 7, "server_signature": "PASS", "status_bound_aad": "PASS", "aes_gcm_decrypt": "PASS", "exact_task_error": "PASS"},
+    "execution_count": 1,
+    "cleanup": "PASS"
+  },
+  "installed_wheel": {"happy_path": "PASS", "preauth": "PASS", "authenticated_application": "PASS", "cleanup": "PASS"},
+  "production": {"package_match": true, "restart": false, "happy_path": "PASS", "preauth": "PASS", "authenticated_application": "PASS", "cleanup": "PASS"},
+  "secrets_present": false
+}

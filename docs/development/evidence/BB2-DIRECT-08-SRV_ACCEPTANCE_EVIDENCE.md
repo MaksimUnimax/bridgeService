@@ -1,31 +1,56 @@
-# BB2-DIRECT-08-SRV server evidence
+# BB2-DIRECT-08-SRV acceptance evidence
 
-All values in this record are redacted to metadata, hashes, counts, statuses,
-and shortened synthetic identifiers. No production rows, keys, pairing codes,
-payloads, reports, cookies, tokens, or ciphertext are recorded.
-
-- Source base: `8194e3737c679c29363e0cc9e217f71dd2cf28bd`; candidate rejected.
-- Direct target: version `0.7.0`, SQLite schema `4`, BB2D-P1 only.
-- Wheel: `business_bridge_2_direct-0.7.0-py3-none-any.whl`, ZIP/RECORD/metadata scan PASS; SHA-256 recorded in results JSON.
-- Source and installed-package task tests: PASS; critical idempotency/permission regression: 5 consecutive runs PASS.
-- Public synthetic flow: pairing/session/create immediate; equivalent reordered duplicate; deterministic conflict; status; repeated report; pending; cancel; repeated cancel; report unavailable; revoke rejection: PASS.
-- Direct post-deployment: active/running, listener `78.17.68.165:18100`, health/version/diagnostics HTTP 200, schema 4, integrity `ok`, foreign-key check empty, service-user import/execute PASS.
-- Legacy postcheck: PID/start time/NRestarts/listener/health unchanged; `MODIFIED=NO`, `RESTARTED=NO`.
-- System Python: package-owned `/usr/bin/python3.10`, mode `0755`, execute PASS; before/after SHA-256 equal; no mutation.
+Technical ID `BB2-DIRECT-08-SRV`, parent run `BB2-DIRECT-08`, attempt `13`.
+All evidence is redacted to statuses, counts and hashes; it contains no keys,
+pairing codes, traffic material, ciphertext or user payload.
 
 ## Defect ledger
 
-- SIGNATURE: Direct ExecStartPre could not execute Python; restart loop after permission normalization.
-- ROOT_CAUSE: recursive normalization followed a venv symlink and changed system Python availability.
-- OWNER: server deployment mechanism.
-- PREVIOUS_MECHANISM: post-install recursive chmod/chown.
-- MECHANISM_CHANGED: staging tree with creation-time permissions, explicit allowlist, lstat/no-follow, resolved-root fail-closed checks, hardlink rejection, atomic activation, verification-only traversal.
-- WHY_PREVIOUS_TESTS_MISSED: no scratch venv boundary, resolved-path inventory, or system interpreter before/after check.
-- REGRESSION: external fake interpreter behind venv-like symlink, path escape, hardlink escape, and interpreter non-mutation tests PASS.
-- RESOLVED: production deployment and stable restart acceptance PASS.
+Attempt 12 exposed a PROCESS defect. The `wrong_signature` case received the
+generic pre-auth response `{"error":"authentication_failed"}`, while the
+harness unconditionally parsed every response as an encrypted response
+envelope and raised `response_envelope_fields`. The corrected harness now
+accepts only a strict one-field generic JSON error for pre-authentication or
+decryption rejection, and reserves response-envelope verification for
+authenticated application errors. Server runtime was not changed.
 
-## Deferred
+The related server-signature harness check was corrected to verify the signed
+envelope without its signature field; this restores the required authenticated
+signature check and does not change protocol/runtime bytes.
 
-Real subprocess/CLI execution, durable crash recovery/reconciliation,
-extension/browser implementation, connection bundle, and governance closure
-remain outside this server step.
+## Candidate and preserved bytes
+
+- Implementation candidate: `ba9614dcd722fd77bf118f78427737f85bed2f6c`
+- Parent: `517dd10166ef1014dec3a3ef9fab49deadc0d51f`
+- Candidate tree: `cb0779a8ff59d6071fec36fa2c163ea999e62830`
+- Attempt-12 server/runtime, migration, manifest and vector blobs: identical.
+- Browser vector SHA-256: `a79ed27626ec3730bacfdee4edbdb803fa53e7bf72647d8d0a3c60e547ddda9e`.
+- Clean wheel verification SHA-256: `142764858e13896b7e74186e9f2a519b0e1d82f5b70cbd16b86daf62dfa8e7a8`.
+
+## Gates
+
+Compileall, protocol tests, server tests, vector verification, manifest
+verification, wheel metadata/RECORD/ZIP validation and secret scan passed.
+Reused gates were vector fixture/determinism, manifest regeneration and wheel
+member/metadata validation; supporting hashes are recorded in `RESULTS.json`.
+The clean wheel build was independently rerun with the attempt-12 toolchain
+and matched the authoritative hash.
+
+Source and installed-wheel TCP acceptance passed: pairing, session, immediate
+create, exact/reordered duplicate, payload conflict, status, report and
+repeat-report identity, single execution, pending task, cancel/repeat cancel,
+cancelled status, unavailable report, revoke and revoked-device rejection.
+The pre-auth matrix produced strict generic JSON errors with no envelope
+parsing; authenticated application cases produced signed/encrypted
+`task_error` responses with status-bound AAD and successful decryption.
+
+Rollback rehearsal passed in isolated test boundaries: Direct-only staging,
+database migration rollback, SQLite integrity/foreign-key checks, identity
+preservation, symlink/hardlink/resolved-path escape rejection and unchanged
+system Python. No Legacy action was performed.
+
+Production package comparison found zero differing runtime members, so package
+mutation was `NO` and Direct restart was `NO`. Production TCP acceptance and
+synthetic cleanup passed; final Direct and Legacy health checks are HTTP 200.
+
+Chromium/Web Crypto verification is `DEFERRED_TO_CHATGPT`.

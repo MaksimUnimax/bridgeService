@@ -1,44 +1,68 @@
 {
   "technical_id": "BB2-DIRECT-08-SRV",
   "parent_run": "BB2-DIRECT-08",
-  "attempt": 1,
+  "attempt": 13,
   "status": "PASS",
   "base": {
-    "origin_development": "8194e3737c679c29363e0cc9e217f71dd2cf28bd",
-    "origin_main": "c426263e6dd00135a0023a0fa08a500273e73e23",
-    "candidate": "962c5b251e1b3aec192d8e1ce8a2da792bb5c787",
-    "candidate_reused": false
+    "development": "517dd10166ef1014dec3a3ef9fab49deadc0d51f",
+    "main": "c426263e6dd00135a0023a0fa08a500273e73e23",
+    "implementation": "ba9614dcd722fd77bf118f78427737f85bed2f6c",
+    "implementation_parent": "517dd10166ef1014dec3a3ef9fab49deadc0d51f"
   },
-  "runtime": {
-    "version": "0.7.0",
-    "schema": 4,
-    "health_http": 200,
-    "version_http": 200,
-    "diagnostics_tasks": "enabled",
-    "integrity_check": "ok",
-    "foreign_key_check": [],
-    "listener": "78.17.68.165:18100",
-    "service_user": "business-bridge-direct",
-    "nrestarts_stable": true
+  "defect": {
+    "type": "PROCESS",
+    "case": "wrong_signature",
+    "old_failure": "response_envelope_fields",
+    "corrected": "strict generic pre-auth JSON; encrypted envelope for authenticated application errors",
+    "server_runtime_changed": false
+  },
+  "harness_paths": [
+    "tests/server/task_acceptance_client.py",
+    "tests/server/acceptance_clients.py"
+  ],
+  "preserved": {
+    "runtime_blobs_identical": true,
+    "manifest_identical": true,
+    "vector_sha256": "a79ed27626ec3730bacfdee4edbdb803fa53e7bf72647d8d0a3c60e547ddda9e",
+    "server_pyproject_identical": true
+  },
+  "reused_gates": {
+    "vector_fixture_and_determinism": "PASS; hash verified",
+    "manifest_regeneration": "PASS; blob verified",
+    "wheel_metadata_members_record_zip": "PASS; authoritative hash verified"
+  },
+  "reexecuted": {
+    "compileall": "PASS",
+    "protocol_and_server": "58 passed, 21 subtests passed",
+    "source_tcp_happy_path": "PASS",
+    "source_tcp_preauth_negative": "PASS; 5 corrected cases",
+    "source_tcp_authenticated_application": "PASS; 7 cases; signature/AAD/GCM verified",
+    "installed_wheel": "PASS; repository imports absent; version 0.7.0; schema 4",
+    "rollback_rehearsal": "PASS; isolated boundary and DB/identity/escape checks",
+    "secret_scan": "PASS; no evidence secrets"
   },
   "wheel": {
-    "filename": "business_bridge_2_direct-0.7.0-py3-none-any.whl",
-    "sha256": "f92fc6249a6dd7d89b8f4929fd920a9bfabd33c3d5c76f1f28d1817a2d4e6018",
-    "zip_integrity": "PASS",
+    "authoritative_sha256": "142764858e13896b7e74186e9f2a519b0e1d82f5b70cbd16b86daf62dfa8e7a8",
+    "clean_verification_sha256": "142764858e13896b7e74186e9f2a519b0e1d82f5b70cbd16b86daf62dfa8e7a8",
+    "match": true,
+    "runtime_member_differences": 0,
     "record": "PASS",
-    "secrets": "NONE"
+    "zip_integrity": "PASS"
   },
-  "tests": {
-    "full_server_protocol": "PASS",
-    "critical_regression_runs": 5,
-    "installed_package_task_tests": "PASS",
-    "public_protected_flow": "PASS",
-    "duplicate_execution_count": 1,
-    "synthetic_device_revoked": true
+  "production": {
+    "package_match": true,
+    "mutated": false,
+    "restarted": false,
+    "happy_path": "PASS",
+    "preauth_negative": "PASS",
+    "authenticated_application_negative": "PASS",
+    "synthetic_cleanup": "PASS",
+    "pending_synthetic_tasks": 0
   },
-  "legacy": {"modified": false, "restarted": false, "health_before": 200, "health_after": 200},
-  "system_python": {"path": "/usr/bin/python3.10", "owner": "root:root", "mode_before": "0755", "mode_after": "0755", "sha256_before": "7d51cd6b48b521277f5caa4610a82126e315fa2be4df069823a8b1eeb5bd4a86", "sha256_after": "7d51cd6b48b521277f5caa4610a82126e315fa2be4df069823a8b1eeb5bd4a86", "mutated": false},
-  "backup": {"path": "/var/backups/business-bridge-2-direct/BB2-DIRECT-08-SRV-20260730T045739Z", "mode": "0700", "verified": true},
-  "security": {"secrets_printed": false, "legacy_secrets_read": false, "legacy_database_read": false, "plaintext_sensitive_payload_observed": false},
-  "deferred": ["real subprocess/CLI execution", "durable crash recovery and reconciliation", "extension/browser implementation", "governance documentation and final marker"]
+  "safety": {
+    "direct": {"pid": 1823652, "nrestarts": 0, "state": "active/running", "health": 200, "version": "0.7.0", "schema": 4, "listener": "78.17.68.165:18100", "identity_unchanged": true, "system_python_unchanged": true},
+    "legacy": {"pid": 1619365, "start_time": "2026-07-27 13:16:29 MSK", "nrestarts": 0, "state": "active/running", "health": 200, "listener": "127.0.0.1:18083", "modified": false, "restarted": false},
+    "chromium_verification": "DEFERRED_TO_CHATGPT"
+  },
+  "secrets_present": false
 }
