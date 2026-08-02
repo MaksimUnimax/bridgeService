@@ -29,9 +29,14 @@
     }
   },
   "negative_cases": [
-    {"name": "tampered_action", "expected_status": 403},
-    {"name": "expired", "expected_status": 400},
-    {"name": "unknown_device", "expected_status": 403},
-    {"name": "padded_signature", "expected_status": 403}
+    {"name": "tampered_action", "description": "Change action after signing; generic authentication rejection", "expected_status": 403},
+    {"name": "tampered_device_id", "description": "Change device_id after signing; generic authentication rejection", "expected_status": 403},
+    {"name": "tampered_request_id", "description": "Change request_id after signing; generic authentication rejection", "expected_status": 403},
+    {"name": "tampered_timestamp", "description": "Change timestamp after signing; generic authentication rejection", "expected_status": 403},
+    {"name": "tampered_expires_at", "description": "Change expires_at after signing; generic authentication rejection", "expected_status": 403},
+    {"name": "expired_within_skew", "description": "Timestamp is 20 seconds old but expires_at is 10 seconds before server now; reject before mutation", "expected_status": 400},
+    {"name": "unknown_device", "description": "Validly shaped request for an unpaired device; generic authentication rejection", "expected_status": 403},
+    {"name": "padded_signature", "description": "Add base64 padding to signature; reject", "expected_status": 403},
+    {"name": "wrong_signature_length", "description": "Use a base64url signature decoding to a length other than 64 bytes; reject", "expected_status": 403}
   ]
 }

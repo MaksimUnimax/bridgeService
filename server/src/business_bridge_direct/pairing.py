@@ -98,7 +98,7 @@ def device_lifecycle(path: str, body: bytes, identity: dict[str, object], server
     expires_at = _lifecycle_timestamp(data["expires_at"])
     now = _lifecycle_now()
     lifetime = (expires_at - timestamp).total_seconds()
-    if expires_at <= timestamp or lifetime > 60 or abs((now - timestamp).total_seconds()) > 30:
+    if expires_at <= timestamp or lifetime > 60 or abs((now - timestamp).total_seconds()) > 30 or expires_at <= now:
         raise ValueError("expired_message" if expires_at > timestamp and lifetime <= 60 else "invalid_timestamp")
     # Lookup is intentionally limited to this device's SPKI and status.
     record = lifecycle_device(path, data["device_id"])
@@ -120,8 +120,9 @@ def device_lifecycle(path: str, body: bytes, identity: dict[str, object], server
         if result not in {"revoked", "already_revoked"}:
             raise PermissionError("device_lifecycle_rejected")
         status = "REVOKED"
-    response_timestamp = _lifecycle_now().isoformat().replace("+00:00", "Z")
-    response_expires = (_lifecycle_now() + timedelta(seconds=60)).isoformat().replace("+00:00", "Z")
+    response_now = _lifecycle_now()
+    response_timestamp = response_now.isoformat().replace("+00:00", "Z")
+    response_expires = (response_now + timedelta(seconds=60)).isoformat().replace("+00:00", "Z")
     response = {
         "lifecycle_version": LIFECYCLE_VERSION, "action": data["action"], "device_id": data["device_id"],
         "instance_id": identity["instance_id"], "server_fingerprint": identity["fingerprint"],

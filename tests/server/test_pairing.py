@@ -1,12 +1,13 @@
 from __future__ import annotations
 import base64, json, os, pathlib, pwd, socket, subprocess, tempfile, threading, unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 from datetime import datetime, timedelta, timezone
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 from business_bridge_direct.database import create_session, initialize_database, session_status, revoke_device, revoke_session
 from business_bridge_direct.database import complete_pairing, device_status
-from business_bridge_direct.pairing import parse_request
+from business_bridge_direct.pairing import device_lifecycle, parse_request
 from business_bridge_direct.http_api import BoundedIPv4Server
 from business_bridge_direct.protocol import domain
 from business_bridge_direct.protocol_crypto import b64u, canonical, sign, verify
@@ -125,11 +126,34 @@ class DeviceLifecycleTests(unittest.TestCase):
             sock.sendall(b"POST /v2/pairing/device HTTP/1.1\r\nHost: test\r\nContent-Type: application/json\r\nContent-Length: " + str(len(body)).encode() + b"\r\n\r\n" + body); sock.shutdown(socket.SHUT_WR); raw = sock.recv(20000)
         return int(raw.split(b" ", 2)[1]), json.loads(raw.split(b"\r\n\r\n", 1)[1])
 
-    def signed(self, action, request_id="00000000-0000-4000-8000-000000000001", device_id=None):
-        stamp = datetime.now(timezone.utc).replace(microsecond=0); ts = stamp.isoformat().replace("+00:00", "Z"); exp = (stamp + timedelta(seconds=30)).isoformat().replace("+00:00", "Z")
+    def signed(self, action, request_id="00000000-0000-4000-8000-000000000001", device_id=None, stamp=None, expires=None):
+        stamp = stamp or datetime.now(timezone.utc).replace(microsecond=0); ts = stamp.isoformat().replace("+00:00", "Z"); exp = (expires or (stamp + timedelta(seconds=30))).isoformat().replace("+00:00", "Z")
         value = {"lifecycle_version":"BB2D-L1", "action":action, "device_id":device_id or self.device_id, "request_id":request_id, "timestamp":ts, "expires_at":exp}
         value["signature"] = sign(self.device, domain("BB2D-L1/client-device", canonical({**value, "method":"POST", "path":"/v2/pairing/device"})))
         return value
+
+    def test_expired_within_timestamp_skew_is_rejected_without_mutation(self):
+        server_now = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        request = self.signed("status", stamp=server_now - timedelta(seconds=20), expires=server_now - timedelta(seconds=10))
+        before = device_status(self.db, self.device_id)["status"]
+        with patch("business_bridge_direct.pairing._lifecycle_now", return_value=server_now):
+            with self.assertRaises(ValueError):
+                device_lifecycle(self.db, json.dumps(request, separators=(",", ":")).encode(), self.identity, self.server_key)
+        self.assertEqual(before, "ACTIVE")
+        self.assertEqual(device_status(self.db, self.device_id)["status"], "ACTIVE")
+
+    def test_response_timestamp_and_expiry_use_one_clock_sample(self):
+        server_now = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        response_now = server_now + timedelta(seconds=1)
+        request = self.signed("status", stamp=server_now)
+        with patch("business_bridge_direct.pairing._lifecycle_now", side_effect=[server_now, response_now]) as clock:
+            status, response = device_lifecycle(self.db, json.dumps(request, separators=(",", ":")).encode(), self.identity, self.server_key)
+        self.assertEqual(status, 200)
+        self.assertEqual(clock.call_count, 2)
+        timestamp = datetime.fromisoformat(response["timestamp"].replace("Z", "+00:00"))
+        expires = datetime.fromisoformat(response["expires_at"].replace("Z", "+00:00"))
+        self.assertEqual(expires - timestamp, timedelta(seconds=60))
+        verify(self.server_key.public_key(), response["signature"], domain("BB2D-L1/server-device", canonical({"method":"POST", "path":"/v2/pairing/device", "status":200, "response":{k:v for k,v in response.items() if k != "signature"}})))
 
     def test_status_revoke_replay_and_status_after_revoke(self):
         status, body = self.request(self.signed("status")); self.assertEqual(status, 200); self.assertEqual(body["status"], "ACTIVE")
