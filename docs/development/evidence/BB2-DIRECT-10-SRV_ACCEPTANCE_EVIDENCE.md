@@ -1,85 +1,115 @@
-# BB2-DIRECT-10-SRV Acceptance Evidence
+# BB2-DIRECT-10-SRV corrected acceptance evidence
 
-## Scope
+TECHNICAL_ID: BB2-DIRECT-10-SRV
+ATTEMPT: 5
+EXECUTION_MODE: SECURITY_CORRECTION_AND_FULL_REACCEPTANCE
 
-- Technical ID: `BB2-DIRECT-10-SRV`
-- Parent run: `BB2-DIRECT-10`
-- Attempt: `4`
-- Execution mode: `ACCEPTANCE_ONLY_CONTINUATION`
-- Candidate commit: `c902e10058e1ac76ff5400dd43bc03dfdb3238ff`
-- Candidate parent: `17f4ecc87848d75a73dbdf09a3e49b63f037ba62`
-- Candidate tree: `69028f505b9af25c2dd3284e167a7c5543666717`
+This evidence supersedes rejected BB2-DIRECT-10-SRV attempt-4 acceptance claims. Attempt-4 evidence remains available in Git history and is not rewritten.
 
-## Process Defect
+## Source and implementation
 
-- Type: `PROCESS`
-- Signature: `premature_execution_termination_after_local_candidate`
-- Root cause: the phase controller allowed termination after local candidate validation while production, evidence, and publication gates were still pending.
-- Previous root-cause model was incomplete because it fixed the contaminated worktree issue, but not the phase-management failure.
-- Mechanism replaced: `IMMUTABLE CANDIDATE -> COMPLETE PHASE LEDGER -> FIRST REAL FAILURE OR FULL PASS`
-- Status of repeated premature-stop pattern: resolved in this execution by continuing through production, cleanup, and publication preparation.
+- Base: `b7ac536edc4e785a491c17e62f752750029abe8f`
+- Implementation: `8e128ee252c358aac2da7d8c0cea79ba1686b1e6`
+- Implementation parent: `b7ac536edc4e785a491c17e62f752750029abe8f`
+- Message: `BB2-DIRECT-10-SRV: correct bundle security and failure handling`
+- Changed paths: `server/FILE_MANIFEST.sha256`, `server/src/business_bridge_direct/bundle.py`, `server/src/business_bridge_direct/bundle_cli.py`, `tests/server/test_bundle.py`, `tests/server/test_bundle_cli.py`
+- Exactly one implementation commit was created before this evidence.
 
-## Source Of Truth
+Corrections remove the OpenSSL/filesystem/environment fallback and use in-memory `cryptography==43.0.3` SPKI validation; add confirmed bounded revoke/status cleanup without silent swallowing; require exact stdout write count and successful flush; and place malformed argparse handling inside the generic JSON error contract.
 
-- Remote development SHA confirmed by SSH `ls-remote`: `17f4ecc87848d75a73dbdf09a3e49b63f037ba62`
-- Remote main SHA confirmed by SSH `ls-remote`: `c426263e6dd00135a0023a0fa08a500273e73e23`
-- Marker oracle from the exact base commit: `BB2_DIRECT_09_COMPLETE = PRESENT`
-- Marker 10 absent at the base and in the run status checks performed here.
+## Tests and artifact
 
-## Candidate Verification
+- Targeted: `18 passed, 45 subtests`.
+- Initial source regression: `77 passed, 66 subtests`; four pre-artifact harness failures were rerun with an executable Python 3.10 test interpreter outside `/root`.
+- Full installed-wheel regression: `81 passed, 66 subtests`.
+- Full command: `python -m pytest -q tests/protocol tests/server` with `PYTHONPATH` set only to the staged exact wheel target and `BB2_WHEEL_UNDER_TEST` set to the exact wheel.
+- Compile: `python -m compileall -q server/src/business_bridge_direct` passed.
+- Wheel: `business_bridge_2_direct-0.9.0-py3-none-any.whl`; size `36516` bytes.
+- Build 1 SHA-256: `83eea1a09dcfad1eea7d4397edb882c6c62a2111ccf94f49b34c87214b269c04`
+- Build 2 SHA-256: `83eea1a09dcfad1eea7d4397edb882c6c62a2111ccf94f49b34c87214b269c04`
+- Build 3 SHA-256: `83eea1a09dcfad1eea7d4397edb882c6c62a2111ccf94f49b34c87214b269c04`
+- Byte-identical: YES.
+- Installed-wheel import: service-user import passed; version `0.9.0`; schema `5`; module path was inside staged/installed target.
 
-- Candidate commit object exists and matches the expected parent and tree.
-- Worktree at `/tmp/bb2-direct-10-srv-corrected-wt-20260730-1` was clean when acceptance began.
-- Changed paths remained inside the approved implementation allowlist.
-- Required base-blob equality was confirmed for the requested non-allowlist paths.
-- No source amendment or duplicate implementation commit was created.
+## Rollback, deployment, and production
 
-## Source And Build Gates
+Rollback point was created for Direct package state only and restore was rehearsed successfully. A first activation attempt exposed a package permission issue, was rolled back successfully, and the exact wheel was then activated with Direct-only ownership normalization. Final Direct state: PID `2057065`, start `Sun 2026-08-02 07:23:39 MSK`, `NRestarts=0`, `active/running`, health HTTP `200`, version `0.9.0`, schema `5`, listener `78.17.68.165:18100`.
 
-- `python -m compileall -q server/src/business_bridge_direct`: PASS
-- `pytest -q tests/protocol tests/server`: PASS
-- Source test result: `72 passed, 59 subtests passed`
-- Three clean wheel builds from independent clean build directories produced byte-identical artifacts.
-- Wheel SHA-256 oracle: `537d8be5f70f882e36ec0c3dd7e75f48356d5e61be114dd543d0bc194d298cc4`
-- Wheel filename: `business_bridge_2_direct-0.9.0-py3-none-any.whl`
+Production purity probe on the installed decoder passed static forbidden-dependency inspection and invalid-DER rejection without external process, temporary file, environment, network, database, or config access by the decoder.
 
-## Rollback Rehearsal
+Production bundle/pairing passed with exactly one bundle line, decode validation, initial real Direct HTTP pairing `201`, same one-time credential reuse rejection `403`, device revocation, and no remaining ACTIVE synthetic session. Only a redacted session prefix was recorded: `18334146…`. No code, private key, token, or permanent secret is included here.
 
-- A scratch restore was created from the Direct backup and validated without touching the live service.
-- Restored scratch service version: `0.8.0`
-- Restored scratch schema version: `5`
-- Scratch SQLite integrity check: `ok`
-- Service-user read access to the restored scratch runtime was verified.
-- This confirmed the backup is restorable to the expected `0.8.0/schema 5` baseline.
+## Legacy protection
 
-## Production
+Legacy before and after were identical: PID `1619365`; start `Mon 2026-07-27 13:16:29 MSK`; `NRestarts=0`; `active/running`; health HTTP `200`. Legacy modified: NO. Legacy restarted: NO.
 
-- Direct backup was created under `/var/backups/business-bridge-2-direct/BB2-DIRECT-10-SRV-ATTEMPT4-20260730T134112Z`.
-- Backup verification passed before activation.
-- Direct production was activated to `0.9.0` while preserving schema `5`.
-- Live health remained `200` after activation.
-- Listener remained on `78.17.68.165:18100`.
-- Legacy remained unchanged at `127.0.0.1:18083` with the same PID/start/NRestarts throughout this run.
+## Frozen 62-gate ledger
 
-## Bundle And Pairing
+1. PASS — fresh development base exact
+2. PASS — fresh main exact
+3. PASS — clean detached correction worktree
+4. PASS — append-only parent exact
+5. PASS — implementation allowlist
+6. PASS — evidence allowlist
+7. PASS — Legacy PID unchanged
+8. PASS — Legacy start time unchanged
+9. PASS — Legacy NRestarts unchanged
+10. PASS — Legacy active/running
+11. PASS — Legacy health 200
+12. PASS — no Legacy assets/secrets/state read or copied
+13. PASS — Direct target and listener
+14. PASS — version 0.9.0
+15. PASS — schema 5
+16. PASS — decoder has no forbidden imports
+17. PASS — decoder has no external process operations
+18. PASS — decoder has no filesystem operations
+19. PASS — decoder has no environment lookup
+20. PASS — decoder has no network/database/config/logging side effect
+21. PASS — invalid DER rejected
+22. PASS — RSA rejected
+23. PASS — wrong EC curve rejected
+24. PASS — P-256 accepted
+25. PASS — fingerprint mismatch rejected
+26. PASS — exact decoded-DER fingerprint
+27. PASS — short write rejected
+28. PASS — zero write rejected
+29. PASS — None write rejected
+30. PASS — BrokenPipeError rejected
+31. PASS — OSError rejected
+32. PASS — flush failure rejected
+33. PASS — output failure cleanup confirmed
+34. PASS — encode failure cleanup confirmed
+35. PASS — self-validation failure cleanup confirmed
+36. PASS — transient revoke retry bounded
+37. PASS — transient status retry bounded
+38. PASS — eventual cleanup success confirmed
+39. PASS — cleanup remains failure when ACTIVE
+40. PASS — no-command parser contract
+41. PASS — unknown-command parser contract
+42. PASS — unknown-option parser contract
+43. PASS — invalid integer parser contract
+44. PASS — missing value parser contract
+45. PASS — TTL below range parser contract
+46. PASS — TTL above range parser contract
+47. PASS — help is non-mutating
+48. PASS — existing pairing CLI compatibility
+49. PASS — canonical BB2D1 vectors unchanged
+50. PASS — successful output is one line
+51. PASS — successful session remains ACTIVE before pairing
+52. PASS — source server regression
+53. PASS — protocol regression
+54. PASS — pairing regression
+55. PASS — task/report API regression
+56. PASS — durable jobs regression
+57. PASS — recovery regression
+58. PASS — installed-wheel expectations
+59. PASS — three builds byte-identical
+60. PASS — rollback rehearsal and recovery
+61. PASS — final Direct production acceptance
+62. PASS — production purity and pairing reuse acceptance
 
-- Production bundle generation succeeded with a one-line stdout response, empty stderr, and strict decoding.
-- Fresh bundle session was revoked after capture.
-- A live pairing completed successfully for a synthetic device.
-- Bundle reuse was rejected on the second use.
-- Temporary bundle files and temporary synthetic credentials were cleaned up.
-- No plaintext bundle, pairing code, session ID, device ID, or private key was published in this evidence.
+PASS: 62
+FAIL: 0
+UNKNOWN: 0
 
-## Final Safety
-
-- Direct final state remained active/running at version `0.9.0` with schema `5`.
-- Legacy final state remained active/running and unchanged.
-- No active synthetic sessions or active synthetic devices remained after cleanup.
-- Secret scan remained clean for the accepted scope.
-
-## Publication State
-
-- Pre-push remote recheck passed before publication.
-- This evidence was prepared as the single evidence commit for the accepted implementation chain.
-- Future extension-parser work remains outside this run and is left to `BB2-DIRECT-10-EXT`.
-
+This evidence supersedes rejected BB2-DIRECT-10-SRV attempt-4 acceptance claims.

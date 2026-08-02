@@ -1,54 +1,19 @@
 {
-  "format_version": "BB2D1",
-  "fixture_sha256": "bcf21bc5ab55313cf0119c5971e6191d10db46508da21f7c4ff45163d18c0a4c",
-  "fixture_path": "tests/fixtures/BB2D1_BUNDLE_VECTORS.json",
-  "positive": {
-    "count": 1,
-    "passed": true,
-    "fields": [
-      "bundle_version",
-      "checksum_b64url",
-      "checksum_domain_input_hex",
-      "checksum_sha256_hex",
-      "decoded_object",
-      "expected_bundle",
-      "payload_b64url",
-      "payload_hex",
-      "payload_string"
-    ]
+  "technical_id": "BB2-DIRECT-10-SRV",
+  "attempt": 5,
+  "supersedes_attempt_4": true,
+  "decoder_static_purity": "PASS",
+  "decoder_dynamic_purity": "PASS",
+  "crypto": {
+    "valid_p256_spki": "PASS",
+    "invalid_der": "PASS",
+    "rsa": "PASS",
+    "wrong_ec_curve": "PASS",
+    "fingerprint_mismatch": "PASS"
   },
-  "negative": {
-    "count": 38,
-    "passed": true
-  },
-  "independent_decoder": {
-    "passed": true,
-    "strict_decode": true,
-    "constant_time_checksum_compare": true,
-    "side_effect_free": true
-  },
-  "cli": {
-    "success_stdout_one_line": true,
-    "success_stderr_empty": true,
-    "failure_stdout_empty": true,
-    "failure_stderr_generic_json": true,
-    "failure_exit_code": 1,
-    "session_revoked_on_failure": true
-  },
-  "coverage": {
-    "bundle_version": "BB2D1",
-    "canonical_json": true,
-    "duplicate_keys_rejected": true,
-    "unknown_fields_rejected": true,
-    "missing_fields_rejected": true,
-    "positive_vector_passed": true,
-    "negative_vector_passed": true
-  },
-  "redaction": {
-    "live_bundle": false,
-    "pairing_code": false,
-    "session_id": false,
-    "device_id": false,
-    "private_key": false
-  }
+  "stdout_failures": {"short": "PASS", "zero": "PASS", "none": "PASS", "broken_pipe": "PASS", "os_error": "PASS", "flush": "PASS"},
+  "cleanup": {"encode": "PASS", "self_validation": "PASS", "revoke_retry": "PASS", "status_retry": "PASS", "active_after_bounded_retry_is_failure": "PASS"},
+  "parser": {"no_command": "PASS", "unknown_command": "PASS", "unknown_option": "PASS", "invalid_integer": "PASS", "missing_value": "PASS", "ttl_below_300": "PASS", "ttl_above_600": "PASS", "help_non_mutating": "PASS"},
+  "compatibility": {"canonical_vectors": "PASS", "one_line_success": "PASS", "successful_session_active": "PASS", "pairing_cli": "PASS"},
+  "artifact_sha256": "83eea1a09dcfad1eea7d4397edb882c6c62a2111ccf94f49b34c87214b269c04"
 }
