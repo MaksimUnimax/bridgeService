@@ -38,7 +38,7 @@ class BaselineTests(unittest.TestCase):
         "service_user": "business-bridge-direct",
         "listen_host": "78.17.68.165",
         "listen_port": 18100,
-        "service_version": "0.9.0",
+        "service_version": "0.9.1",
         "identity_metadata_path": "/var/lib/business-bridge-2-direct/identity/identity.json",
         "server_signing_private_key_path": "/etc/business-bridge-2-direct/secrets/server_signing_private_key.pem",
         "openssl_path": "/usr/bin/openssl",
@@ -123,7 +123,7 @@ class BaselineTests(unittest.TestCase):
       database.initialize_database(str(fresh))
       with sqlite3.connect(fresh) as connection:
         self.assertEqual(connection.execute("PRAGMA user_version").fetchone()[0], 5)
-        self.assertEqual(dict(connection.execute("SELECT key,value FROM runtime_metadata")), {"schema_version": "5", "service_version": "0.9.0"})
+        self.assertEqual(dict(connection.execute("SELECT key,value FROM runtime_metadata")), {"schema_version": "5", "service_version": "0.9.1"})
       self.assertTrue(database.check_database(str(fresh)))
       migrated = pathlib.Path(directory) / "migrated.sqlite3"
       with sqlite3.connect(migrated) as connection:

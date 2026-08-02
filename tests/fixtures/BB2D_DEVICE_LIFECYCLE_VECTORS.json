@@ -1,0 +1,37 @@
+{
+  "lifecycle_version": "BB2D-L1",
+  "endpoint": "/v2/pairing/device",
+  "device_public_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEkt5PQFpkkoXsOwE6zgA79hbZpTgFywqZcnF2FSKjA5ZXoeT5BQqbeUboRGiVq9bNu0LeB1D2OOB7Kz09zytiJQ",
+  "requests": {
+    "active_status": {
+      "lifecycle_version": "BB2D-L1", "action": "status", "device_id": "11111111-1111-4111-8111-111111111111", "request_id": "22222222-2222-4222-8222-222222222222", "timestamp": "2030-01-01T00:00:00Z", "expires_at": "2030-01-01T00:00:30Z",
+      "signature": "KiTRX2QcsZzDXbUFOGIstNmRkfG-rfqnXHLTcSOioNMD-qVMd4ZCasgKiKjBBjO6eIIHum7kkNsVi51q0BVTjQ",
+      "signed_transcript_sha256": "2941215a4f7443707f93310006b9c03198b00c35208ea5cadaec6859a4e92813"
+    },
+    "revoke": {
+      "lifecycle_version": "BB2D-L1", "action": "revoke", "device_id": "11111111-1111-4111-8111-111111111111", "request_id": "33333333-3333-4333-8333-333333333333", "timestamp": "2030-01-01T00:00:00Z", "expires_at": "2030-01-01T00:00:30Z",
+      "signature": "phM7mHTvRywvlidBd7JSMclvftXXh4Bx7dcC1dgahU0OwAAoQe8j3aNC6RKjGYnJkEPeXuH3bJVvDRX8oISRAA",
+      "signed_transcript_sha256": "67a75754a53d2c9e5fe78aa33b849328c7de1062eed638764a7c98f4bbe7446c"
+    }
+  },
+  "server_public_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE5hLtGgXSs3ko5F66J-1uxRztrESKkTEOUE8s3ZxsaJoN5hcnAXw7FYDq_A0vSOsZWjh2rmcK1Z2zcs3JclDhlg",
+  "server_fingerprint": "sha256:e5b620c954dc2e0f0a751ecbaf24094bd2f3b614d3fd6b1941a5b20780aedb13",
+  "responses": {
+    "active": {
+      "lifecycle_version": "BB2D-L1", "action": "status", "device_id": "11111111-1111-4111-8111-111111111111", "instance_id": "44444444-4444-4444-8444-444444444444", "server_fingerprint": "sha256:e5b620c954dc2e0f0a751ecbaf24094bd2f3b614d3fd6b1941a5b20780aedb13", "request_id": "22222222-2222-4222-8222-222222222222", "status": "ACTIVE", "timestamp": "2030-01-01T00:00:01Z", "expires_at": "2030-01-01T00:01:01Z",
+      "signature": "INPNH9Yr-RwdUHTrvK6omBj9CnQY-Fc-dE1e_nSBZBB3W0CZtsejo-inRcBOUd6l4UCEexlq3Y4GHU2MQnGUzw",
+      "signed_transcript_sha256": "93cbe82823ab4961189f2552f6ed9e4d34486cdac3028b99f894eff9cefc1044"
+    },
+    "revoked": {
+      "lifecycle_version": "BB2D-L1", "action": "revoke", "device_id": "11111111-1111-4111-8111-111111111111", "instance_id": "44444444-4444-4444-8444-444444444444", "server_fingerprint": "sha256:e5b620c954dc2e0f0a751ecbaf24094bd2f3b614d3fd6b1941a5b20780aedb13", "request_id": "33333333-3333-4333-8333-333333333333", "status": "REVOKED", "timestamp": "2030-01-01T00:00:01Z", "expires_at": "2030-01-01T00:01:01Z",
+      "signature": "AWWe4kjP-Ip3VGW4vgEq6aePSGMZjRQl9ynPO86FmctcVGxMnry51djl-UEGy15FTu7G0rOADY0vWwEICMdsXA",
+      "signed_transcript_sha256": "4d2d7849551f3a4f8a3d1c76ea03aaeba797727561c5357f938bafa297f9fadc"
+    }
+  },
+  "negative_cases": [
+    {"name": "tampered_action", "expected_status": 403},
+    {"name": "expired", "expected_status": 400},
+    {"name": "unknown_device", "expected_status": 403},
+    {"name": "padded_signature", "expected_status": 403}
+  ]
+}

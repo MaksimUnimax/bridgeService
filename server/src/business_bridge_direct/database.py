@@ -167,6 +167,12 @@ def device_status(path: str, device_id: str):
     with _connect(path) as c:
         row=c.execute('SELECT device_id,device_fingerprint,created_at,status,revoked_at,pairing_session_id FROM paired_devices WHERE device_id=?',(device_id,)).fetchone(); return dict(zip(('device_id','device_fingerprint','created_at','status','revoked_at','pairing_session_id'),row)) if row else None
 
+def lifecycle_device(path: str, device_id: str):
+    """Return only the persisted public key and lifecycle state for one device."""
+    with _connect(path) as c:
+        row = c.execute('SELECT public_key_spki,status FROM paired_devices WHERE device_id=?', (device_id,)).fetchone()
+        return (row[0], row[1]) if row else None
+
 def complete_pairing(path: str, session_id: str, code: str, public_key: str, now: str|None=None):
     current=now or utc_now(); c=_connect(path)
     try:

@@ -1,9 +1,15 @@
 from __future__ import annotations
 import base64, json, os, pathlib, pwd, socket, subprocess, tempfile, threading, unittest
 from types import SimpleNamespace
+from datetime import datetime, timedelta, timezone
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ec
 from business_bridge_direct.database import create_session, initialize_database, session_status, revoke_device, revoke_session
+from business_bridge_direct.database import complete_pairing, device_status
 from business_bridge_direct.pairing import parse_request
 from business_bridge_direct.http_api import BoundedIPv4Server
+from business_bridge_direct.protocol import domain
+from business_bridge_direct.protocol_crypto import b64u, canonical, sign, verify
 
 class PairingTests(unittest.TestCase):
     def setUp(self):
@@ -92,3 +98,51 @@ class PairingTests(unittest.TestCase):
             self.assertIn(b"HTTP/1.1 403", request(b"POST", b"/v2/pairing/complete", body))
         finally:
             server.shutdown(); thread.join(2); server.server_close()
+
+
+class DeviceLifecycleTests(unittest.TestCase):
+    def setUp(self):
+        self.t = tempfile.TemporaryDirectory(); root = pathlib.Path(self.t.name)
+        self.db = str(root / "pair.sqlite3"); initialize_database(self.db)
+        self.device = ec.generate_private_key(ec.SECP256R1())
+        der = self.device.public_key().public_bytes(serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo)
+        self.device_spki = b64u(der)
+        self.server_key = ec.generate_private_key(ec.SECP256R1())
+        server_der = self.server_key.public_key().public_bytes(serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo)
+        key_path = root / "server.pem"; key_path.write_bytes(self.server_key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption()))
+        self.identity = {"instance_id":"00000000-0000-4000-8000-000000000000", "fingerprint":"sha256:" + __import__("hashlib").sha256(server_der).hexdigest()}
+        self.cfg = SimpleNamespace(request_timeout_seconds=5, max_header_bytes=8192, max_request_line_bytes=2048, max_request_body_bytes=4096, max_header_count=32, max_concurrent_requests=16, listen_backlog=4, per_source_rate_window_seconds=10, per_source_rate_limit=30, global_rate_window_seconds=10, global_rate_limit=120, server_signing_private_key_path=str(key_path))
+        sid, code, _ = create_session(self.db); ok, result = complete_pairing(self.db, sid, code, self.device_spki); self.assertTrue(ok); self.device_id = result["device_id"]
+        self.service = SimpleNamespace(database_path=self.db, service_name="business-bridge-2-direct", version="0.9.1", identity=self.identity, config=self.cfg)
+        self.server = BoundedIPv4Server(("127.0.0.1", 0), self.service, self.cfg); self.thread = threading.Thread(target=self.server.serve_forever, daemon=True); self.thread.start()
+
+    def tearDown(self):
+        self.server.shutdown(); self.thread.join(2); self.server.server_close(); self.t.cleanup()
+
+    def request(self, value):
+        body = json.dumps(value, separators=(",", ":")).encode()
+        with socket.create_connection(self.server.server_address, timeout=2) as sock:
+            sock.sendall(b"POST /v2/pairing/device HTTP/1.1\r\nHost: test\r\nContent-Type: application/json\r\nContent-Length: " + str(len(body)).encode() + b"\r\n\r\n" + body); sock.shutdown(socket.SHUT_WR); raw = sock.recv(20000)
+        return int(raw.split(b" ", 2)[1]), json.loads(raw.split(b"\r\n\r\n", 1)[1])
+
+    def signed(self, action, request_id="00000000-0000-4000-8000-000000000001", device_id=None):
+        stamp = datetime.now(timezone.utc).replace(microsecond=0); ts = stamp.isoformat().replace("+00:00", "Z"); exp = (stamp + timedelta(seconds=30)).isoformat().replace("+00:00", "Z")
+        value = {"lifecycle_version":"BB2D-L1", "action":action, "device_id":device_id or self.device_id, "request_id":request_id, "timestamp":ts, "expires_at":exp}
+        value["signature"] = sign(self.device, domain("BB2D-L1/client-device", canonical({**value, "method":"POST", "path":"/v2/pairing/device"})))
+        return value
+
+    def test_status_revoke_replay_and_status_after_revoke(self):
+        status, body = self.request(self.signed("status")); self.assertEqual(status, 200); self.assertEqual(body["status"], "ACTIVE")
+        server_der = self.server_key.public_key().public_bytes(serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo)
+        verify(serialization.load_der_public_key(server_der), body["signature"], domain("BB2D-L1/server-device", canonical({"method":"POST", "path":"/v2/pairing/device", "status":200, "response":{k:v for k,v in body.items() if k != "signature"}})))
+        revoke = self.signed("revoke", "00000000-0000-4000-8000-000000000002")
+        status, body = self.request(revoke); self.assertEqual((status, body["status"]), (200, "REVOKED")); self.assertEqual(device_status(self.db, self.device_id)["status"], "REVOKED")
+        status, replay = self.request(revoke); self.assertEqual((status, replay["status"]), (200, "REVOKED")); self.assertEqual(device_status(self.db, self.device_id)["status"], "REVOKED")
+        status, body = self.request(self.signed("status", "00000000-0000-4000-8000-000000000003")); self.assertEqual((status, body["status"]), (200, "REVOKED"))
+
+    def test_unknown_tamper_and_method_are_generic(self):
+        unknown = self.signed("status", device_id="00000000-0000-4000-8000-000000000099")
+        status, body = self.request(unknown); self.assertEqual(status, 403); self.assertEqual(body, {"error":"device_lifecycle_rejected"})
+        bad = self.signed("status"); bad["action"] = "revoke"; status, body = self.request(bad); self.assertEqual(status, 403); self.assertEqual(body, {"error":"device_lifecycle_rejected"})
+        with socket.create_connection(self.server.server_address, timeout=2) as sock:
+            sock.sendall(b"GET /v2/pairing/device HTTP/1.1\r\nHost: test\r\n\r\n"); self.assertIn(b"HTTP/1.1 405", sock.recv(4096))

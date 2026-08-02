@@ -11,7 +11,9 @@ from typing import Callable
 
 from .database import check_database
 from .pairing import pair
+from .pairing import device_lifecycle
 from .protocol import PV
+from cryptography.hazmat.primitives import serialization
 
 
 class RateLimiter:
@@ -130,15 +132,16 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
             target_raw = parts[1]
             path = target_raw.split(b"?", 1)[0]
             is_pairing = path == b"/v2/pairing/complete"
+            is_lifecycle = path == b"/v2/pairing/device"
             is_protocol = path in (b"/v2/protocol/session", b"/v2/protocol/probe", b"/v2/protocol/tasks")
-            if is_pairing:
+            if is_pairing or is_lifecycle:
                 if not self.server.pairing_limiter.allow(self.client_address[0], 60, 10, 60, 60):  # type: ignore[attr-defined]
                     self._send(429, {"error": "rate_limited"}, 10); return
             else:
                 limiter = self.server.limiter  # type: ignore[attr-defined]
                 if not limiter.allow(self.client_address[0], config.per_source_rate_window_seconds, config.per_source_rate_limit, config.global_rate_window_seconds, config.global_rate_limit):
                     self._send(429, {"error": "rate_limited"}, 10); return
-            if parts[0] != b"GET" and not is_pairing and not is_protocol:
+            if parts[0] != b"GET" and not is_pairing and not is_lifecycle and not is_protocol:
                 self._send(405, {"error": "method_not_allowed"})
                 return
             if is_pairing:
@@ -152,6 +155,21 @@ class DirectRequestHandler(socketserver.BaseRequestHandler):
                     data["instance_id"] = self.server.service.identity["instance_id"]  # type: ignore[attr-defined]
                     self._send(201, data); return
                 self._send(403, {"error":"pairing_rejected"}); return
+            if is_lifecycle:
+                if parts[0] != b"POST": self._send(405, {"error":"method_not_allowed"}); return
+                if b"?" in target_raw or headers.get("transfer-encoding", "").lower() == "chunked":
+                    self._send(400, {"error":"device_lifecycle_rejected"}); return
+                if headers.get("content-type", "").lower() != "application/json":
+                    self._send(415, {"error":"device_lifecycle_rejected"}); return
+                try:
+                    with open(self.server.service.config.server_signing_private_key_path, "rb") as key_file:  # type: ignore[attr-defined]
+                        key = serialization.load_pem_private_key(key_file.read(), None)
+                    status, data = device_lifecycle(self.server.service.database_path, bytes(body), self.server.service.identity, key)  # type: ignore[attr-defined]
+                    self._send(status, data); return
+                except PermissionError:
+                    self._send(403, {"error":"device_lifecycle_rejected"}); return
+                except (ValueError, OSError, TypeError):
+                    self._send(400, {"error":"device_lifecycle_rejected"}); return
             if is_protocol:
                 service = self.server.service  # type: ignore[attr-defined]
                 if parts[0] != b"POST": self._send(405,{"error":"method_not_allowed"}); return
