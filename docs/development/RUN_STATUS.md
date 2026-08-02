@@ -14,7 +14,7 @@
 | BB2-DIRECT-07 | Защищённый прикладной протокол | ACCEPTED / PASS |
 | BB2-DIRECT-08 | Совместимый task/report API | ACCEPTED / PASS |
 | BB2-DIRECT-09 | Durable jobs и восстановление | ACCEPTED / PASS |
-| BB2-DIRECT-10 | Connection bundle и CLI output | NOT STARTED |
+| BB2-DIRECT-10 | Connection bundle и CLI output | ACCEPTED / PASS |
 | BB2-DIRECT-11 | Профили серверов в расширении | NOT STARTED |
 | BB2-DIRECT-12 | Direct transport adapter расширения | NOT STARTED |
 | BB2-DIRECT-13 | Изоляция диалогов и нескольких серверов | NOT STARTED |
@@ -37,6 +37,7 @@ BB2_DIRECT_06_COMPLETE
 BB2_DIRECT_07_COMPLETE
 BB2_DIRECT_08_COMPLETE
 BB2_DIRECT_09_COMPLETE
+BB2_DIRECT_10_COMPLETE
 ```
 
 ## Правила перехода
@@ -48,7 +49,21 @@ BB2_DIRECT_09_COMPLETE
 - Единичные defects исправляются под тем же technical ID без создания `FIX1/FIX2/FIX3`.
 - Необязательные улучшения записываются как `DEFERRED` и не создают новые раны.
 
-Следующий ран: `BB2-DIRECT-10` — connection bundle; он не выполнялся.
+Следующий ран: `BB2-DIRECT-11` — server profiles in extension.
+
+## BB2-DIRECT-10
+
+`BB2-DIRECT-10 = ACCEPTED / PASS`.
+
+Server step `BB2-DIRECT-10-SRV` принят после corrective attempts 5–7. Финальная опубликованная server boundary: test-oracle commit `84dad3d7f1b7b47cea034491353d6998eda62eca` и attempt-7 evidence commit `80f5725b5acf092337c6f23ea3ed73637cd6a567`; runtime source после `8e128ee252c358aac2da7d8c0cea79ba1686b1e6` не менялся. Direct `0.9.0/schema 5` генерирует strict one-line `BB2D1` bundle; accepted deterministic wheel SHA-256 `50fefc54cf102e1081523dd548fb4c9709a559b50364760791d8eb8097ca21d2`. Final server acceptance: 62/62 gates PASS, production pairing first use `201`, reuse `403`, synthetic cleanup PASS, Direct stable and Legacy unchanged.
+
+ChatGPT-owned `BB2-DIRECT-10-EXT` добавил pure browser parser `extension/protocol/bb2d1-bundle.js`, shared-vector/contract browser harnesses, Node regression and parser documentation. Parser validates BB2D1 framing/version, checksum, canonical JSON/base64url, expiry/TTL, endpoint/IDs, P-256 SPKI and exact fingerprint fail-closed; он не хранит bundle и не реализует profile/pairing/transport lifecycle будущих ранов. Node PASS; Chromium `144.0.7559.96` secure-context acceptance: 6/6 runs, 38/38 negative contract cases per run, real `globalThis.crypto.subtle`, P-384/RSA rejection PASS. Evidence: `docs/development/evidence/BB2-DIRECT-10-EXT_CHATGPT_EVIDENCE.md`.
+
+Server/Legacy runtime не изменялся extension step. `main` не изменён.
+
+Marker: `BB2_DIRECT_10_COMPLETE`.
+
+Следующий ран: `BB2-DIRECT-11` — server profiles in extension.
 
 ## BB2-DIRECT-09
 
