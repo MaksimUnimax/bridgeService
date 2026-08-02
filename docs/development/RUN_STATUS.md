@@ -15,7 +15,7 @@
 | BB2-DIRECT-08 | Совместимый task/report API | ACCEPTED / PASS |
 | BB2-DIRECT-09 | Durable jobs и восстановление | ACCEPTED / PASS |
 | BB2-DIRECT-10 | Connection bundle и CLI output | ACCEPTED / PASS |
-| BB2-DIRECT-11 | Профили серверов в расширении | NOT STARTED |
+| BB2-DIRECT-11 | Профили серверов в расширении | ACCEPTED / PASS |
 | BB2-DIRECT-12 | Direct transport adapter расширения | NOT STARTED |
 | BB2-DIRECT-13 | Изоляция диалогов и нескольких серверов | NOT STARTED |
 | BB2-DIRECT-14 | Автоматическое переподключение | NOT STARTED |
@@ -38,6 +38,7 @@ BB2_DIRECT_07_COMPLETE
 BB2_DIRECT_08_COMPLETE
 BB2_DIRECT_09_COMPLETE
 BB2_DIRECT_10_COMPLETE
+BB2_DIRECT_11_COMPLETE
 ```
 
 ## Правила перехода
@@ -49,7 +50,25 @@ BB2_DIRECT_10_COMPLETE
 - Единичные defects исправляются под тем же technical ID без создания `FIX1/FIX2/FIX3`.
 - Необязательные улучшения записываются как `DEFERRED` и не создают новые раны.
 
-Следующий ран: `BB2-DIRECT-11` — server profiles in extension.
+Следующий ран: `BB2-DIRECT-12` — Direct extension transport.
+
+## BB2-DIRECT-11
+
+`BB2-DIRECT-11 = ACCEPTED / PASS`.
+
+ChatGPT-owned `BB2-DIRECT-11-EXT` опубликован от принятой server/lifecycle boundary `63be0af894fe27252ace7fa6eb7480b624df1be4`. Extension implementation commit: `650d5dab847dec4e3d72e9f9a3e70190f693b65b`; evidence commit: `58cc89c4cb14afaae552b64870c23b23ffc26e73`. Implementation diff содержит только `extension/**`; server/runtime/installer не менялись.
+
+Extension `2.0.0.21`, settings schema `5`, реализует отдельные Direct profiles: strict BB2D1 paste/preview, explicit identity confirmation, one-time pairing, отдельный P-256 device-key vault, signed `BB2D-L1` status/connect/revoke, local disconnect/rename/delete, fail-closed identity-change warning, multiple independent Direct profiles, migration `4→5` и backup metadata без Direct private keys. Legacy profile/token/binding behavior сохранён и не смешивается с Direct.
+
+Final local regression: `123/123 PASS`. Chromium `144.0.7559.96` подтвердил real secure-context Web Crypto, unpacked MV3 worker, modular content-script runtime и popup/package runtime. Managed Chromium policy после acceptance восстановлена byte-for-byte к SHA-256 `3b740260e337305aaef268e6c63af8fa2796057ce46f43df5ae5a3949e085e86`.
+
+Authoritative extension package: `business-bridge-chatgpt-extension-v2.0.0.21-run11.zip`, 34 runtime members, SHA-256 `b9cda4ddffcda3909be7026ada8fd813b0a0faa4c333617852b390da286ed34b`; ZIP integrity, unpack byte equality, packaged JS syntax and unpacked Chromium load PASS.
+
+Direct task/report transport намеренно не реализован в Run11 и остаётся scope `BB2-DIRECT-12-EXT`.
+
+Marker: `BB2_DIRECT_11_COMPLETE`.
+
+Следующий ран: `BB2-DIRECT-12` — Direct extension transport, owner ChatGPT.
 
 ## BB2-DIRECT-10
 
