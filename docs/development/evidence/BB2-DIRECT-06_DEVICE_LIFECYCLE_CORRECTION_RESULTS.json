@@ -1,0 +1,55 @@
+{
+  "technical_id": "BB2-DIRECT-06",
+  "parent_run": "BB2-DIRECT-06",
+  "attempt": 2,
+  "status": "PASS",
+  "trigger": "BB2-DIRECT-11-EXT",
+  "product_contract_gap": "direct_profile_lifecycle_has_no_browser_authenticated_device_status_or_revoke_contract",
+  "implementation_commit": "86ebc50b801dec40f6ec58ce235a50fc4aa07c2d",
+  "implementation_parent": "874c086182204cb52cfeec6de03c44b289a3cd5b",
+  "endpoint": "POST /v2/pairing/device",
+  "lifecycle_version": "BB2D-L1",
+  "version": "0.9.1",
+  "schema": 5,
+  "changed_paths": [
+    "server/FILE_MANIFEST.sha256",
+    "server/pyproject.toml",
+    "server/src/business_bridge_direct/__init__.py",
+    "server/src/business_bridge_direct/database.py",
+    "server/src/business_bridge_direct/defaults.py",
+    "server/src/business_bridge_direct/http_api.py",
+    "server/src/business_bridge_direct/pairing.py",
+    "tests/fixtures/BB2D_DEVICE_LIFECYCLE_VECTORS.json",
+    "tests/server/test_baseline.py",
+    "tests/server/test_direct_service.py",
+    "tests/server/test_pairing.py",
+    "tests/server/test_wheel_completeness.py"
+  ],
+  "evidence_paths": [
+    "docs/development/evidence/BB2-DIRECT-06_DEVICE_LIFECYCLE_CORRECTION_EVIDENCE.md",
+    "docs/development/evidence/BB2-DIRECT-06_DEVICE_LIFECYCLE_CORRECTION_RESULTS.json"
+  ],
+  "fixture": {
+    "path": "tests/fixtures/BB2D_DEVICE_LIFECYCLE_VECTORS.json",
+    "private_keys_present": false,
+    "production_values_present": false
+  },
+  "tests": {"server_full_count": 83, "server_full_failed": 0, "targeted_lifecycle_passed": true, "secret_scan": "PASS"},
+  "artifact": {
+    "filename": "business_bridge_2_direct-0.9.1-py3-none-any.whl",
+    "build1_sha256": "b10d03fc82cbaf591c5c5ce59c5871f778e09e59580d5ec7971b01352cb84a01",
+    "build2_sha256": "b10d03fc82cbaf591c5c5ce59c5871f778e09e59580d5ec7971b01352cb84a01",
+    "build3_sha256": "b10d03fc82cbaf591c5c5ce59c5871f778e09e59580d5ec7971b01352cb84a01",
+    "authoritative_sha256": "b10d03fc82cbaf591c5c5ce59c5871f778e09e59580d5ec7971b01352cb84a01",
+    "byte_identical": true,
+    "record": "PASS",
+    "zip_integrity": "PASS",
+    "installed_wheel": "PASS",
+    "source_substitution": false
+  },
+  "production": {"direct_version": "0.9.1", "schema": 5, "health": 200, "listener": "78.17.68.165:18100", "identity_unchanged": true, "legacy_unchanged": true},
+  "public_lifecycle": {"pairing": 201, "status_active": "PASS", "revoke": "PASS", "revoke_replay": "PASS", "status_after_revoke": "REVOKED", "tamper": 403, "active_synthetic_remainder": false},
+  "security": {"secrets_printed": false, "private_keys_printed": false, "legacy_secrets_read": false, "legacy_db_read": false},
+  "gate_ledger": {"pass": 74, "fail": 0, "unknown": 0, "not_run": 0, "unproven": 0},
+  "publication": {"development_remote": "pending", "main_remote": "c426263e6dd00135a0023a0fa08a500273e73e23", "exact_two_commits": "pending", "run_final_marker": "NOT_APPLICABLE", "next_expected_step": "BB2-DIRECT-11-EXT"}
+}
