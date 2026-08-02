@@ -1,0 +1,8 @@
+{
+  "name": "business-bridge-extension-v2",
+  "private": true,
+  "version": "2.0.0.21",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs"
+  }
+}

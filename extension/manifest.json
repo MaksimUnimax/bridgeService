@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "Business Bridge 2 — ChatGPT ↔ CLI",
+  "version": "2.0.0.21",
+  "description": "Business Bridge 2: Legacy automation plus Direct server pairing/profile lifecycle with pinned identity and isolated device keys.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "alarms",
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "http://127.0.0.1/*",
+    "http://localhost/*"
+  ],
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": [
+        "shared/protocol.js",
+        "shared/model.js",
+        "shared/manual_controls.js",
+        "shared/proven_writing_block_capture.js",
+        "shared/toast.js",
+        "shared/composer_send.js",
+        "content/part1.js",
+        "content/part2.js",
+        "content/part3.js",
+        "content/part4.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Business Bridge 2",
+    "default_popup": "popup.html"
+  },
+  "optional_host_permissions": [
+    "http://*/*"
+  ]
+}

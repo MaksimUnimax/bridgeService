@@ -1,0 +1,60 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>BB2 Direct run11 browser test</title>
+<pre id="result">RUNNING</pre>
+<script src="../shared/direct_profiles.js"></script>
+<script type="module">
+const result = document.getElementById('result');
+const assert = (ok, msg) => { if (!ok) throw new Error(msg); };
+try {
+  assert(globalThis.isSecureContext === true, 'secure_context_required');
+  assert(globalThis.crypto?.subtle, 'webcrypto_required');
+  const device = await BB2Direct.generateDeviceIdentity();
+  assert(device.public_key_format === 'SPKI_DER_BASE64URL', 'device_format');
+  assert(/^[A-Za-z0-9_-]+$/.test(device.public_key), 'device_spki');
+  assert(/^[A-Za-z0-9_-]+$/.test(device.private_key), 'device_pkcs8');
+  const importedDevice = await BB2Direct.importDevicePrivateKey(device.private_key);
+
+  const server = await crypto.subtle.generateKey({name:'ECDSA', namedCurve:'P-256'}, true, ['sign','verify']);
+  const serverSpki = new Uint8Array(await crypto.subtle.exportKey('spki', server.publicKey));
+  const fingerprint = 'sha256:' + [...new Uint8Array(await crypto.subtle.digest('SHA-256', serverSpki))]
+    .map(x => x.toString(16).padStart(2,'0')).join('');
+  const serverPublic = BB2Direct.b64uEncode(serverSpki);
+  const profile = {
+    profile_id:'direct-profile-11111111-1111-4111-8111-111111111111',
+    profile_revision:1, kind:'direct', name:'Chrome', host:'127.0.0.1', port:18100,
+    server_instance_id:'11111111-1111-4111-8111-111111111111',
+    server_fingerprint:fingerprint, server_public_key:serverPublic,
+    rotation_generation:1, device_id:'22222222-2222-4222-8222-222222222222',
+    device_status:'ACTIVE', connection_state:'CONNECTED', created_at:new Date().toISOString(), updated_at:new Date().toISOString()
+  };
+  const now = Date.now();
+  const request = await BB2Direct.lifecycleRequest(profile, importedDevice, 'status', now);
+  assert(request.signature.length > 80, 'request_signature');
+  const unsigned = {
+    lifecycle_version:'BB2D-L1', action:'status', device_id:profile.device_id,
+    instance_id:profile.server_instance_id, server_fingerprint:profile.server_fingerprint,
+    request_id:request.request_id, status:'ACTIVE',
+    timestamp:BB2Direct.utcSeconds(now), expires_at:BB2Direct.utcSeconds(now + 60000)
+  };
+  const signature = await BB2Direct.sign(server.privateKey, BB2Direct.domain('BB2D-L1/server-device', BB2Direct.canonical({
+    method:'POST', path:'/v2/pairing/device', status:200, response:unsigned
+  })));
+  const response = {...unsigned, signature};
+  const verified = await BB2Direct.verifyLifecycleResponse(profile, request, response, now);
+  assert(verified.status === 'ACTIVE', 'verified_status');
+  await (async () => {
+    let rejected = false;
+    try { await BB2Direct.verifyLifecycleResponse({...profile, server_fingerprint:'sha256:'+'0'.repeat(64)}, request, response, now); }
+    catch (e) { rejected = e?.code === 'server_identity_changed'; }
+    assert(rejected, 'identity_change_rejected');
+  })();
+  const publicProfile = BB2Direct.publicProfile({...profile, key_ref:'secret-ref'}, true);
+  assert(!('key_ref' in publicProfile) && !('private_key' in publicProfile), 'public_profile_redaction');
+  result.textContent = JSON.stringify({pass:true, secureContext:isSecureContext, crypto:'subtle', identityChangeRejected:true});
+  document.title = 'PASS';
+} catch (error) {
+  result.textContent = 'FAIL:' + (error?.stack || error);
+  document.title = 'FAIL';
+}
+</script>

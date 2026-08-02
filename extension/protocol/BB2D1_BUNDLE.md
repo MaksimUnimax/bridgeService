@@ -19,4 +19,4 @@ It validates, fail-closed:
 
 The authoritative compatibility vectors are shared with the server at `tests/fixtures/BB2D1_BUNDLE_VECTORS.json`. `extension/tests/bb2d1-bundle-chrome.html` loads that exact file and requires the positive vector to decode exactly while every published negative vector fails with `BundleError`.
 
-This module does not persist a server profile, perform pairing, or make Direct network requests. Those lifecycle responsibilities begin in `BB2-DIRECT-11-EXT` and later runs.
+The parser itself still does not persist a profile or make network requests. `BB2-DIRECT-11-EXT` consumes its validated output in popup/service-worker code to implement explicit identity confirmation, one-time pairing and signed profile lifecycle. Direct task transport remains deferred to run 12.

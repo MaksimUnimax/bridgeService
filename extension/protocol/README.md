@@ -6,4 +6,4 @@
 
 The authoritative server/browser compatibility fixture is `tests/fixtures/BB2D1_BUNDLE_VECTORS.json`. Browser harnesses live under `extension/tests/`.
 
-Profile persistence, user confirmation, pairing and Direct network transport are intentionally outside this module and begin in later roadmap steps.
+`BB2-DIRECT-11-EXT` now owns the profile/pairing lifecycle around these pure primitives: explicit bundle preview/confirmation, isolated device-key storage, signed `BB2D-L1` status/revoke and pinned-identity warnings. Protected Direct task transport remains intentionally outside these modules until `BB2-DIRECT-12-EXT`.

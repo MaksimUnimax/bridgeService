@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Business Bridge 2</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Business Bridge 2</h1>
+      <p id="context" class="meta">Загрузка контекста…</p>
+    </div>
+    <span class="badge">2.0.0.21</span>
+  </header>
+
+  <section class="priority-section">
+    <div class="binding-banner" id="bindingBanner">
+      <div>
+        <span class="eyebrow">Привязка</span>
+        <strong id="bindingState">Проверяю привязку…</strong>
+        <div id="bindingMeta" class="meta compact">Ручная отправка требует явной привязки диалога.</div>
+      </div>
+      <button id="bind" class="primary">Привязать диалог</button>
+    </div>
+
+    <label for="profile">Bridge-профиль</label>
+    <select id="profile"></select>
+    <div id="profileMeta" class="meta"></div>
+
+    <h2>Управление run</h2>
+    <div class="action-grid action-grid-four">
+      <button id="start" class="primary">▶ Авторежим</button>
+      <button id="pause" class="secondary">Ⅱ Пауза</button>
+      <button id="resume" class="secondary">▶ Продолжить</button>
+      <button id="stop" class="danger">■ Завершить</button>
+    </div>
+    <div id="primaryActionFeedback" class="inline-feedback" aria-live="polite"></div>
+
+    <div class="switch-stack">
+      <label class="switch-row" for="manualMode">
+        <span><strong>Ручной режим writing blocks</strong><small id="manualModeMeta">Выключен: страница не наблюдается.</small></span>
+        <span class="switch"><input id="manualMode" type="checkbox"><span class="slider"></span></span>
+      </label>
+    </div>
+
+    <div class="picker-box">
+      <h3>Кнопки ChatGPT</h3>
+      <p class="meta picker-intro">Выбор необязателен: по умолчанию расширение распознаёт обе кнопки автоматически. Задайте их вручную только если интерфейс ChatGPT изменился или автоматическое распознавание не сработало.</p>
+
+      <div class="picker-control">
+        <div class="row"><span>Кнопка отправки отчёта</span><strong id="sendButtonState">Не выбрана</strong></div>
+        <div class="action-grid">
+          <button id="pickSend" class="secondary">Выбрать Send-кнопку</button>
+          <button id="clearSend" class="secondary">Сбросить Send-кнопку</button>
+        </div>
+        <p class="meta">Используется для отправки готового отчёта из поля ввода ChatGPT.</p>
+      </div>
+
+      <div class="picker-control">
+        <div class="row"><span>Кнопка копирования блока</span><strong id="copyButtonState">2 встроенных</strong></div>
+        <div class="action-grid">
+          <button id="pickCopy" class="secondary">Добавить Copy-кнопку</button>
+          <button id="clearCopy" class="secondary">Сбросить выбранные</button>
+        </div>
+        <p class="meta">По умолчанию поддерживаются старый code block и новый writing block. Ручной выбор добавляет ещё одну сигнатуру и не удаляет прежние. Общая «Копировать ответ» исключена.</p>
+      </div>
+    </div>
+
+    <div class="run-summary">
+      <div class="row"><span>Run текущего диалога</span><strong id="runState">Не запущен</strong></div>
+      <div class="row"><span>Активных runs</span><strong id="activeRunCount">0</strong></div>
+      <div class="row"><span>Монитор ChatGPT</span><strong id="pageMonitor">—</strong></div>
+      <pre id="runCard" class="run-card">Активного run нет.</pre>
+      <pre id="activeRuns" class="run-card compact-card">Нет активных runs.</pre>
+      <div class="row"><span>Активная CLI</span><strong id="activeExecutorState">Нет активной задачи</strong></div>
+      <div class="row"><span>Статус</span><strong id="currentIterationStatus">Не запущена</strong></div>
+      <div class="row"><span>Политика ресурсов</span><strong id="resourcePolicyState">—</strong></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>CLI следующей итерации</h2>
+    <label for="executor">Исполнитель</label>
+    <select id="executor"></select>
+    <div id="catalogMeta" class="meta"></div>
+    <div class="row wrap">
+      <button id="refresh" class="secondary">Обновить CLI</button>
+      <span>Последняя задача</span><code id="latestTask">—</code>
+    </div>
+  </section>
+
+  <section>
+    <h2>Префикс отчёта CLI</h2>
+    <label class="switch-row" for="reportPrefixEnabled">
+      <span><strong>Добавлять префикс перед отчётом</strong><small>Применяется и к отчётам об ошибках CLI.</small></span>
+      <span class="switch"><input id="reportPrefixEnabled" type="checkbox"><span class="slider"></span></span>
+    </label>
+    <label for="reportPrefixText">Текст префикса</label>
+    <textarea id="reportPrefixText" rows="4" placeholder="Например: Проверь отчёт и продолжи по следующему шагу."></textarea>
+    <label>Добавлять раз в N отчётов<input id="reportPrefixInterval" type="number" min="1" max="999" value="1"></label>
+    <p id="reportPrefixHint" class="meta">N = 1 — перед каждым доставленным отчётом.</p>
+  </section>
+
+  <section>
+    <h2>Файл контекста для отчётов</h2>
+    <label>Roadmap / ТЗ<input id="reportAttachmentFile" type="file"></label>
+    <div class="row"><span>Выбранный файл</span><strong id="reportAttachmentState">Не выбран</strong></div>
+    <label>Прикладывать раз в N отчётов<input id="reportAttachmentInterval" type="number" min="1" max="999" value="1"></label>
+    <button id="clearReportAttachment" class="secondary">Удалить файл контекста</button>
+    <p id="reportAttachmentHint" class="meta">Если загрузка не удалась, отчёт всё равно отправляется, а файл ожидает следующего отчёта.</p>
+  </section>
+
+  <section>
+    <h2>Настройки следующей итерации</h2>
+    <label for="focusPolicy">Активация вкладки</label>
+    <select id="focusPolicy">
+      <option value="off">Не активировать</option>
+      <option value="report_only">Только при доставке отчёта</option>
+      <option value="always">При отчёте и ожидании следующего prompt</option>
+    </select>
+    <label class="check"><input id="waitRecovery" type="checkbox"> Ждать восстановления выбранной CLI вместо автоматического перехода на доступную</label>
+    <div class="action-feedback-row">
+      <button id="applyNextSettings" class="primary">Применить настройки</button>
+      <span id="nextSettingsFeedback" class="button-feedback" aria-live="polite"></span>
+    </div>
+    <p id="nextSettingsMeta" class="meta">CLI, префикс, файл и настройки хранятся отдельно для каждого диалога.</p>
+  </section>
+
+  <section>
+    <h2>Bridge и служебные настройки</h2>
+    <div class="row"><span>Соединение</span><strong id="connectionState" class="connection-state connection-unknown">—</strong></div>
+    <div id="connectionMeta" class="meta">Состояние соединения ещё не проверено.</div>
+    <div class="row"><span>Identity</span><code id="identityState">—</code></div>
+    <div class="row"><span>Последняя автоматическая задача</span><code id="latestTaskMirror">см. выше</code></div>
+    <div class="action-grid">
+      <button id="checkConnection" class="secondary">Проверить соединение</button>
+      <button id="newProfile" class="secondary">Новый профиль</button>
+    </div>
+
+    <details id="profileEditor">
+      <summary>Добавить или обновить сервер</summary>
+      <div class="form-grid">
+        <label>Название<input id="profileName" type="text" maxlength="80" placeholder="Сервер 80"></label>
+        <label>Local API endpoint<input id="endpoint" type="url" placeholder="http://127.0.0.1:18083"></label>
+        <label>Token<input id="token" type="password" autocomplete="off" placeholder="Новый token или пусто при обновлении"></label>
+        <label class="check"><input id="makeDefault" type="checkbox"> Сделать профилем по умолчанию</label>
+        <button id="saveProfile" class="primary">Проверить и сохранить</button>
+      </div>
+    </details>
+
+    <details id="directProfilesPanel" open>
+      <summary>Direct Connection — защищённые серверные профили</summary>
+      <p class="meta">Direct-профили хранятся отдельно от Legacy Bridge. Задания через Direct начнут выполняться только в следующем ране transport.</p>
+      <label>Connection bundle BB2D1<textarea id="directBundle" rows="3" autocomplete="off" spellcheck="false" placeholder="Вставьте одну строку BB2D1.…"></textarea></label>
+      <div class="action-grid">
+        <button id="previewDirectBundle" class="secondary">Проверить bundle</button>
+        <button id="pairDirectProfile" class="primary" disabled>Подтвердить и подключить</button>
+      </div>
+      <div id="directPreview" class="direct-preview">Bundle ещё не проверен.</div>
+      <label class="check"><input id="directIdentityConfirm" type="checkbox" disabled> Я сверил IP, порт и fingerprint и подтверждаю этот сервер.</label>
+      <label>Название Direct-профиля<input id="directNewName" type="text" maxlength="80" placeholder="Мой Direct сервер"></label>
+
+      <label for="directProfile">Сохранённый Direct-профиль</label>
+      <select id="directProfile"></select>
+      <div id="directProfileMeta" class="meta"></div>
+      <label>Переименовать<input id="directRename" type="text" maxlength="80"></label>
+      <div class="action-grid action-grid-four">
+        <button id="directStatus" class="secondary">Статус</button>
+        <button id="directConnect" class="primary">Подключить</button>
+        <button id="directDisconnect" class="secondary">Отключить</button>
+        <button id="directRenameButton" class="secondary">Переименовать</button>
+      </div>
+      <div class="action-grid">
+        <button id="directRevoke" class="danger">Отозвать устройство</button>
+        <button id="directDelete" class="danger">Удалить локально</button>
+      </div>
+      <p class="warning">«Отключить» — только локальное состояние. «Отозвать» подписанно блокирует устройство на сервере. «Удалить локально» не отзывает серверное устройство автоматически.</p>
+    </details>
+
+    <details>
+      <summary>Перенос профилей и настроек между версиями</summary>
+      <p class="warning">Экспорт содержит Bridge tokens. Храни файл как секрет.</p>
+      <div class="action-grid">
+        <button id="exportSettings" class="secondary">Экспортировать</button>
+        <button id="chooseImport" class="secondary">Импортировать</button>
+        <input id="importFile" type="file" accept="application/json,.json" hidden>
+      </div>
+      <p id="backupMeta" class="meta">Импорт проверяет структуру и не стирает активные runs.</p>
+    </details>
+  </section>
+
+  <section>
+    <h2>Диагностика цепочки</h2>
+    <p class="hint">В журнале нет token, полного prompt и полного CLI-report.</p>
+    <div class="row"><span>Событий в журнале</span><strong id="diagnosticsCount">0</strong></div>
+    <label for="diagnosticsFilter">Показывать</label>
+    <select id="diagnosticsFilter">
+      <option value="current">Текущий run и общие события</option>
+      <option value="errors">Только ошибки и предупреждения</option>
+      <option value="http">HTTP-запросы Bridge</option>
+      <option value="all">Все события</option>
+    </select>
+    <div class="action-grid action-grid-four">
+      <button id="loadDiagnostics" class="secondary">Обновить</button>
+      <button id="copyDiagnostics" class="secondary">Скопировать</button>
+      <button id="downloadDiagnostics" class="secondary">Скачать JSON</button>
+      <button id="clearDiagnostics" class="secondary">Очистить</button>
+    </div>
+    <p id="diagnosticsMeta" class="meta">Журнал обновляется автоматически, пока popup открыт.</p>
+    <pre id="diagnostics"></pre>
+  </section>
+
+  <p id="status" class="status" aria-live="polite"></p>
+</main>
+<script src="popup/part1.js"></script>
+<script src="popup/part2.js"></script>
+<script src="popup/part3.js"></script>
+</body>
+</html>
