@@ -1,20 +1,8 @@
 # Business Bridge 2 Direct — журнал работ
 
-## 2026-08-02 — BB2-DIRECT-11 — server profiles in extension
-
-- ChatGPT-owned `BB2-DIRECT-11-EXT` принят после независимого post-publish audit. Accepted base: `63be0af894fe27252ace7fa6eb7480b624df1be4`; extension implementation `650d5dab847dec4e3d72e9f9a3e70190f693b65b`; evidence `58cc89c4cb14afaae552b64870c23b23ffc26e73`. Implementation меняет только `extension/**`; server/runtime/installer не менялись.
-- Extension `2.0.0.21`, settings schema `5`, добавляет отдельные Direct server profiles: strict BB2D1 paste/preview, explicit fingerprint confirmation, browser-generated P-256 device identity, one-time pairing, pinned server identity, signed BB2D-L1 status/connect/revoke, local disconnect/rename/delete, identity-change warning, multiple separate profiles and migration `4→5`.
-- Direct private keys хранятся отдельно в `bb2_direct_private_keys`; worker устанавливает `chrome.storage.local` access level `TRUSTED_CONTEXTS`. Content script не загружает Direct key code; Direct management messages from tab/content-script sender fail closed. Diagnostics redact private/token/credential/pairing fields. Backup переносит Direct metadata, но исключает private keys/key_ref; профиль без local key восстанавливается как `NEEDS_REPAIR`.
-- Legacy endpoint validation и Legacy profile/token/binding flow не ослаблены. Direct optional host permission запрашивается только по user gesture для выбранного IPv4; точный port остаётся pinned profile property. `/v2/bootstrap` — только early mismatch signal, а trust устанавливается signed BB2D-L1 response под bundle-pinned server key.
-- Full local extension regression на пользовательском v2.0.0.20 baseline + Run11: `123/123 PASS`. Chromium `144.0.7559.96` подтвердил real secure-context Web Crypto, unpacked MV3 worker, modular content-script runtime и popup, а также worker/popup из финально распакованного ZIP. Managed Chromium policy после каждого accepted run восстановлена byte-for-byte к SHA-256 `3b740260e337305aaef268e6c63af8fa2796057ce46f43df5ae5a3949e085e86`.
-- Final authoritative package: `business-bridge-chatgpt-extension-v2.0.0.21-run11.zip`, 34 runtime members, SHA-256 `b9cda4ddffcda3909be7026ada8fd813b0a0faa4c333617852b390da286ed34b`; ZIP integrity, unpack equality, packaged JS syntax and unpacked Chromium worker/popup load PASS.
-- Direct task/report transport намеренно не реализован преждевременно; он остаётся scope `BB2-DIRECT-12-EXT`.
-- Marker: `BB2_DIRECT_11_COMPLETE`.
-- Следующий ран: `BB2-DIRECT-12` — Direct extension transport, owner ChatGPT.
-
 ## 2026-08-02 — BB2-DIRECT-10 — connection bundle
 
-- `BB2-DIRECT-10-SRV` принят после corrective attempts 5–7. Финальная append-only server chain: test-oracle correction `84dad3d7f1b7b47cea034491353d6998eda62eca` → corrected attempt-7 evidence commit `80f5725b5acf092337c6f23ea3ed73637cd6a567`. Runtime source после `8e128ee252c358aac2da7d8c0cea79ba1686b1e6` не менялся.
+- `BB2-DIRECT-10-SRV` принят после corrective attempts 5–7. Финальная append-only server chain: test-oracle correction `84dad3d7f1b7b47cea034491353d6998eda62eca` → corrected attempt-7 evidence `80f5725b5acf092337c6f23ea3ed73637cd6a567`. Runtime source после `8e128ee252c358aac2da7d8c0cea79ba1686b1e6` не менялся.
 - Direct `0.9.0/schema 5` генерирует strict one-line `BB2D1` bundle с public endpoint, instance/server public identity, one-time pairing session/code, issue/expiry и rotation generation. Server attempt 7: 62/62 gates PASS; deterministic wheel SHA-256 `50fefc54cf102e1081523dd548fb4c9709a559b50364760791d8eb8097ca21d2`; production pairing first use `201`, reuse `403`, cleanup PASS.
 - `BB2-DIRECT-10-EXT` выполнен ChatGPT без делегирования CLI. Published extension implementation commits from accepted server base through `f60ff8105dbd01197da1bf9db1f90d9ce1be546e` add only `extension/**`: pure `bb2d1-bundle.js`, Node regression, shared-fixture Chrome harness, self-contained Chromium contract harness and parser documentation. Server/runtime/installer не менялись.
 - Browser parser fail-closed проверяет BB2D1 framing/version/length, canonical unpadded base64url, domain-separated SHA-256 checksum, canonical JSON/exact fields, timestamps/TTL/expiry, IPv4/port/UUID/pairing-code/generation, P-256 SPKI и exact DER fingerprint. Профили, pairing lifecycle, storage и Direct transport не реализованы преждевременно; они остаются scope BB2-DIRECT-11+.
@@ -28,7 +16,7 @@
 
 - Implementation commit `46ed6317b03ba9b84e52042cdd068379d02ad1b7` and evidence commit `168f80f3f9b3c3dcd27219c5f93aa15a2bb10236` were published linearly from accepted base `e41a6c7461e3a852a95da0e2f6cd6423c654b5c4`. `main` remained `c426263e6dd00135a0023a0fa08a500273e73e23`.
 - Direct advanced to `0.8.0`, SQLite schema `5`. The runtime now has the ten approved durable states, immutable operation mapping, transition history, one-winner lease ownership, stale-owner rejection, startup recovery, cancellation, expiry, immutable durable reports and internal proof-gated reconciliation.
-- Restart ambiguity is fail-closed: `RUNNING` without a proven durable result становится `UNKNOWN`, its lease is cleared and it is never automatically requeued. Duplicate operation IDs preserve the same task/report; a different canonical payload remains a deterministic conflict.
+- Restart ambiguity is fail-closed: `RUNNING` without a proven durable result becomes `UNKNOWN`, its lease is cleared and it is never automatically requeued. Duplicate operation IDs preserve the same task/report; a different canonical payload remains a deterministic conflict.
 - Attempt 2 failed only at production activation because root-installed wheel files were inaccessible to `business-bridge-direct`. The corrected mechanism uses same-filesystem staging, umask `0027`, complete `lstat`/no-follow inventory, rejection of unsafe types/hardlinks/escapes, root/service-group ownership and safe modes, service-user imports and staged `identity_cli verify` before activation.
 - Full source acceptance passed: server `58/58`, protocol `5/5`, migration, state machine, duplicate/lease races, stale-owner rejection, recovery, no-blind-retry, reconciliation, cancellation, expiry, durable reports, permission regression and secret scans.
 - Three clean wheel builds were byte-identical: SHA-256 `c9d799d31ad19b34b8340269ef136fdc228e461dfc72641a2dc454a63401563e`, 20 members, RECORD/ZIP integrity PASS. Installed-wheel, protected TCP and negative matrices passed without repository imports.
@@ -90,203 +78,148 @@ FIX2 завершил corrective continuation BB2-DIRECT-07. Первоприч�
 - Health: `GET /v2/health → HTTP 200` до и после проверки.
 - Публичный IPv4: `78.17.68.165`.
 - Порты `18100–18199` были свободны на момент проверки.
+- Выбран первичный порт новой версии `18100`.
+- Определены полностью изолированные каталоги и новая systemd-служба.
+- Действующий Bridge не изменён и не перезапущен.
 
-### Результат
+### Изолированные ресурсы новой версии
 
-На сервере одновременно существуют:
+- `/opt/business-bridge-2-direct`;
+- `/etc/business-bridge-2-direct`;
+- `/var/lib/business-bridge-2-direct`;
+- `/var/log/business-bridge-2-direct`;
+- `business-bridge-2-direct.service`;
+- пользователь `business-bridge-direct`.
 
-- действующий Bridge на `127.0.0.1:18083`;
-- свободный диапазон для новой Direct-службы;
-- публичный IPv4 `78.17.68.165`.
+### Marker
 
-Следующий ран: `BB2-DIRECT-01` — архитектурный и продуктовый контракт.
+```text
+BB2_DIRECT_00_READ_ONLY_COMPLETE
+```
+
+### Следующий ран
+
+`BB2-DIRECT-01` — архитектурный, продуктовый и совместимый контракт.
 
 ---
 
-## BB2-DIRECT-01 — Architecture & product contract
+## BB2-DIRECT-01 — продуктовый, архитектурный и совместимый контракт
 
 **Статус:** ACCEPTED / PASS
 
-### Зафиксировано
+### Созданные и обновлённые материалы
 
-- Новый server-side компонент устанавливается отдельно от Legacy Bridge.
-- Direct использует отдельный systemd unit, user, virtualenv, DB, state, config, logs, identity и secrets.
-- Публичный TCP endpoint — `78.17.68.165:18100`.
-- Никакой домен, relay, VPN, desktop helper или SSH-туннель не является обязательным элементом финального пользовательского потока.
-- Legacy Bridge остаётся immutable fallback до финального release.
-- Парное устройство проходит one-time pairing и получает собственную durable identity.
-- Прикладной трафик после pairing защищается device authentication + encrypted/signed session protocol.
-- Browser extension никогда не передаёт private device key в page context.
+Созданы product, architecture, security, compatibility, acceptance, rollback и три ADR-документа; обновлены README, master context, run status и этот worklog; добавлено documentation evidence.
+
+### Принятые решения
+
+- Direct — прямое соединение extension с публичным IPv4 VPS клиента без relay/control plane, tunnel или обязательного домена.
+- Bundle выдаёт CLI, содержит одноразовые pairing-данные, не содержит постоянный private key.
+- Sensitive payload защищается application-layer encryption; legacy остаётся fallback.
+- Direct получает отдельные paths/DB/secrets/service/user/port; bind подтверждается в BB2-DIRECT-04.
+- Pairing имеет TTL 5–10 минут, single-use, limits, device identity и revoke.
+
+### Проверки и ограничения
+
+Выполнены проверки наличия/непустоты файлов, Markdown-ссылок, placeholder/secret scans, terminology/cross-document consistency, 19-run count, acceptance coverage, SHA-256 и git diff. Runtime, systemd unit, user, порт 18100, firewall, legacy Bridge и BB2-DIRECT-02 не затрагивались. Неподтверждённые legacy endpoint’ы оставлены `NEEDS_SOURCE_CONFIRMATION` до BB2-DIRECT-02/08.
+
+### Marker и следующий ран
+
+`BB2_DIRECT_01_COMPLETE`.
+
+Следующий ран: `BB2-DIRECT-02` — изолированный source baseline.
+
+## BB2-DIRECT-01-FIX1 — controlled acceptance continuation
+
+Документационный follow-up исправил явность product/network/security/API/rollback contract в разрешённых файлах. Runtime Business Bridge 2 Direct не создавался и не запускался; действующий legacy Bridge не изменялся и не перезапускался. Commit SHA финальной публикации будет зафиксирован в evidence после обычного follow-up commit; следующий ран остаётся `BB2-DIRECT-02`.
 
 Marker: `BB2_DIRECT_01_COMPLETE`.
 
-Следующий ран: `BB2-DIRECT-02`.
+## 2026-07-28 — BB2-DIRECT-02-FIX1 — isolated source baseline
 
----
+### Контекст и исправление
 
-## BB2-DIRECT-02 — Isolated source baseline
+- Первоначальная попытка BB2-DIRECT-02 была `BLOCKED` с ошибкой `invalid command 'bdist_wheel'`.
+- Причина: isolated staging environment не содержал пакет `wheel`, а packaging path вызывал legacy `bdist_wheel`.
+- FIX1 ограничен этим blocker: объявлен PEP 517 backend `setuptools.build_meta`, build requirements `setuptools>=65` и `wheel>=0.40`, а toolchain установлен только в Direct staging venv.
+- `wheel` импортирован из staging venv; установка и wheel build выполнены через `python -m pip` с `--no-build-isolation` без прямого вызова setup.py.
 
-**Статус:** ACCEPTED / PASS
+### Baseline и безопасность
 
-### Зафиксировано
+- Создана canonical source tree `server/src/business_bridge_direct/` с distribution `business-bridge-2-direct`.
+- Включён только side-effect-free configuration defaults; legacy API, SQLite, secrets, executor subprocesses, scheduler и service activation исключены и документированы.
+- Staging установлен атомарно в `/opt/business-bridge-2-direct`; service, user, process, listener, DB и runtime directories не создавались.
+- Legacy Bridge оставался healthy, его PID/start time/NRestarts не изменились; legacy source читался только read-only.
 
-- Создан отдельный server package `business-bridge-direct`.
-- Direct source не импортирует и не копирует Legacy DB/state/secrets.
-- Определены отдельные Direct roots `/opt/business-bridge-2-direct`, `/etc/business-bridge-2-direct`, `/var/lib/business-bridge-2-direct`, `/var/log/business-bridge-2-direct`.
-- Source/test layout подготовлен к самостоятельной сборке wheel и дальнейшей установке.
-- Legacy runtime остаётся неизменным.
+### Проверки и публикация
+
+- Repository, staging и final-tree baseline tests: 7 collected, 7 passed, 0 failed, 0 skipped.
+- Manifest SHA-256 verification: PASS; source/install hash comparison: PASS.
+- Evidence фиксирует resolved toolchain, source inventory, hashes, acceptance criteria и final safety state.
+- Commit и remote publication SHA зафиксированы в evidence.
 
 Marker: `BB2_DIRECT_02_COMPLETE`.
-
 Следующий ран: `BB2-DIRECT-03`.
 
----
+## 2026-07-28 — BB2-DIRECT-03 — isolated localhost service
 
-## BB2-DIRECT-03 — Local Direct service
-
-**Статус:** ACCEPTED / PASS
-
-### Зафиксировано
-
-- Direct service запускается отдельным unit `business-bridge-2-direct.service`.
-- Runtime user: `business-bridge-direct`.
-- Local health contract доступен без чтения Legacy state.
-- Direct version/schema metadata доступны из собственного runtime.
-- systemd isolation и dedicated paths проверены.
+- Implementation commits: `89575d777a1a02b06ece95c6ed85f0711e6ec786` and lifecycle-test follow-up `e9bee7bb1d8017cd42d480e940bafb6a61a41f61`; both published linearly to `development` with the project-specific deploy key over SSH/443. `main` remained `c426263e6dd00135a0023a0fa08a500273e73e23`.
+- Installed `/opt/business-bridge-2-direct` version 0.2.0, config `/etc/business-bridge-2-direct/service.json`, state `/var/lib/business-bridge-2-direct`, log contract `/var/log/business-bridge-2-direct`, empty secrets directory, and unit `business-bridge-2-direct.service`.
+- Dedicated system user/group `business-bridge-direct` (UID/GID 995), nologin, locked password, no privileged groups. Listener is exactly `127.0.0.1:18100`; endpoints are GET health, version and public diagnostics only.
+- SQLite is owned by the Direct user, mode 0600, `PRAGMA user_version=1`, one `runtime_metadata` table, and schema/service metadata only. No legacy database, state, logs, secrets or venv were reused.
+- Repository, staging и final installed tests passed: 13 collected, 13 passed, 0 failed, 0 skipped. Wheel/package metadata and manifest verification passed; systemd-analyze verify passed; installed unit is byte-equivalent to the repository template.
+- One controlled Direct SIGKILL restart-policy test was executed. PID changed from 1661755 to 1661953; NRestarts increased from 20 to 24; service recovered active/running with health 200 and persistent DB schema. Legacy before/after remained PID 1619365, start `Mon 2026-07-27 13:16:29 MSK`, NRestarts 0, localhost listener and health 200.
+- Two pre-activation Direct staging attempts were rolled back safely; the final deployment remained within Direct scope. No legacy mutation occurred. Evidence is redacted and contains no secrets, tokens, DB rows or full journal.
 
 Marker: `BB2_DIRECT_03_COMPLETE`.
+Следующий ран: `BB2-DIRECT-04` — public bind/firewall/external reachability; не выполнялся.
 
-Следующий ран: `BB2-DIRECT-04`.
+## 2026-07-28 — BB2-DIRECT-04 — bounded public IPv4 listener
 
----
-
-## BB2-DIRECT-04 — Public IPv4 endpoint
-
-**Статус:** ACCEPTED / PASS
-
-### Зафиксировано
-
-- Direct bind переведён на публичный IPv4 `78.17.68.165:18100`.
-- Listener принадлежит только Direct process.
-- Public health reachability подтверждена.
-- Legacy listener `127.0.0.1:18083` остался неизменным.
+- Expected base matched `6ba7db7ae7d299e610d4e7b68f640b9f2bc06314`; `main` remained `c426263e6dd00135a0023a0fa08a500273e73e23`. Implementation commits: `cf16289dd60766f67b7a14c56c6f5839e19dc985`, `b4bd13b`; acceptance commit is recorded in the final evidence update.
+- Network inventory found `78.17.68.165/24` locally on `eth0`, source address for the default route and confirmed by two independent IP echo services. Selected exact bind `78.17.68.165:18100`; no NAT inference and no IPv6 listener.
+- Backup completed before mutation at `/var/backups/business-bridge-2-direct/BB2-DIRECT-04-20260728T065830Z/`. Host firewall was already permissive (`INPUT ACCEPT`, UFW/firewalld inactive), so mutation was `NONE`; SSH and legacy rules were unchanged.
+- Direct was upgraded to 0.3.0 with bounded timeout, size, header, backlog, concurrency and in-memory per-source/global rate limits. SQLite schema remained version 1 with the single runtime metadata table.
+- Repository, staging and installed tests: 16 collected, 16 passed, 0 failed, 0 skipped. Wheel metadata is 0.3.0 and source/install hashes match.
+- External check-host probes after deployment and restart: TCP 5/5 and HTTP `/v2/health` 5/5 HTTP 200. Legacy external TCP 18083 was 0/5 success. Limit tests covered 400/404/405/413/414/429/431/503 and timeout.
+- One successful controlled Direct restart changed PID `1664395` to `1664423`, preserved `NRestarts=0` and restored the public listener. A graceful-shutdown correction was required after the first restart attempt exposed a stop deadlock; no legacy mutation occurred.
+- Rollback is Direct-only to the saved 0.2.0 localhost tree/config/unit; firewall inverse is exact rule removal, with no rule added in this run. Limitations: diagnostics/bootstrap only, no identity, pairing, crypto, tasks, reports or production-readiness claim.
 
 Marker: `BB2_DIRECT_04_COMPLETE`.
-
 Следующий ран: `BB2-DIRECT-05`.
 
----
+## 2026-07-28 — BB2-DIRECT-05 — stable server identity
 
-## BB2-DIRECT-05 — Instance identity
-
-**Статус:** ACCEPTED / PASS
-
-### Зафиксировано
-
-- Direct имеет отдельную stable instance identity.
-- Создана отдельная P-256 signing identity.
-- Public fingerprint и public key доступны через Direct bootstrap contract.
-- Private signing key находится только в Direct secrets boundary.
-- Rotation generation хранится отдельно и входит в identity metadata.
-- Legacy identity/secrets не читаются и не копируются.
+- Expected base `ff7829f662b5210619e1382c7984310a4e9d37f4` matched; implementation commit `cda5c8bebba0d756507b7eae44cd5b0e04c64762` was published linearly to `development`. Main remained `c426263e6dd00135a0023a0fa08a500273e73e23`.
+- Direct is 0.4.0. ECDSA P-256, unencrypted PKCS#8 PEM, canonical SPKI DER, base64url public representation and SHA-256 fingerprint were provisioned once. Instance `73515b73-a4d3-41c7-b143-624ce2a42eb5`, public fingerprint `sha256:b0adfb05bd25e9684279494aa8054191dca70784fab416a29ec699b737111bc4`, generation 1.
+- Private key and metadata are Direct-only, root:business-bridge-direct mode 0640; second init returned unchanged; startup validates before binding and never generates identity. `/v2/bootstrap` is deterministic public discovery.
+- No pairing, device identity, token, signature envelope, encryption, tasks or reports were added. Repository tests: 18 collected, 18 passed, 0 failed, 0 skipped. Isolated restore preserved identity and production files were unchanged.
+- Post-restart external check-host probes: TCP 5/5, health 5/5, bootstrap 5/5; legacy external 18083 0/5. Legacy PID 1619365, start timestamp and NRestarts 0 remained unchanged; firewall mutation NONE.
+- Rotation contract is documented; production rotation was not performed.
 
 Marker: `BB2_DIRECT_05_COMPLETE`.
+Следующий ран: `BB2-DIRECT-06` — одноразовое pairing; не выполнялся.
 
-Следующий ран: `BB2-DIRECT-06`.
+## 2026-07-28 — BB2-DIRECT-06-FIX1 — one-time pairing acceptance
 
----
+- Implementation commit `bbbc63de129f5ff763672d2084bacf0f892de4c5` добавил pairing session state machine, 128-bit one-time code, TTL 300–600 секунд, five-attempt lock, pairing-specific rate limits, separate device public identity, revoke, safe audit и schema 1→2 migration. Code хранится только через scrypt verifier/salt; device private key не принимается.
+- Реальная причина предыдущего production restart loop была скрыта generic startup exception; controlled schema migration могла проиграть краткой SQLite lock race. Исправление ограничено Direct startup: bounded retry только `database is locked`; restart policy не ослаблялась.
+- Exact wheel `business_bridge_2_direct-0.5.0-py3-none-any.whl`, SHA-256 `b26ea45ff0239449710bfefc872ccdd9f271eec754ec2d48fbd92473cccbaadd5`; metadata/RECORD/ZIP/runtime scan PASS. Full source/wheel/staging/installed suite: 38 passed, 16 subtests passed; compileall, manifest и systemd verify PASS.
+- Pre-mutation root-only backup: `/var/backups/business-bridge-2-direct/BB2-DIRECT-06-FIX1-pre-20260728T114412Z/`; dirty repository snapshot, Direct tree/config/unit, SQLite backup API и identity/private-key pair сохранены без вывода содержимого.
+- Direct 0.5.0 deployed only to public `78.17.68.165:18100`; migration produced `user_version=2`, integrity `ok`, final service active/running with `NRestarts=0`. Valid/reuse/expiry/wrong/attempt/rate/malformed/GET/revoke/restart persistence acceptance passed. TCP and HTTP probes 5/5.
+- Server instance ID, fingerprint, rotation generation and private key metadata remained unchanged. Legacy PID `1619365`, start time, NRestarts `0`, localhost listener `127.0.0.1:18083` and health remained unchanged. No legacy service or state was mutated.
+- Redacted evidence: `docs/development/evidence/BB2-DIRECT-06_ACCEPTANCE_EVIDENCE.md` and `.json`. Marker: `BB2_DIRECT_06_COMPLETE`.
 
-## BB2-DIRECT-06 — One-time pairing
+Следующий ран: `BB2-DIRECT-07` — не выполнялся.
 
-**Статус:** ACCEPTED / PASS
+## 2026-07-28 — BB2-DIRECT-05-FIX7 — complete identity deployment
 
-### Зафиксировано
+- Permission blocker reproduced: restrictive wheel-install umask left package directories/files inaccessible to the service user; package presence and root import were confirmed. Deterministic root-owned/readable/non-writable normalization corrected the Direct tree.
+- Exact tested wheel `business_bridge_2_direct-0.4.0-py3-none-any.whl`, SHA-256 `5ab039200e396b6557b83593682d928a408fbcdba88b8ae40ea48f9118b472a0`.
+- Existing identity was preserved: instance `73515b73-a4d3-41c7-b143-624ce2a42eb5`, fingerprint `sha256:b0adfb05bd25e9684279494aa8054191dca70784fab416a29ec699b737111bc4`, generation 1. Metadata migrated atomically to the nested path; private key was not replaced.
+- Fresh backup `/var/backups/business-bridge-2-direct/BB2-DIRECT-05-FIX7-20260728T103143Z/`; scratch identity and SQLite restore validation PASS.
+- Full tests 29/29 PASS; active Direct service is non-root, version 0.4.0, exact public listener and stable bootstrap. One manual controlled restart was issued; a Direct-only TIME_WAIT bind defect was corrected with `allow_reuse_address=True`, after which the same systemd recovery sequence became active/running. No second manual restart was issued.
+- Legacy remained PID `1619365`, start `Mon 2026-07-27 13:16:29 MSK`, NRestarts 0, listener `127.0.0.1:18083`, health 200, unchanged and not restarted. Main remains unchanged.
+- Evidence: `BB2-DIRECT-05_INSTANCE_IDENTITY_EVIDENCE.md`, `BB2-DIRECT-05_BOOTSTRAP_RESULTS.json`, `BB2-DIRECT-05_PERMISSION_TEST_RESULTS.json`. Acceptance marker: `BB2_DIRECT_05_COMPLETE`.
 
-- Pairing session имеет TTL и одноразовый code verifier.
-- Plaintext pairing code не хранится в DB.
-- Pairing attempts ограничены.
-- Successful pairing создаёт durable device identity с P-256 public key.
-- Reuse pairing code отклоняется.
-- Device revoke поддерживается server-side.
-- Audit/log outputs redacted.
-
-Marker: `BB2_DIRECT_06_COMPLETE`.
-
-Следующий ран: `BB2-DIRECT-07`.
-
----
-
-## BB2-DIRECT-07 — Protected application protocol
-
-**Статус:** ACCEPTED / PASS
-
-### Зафиксировано
-
-- `BB2D-P1` использует authenticated device handshake.
-- Session keys выводятся через P-256 ECDH + HKDF-SHA-256.
-- Payload encryption — AES-256-GCM.
-- Request/response signatures — P-256 ECDSA SHA-256.
-- Canonical request/response domains и AAD frozen and tested.
-- Replay, stale timestamp, sequence and tamper failures fail closed.
-- Real browser Web Crypto interoperability подтверждена.
-
-Marker: `BB2_DIRECT_07_COMPLETE`.
-
-Следующий ран: `BB2-DIRECT-08`.
-
----
-
-## BB2-DIRECT-08 — Compatible task/report API
-
-**Статус:** ACCEPTED / PASS
-
-### Зафиксировано
-
-- Protected `task_create`, `task_status`, `task_cancel`, `task_report` реализованы.
-- Immutable operation ID и canonical payload idempotency реализованы.
-- Duplicate operation не выполняется повторно.
-- Different payload под тем же operation даёт deterministic conflict.
-- Report repeatable and immutable.
-- Pre-auth failures возвращают generic non-sensitive plaintext error.
-- Authenticated application errors возвращаются signed/encrypted внутри `BB2D-P1`.
-- Real Chromium Web Crypto probe подтверждает wire compatibility.
-
-Marker: `BB2_DIRECT_08_COMPLETE`.
-
-Следующий ран: `BB2-DIRECT-09`.
-
----
-
-## BB2-DIRECT-09 — Durable jobs and recovery
-
-**Статус:** ACCEPTED / PASS
-
-### Зафиксировано
-
-- Durable operation ledger использует состояния `CREATED`, `QUEUED`, `ACCEPTED`, `RUNNING`, `SUCCEEDED`, `FAILED`, `CANCEL_REQUESTED`, `CANCELLED`, `UNKNOWN`, `EXPIRED`.
-- Durable reports и transition history сохраняются отдельно от Legacy.
-- Lease ownership и stale-owner protection не допускают двух исполнителей одной операции.
-- Startup recovery не делает blind retry.
-- Ambiguous `RUNNING` после restart становится `UNKNOWN`, пока результат не доказан.
-- Reconciliation, cancellation, expiry и repeated report прошли production restart acceptance.
-
-Marker: `BB2_DIRECT_09_COMPLETE`.
-
-Следующий ран: `BB2-DIRECT-10`.
-
----
-
-## BB2-DIRECT-10 — Connection bundle
-
-**Статус:** ACCEPTED / PASS
-
-### Зафиксировано
-
-- Server генерирует strict one-line `BB2D1` bundle без permanent private secret.
-- Bundle содержит public IPv4/port, instance identity/fingerprint/SPKI, pairing session/code, issue/expiry и rotation generation.
-- Browser parser проверяет framing, checksum, canonical JSON, exact fields, TTL/expiry, P-256 SPKI/fingerprint и malformed/corrupt variants fail closed.
-- Shared server/browser vectors и real Chromium Web Crypto acceptance прошли.
-
-Marker: `BB2_DIRECT_10_COMPLETE`.
-
-Следующий ран: `BB2-DIRECT-11`.
+Следующий ран: `BB2-DIRECT-06` — одноразовое pairing; не выполнялся.
