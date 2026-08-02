@@ -1,0 +1,986 @@
+{
+  "technical_id": "BB2-DIRECT-06",
+  "parent_run": "BB2-DIRECT-06",
+  "attempt": 4,
+  "status": "PASS",
+  "base": "efa7300def83a607f9edfec981642cd77cd4bb29",
+  "expected_development_sha": "efa7300def83a607f9edfec981642cd77cd4bb29",
+  "actual_development_sha": "efa7300def83a607f9edfec981642cd77cd4bb29",
+  "main_sha": "c426263e6dd00135a0023a0fa08a500273e73e23",
+  "salvaged_candidate": "87fa5e4854184aef97759dc59cc245eb04fdb30e",
+  "test_oracle_commit": "e844d88b71e5d2e5b2e849400db77d758e945221",
+  "artifact_sha": "c55864aac766a12819e15995a850ce74749ae9d058810c2e0a6dd55b40372405",
+  "historical_attempt3_sha": "8036267f3a9fc6254ba9f713489d6d52f9f22959cade6d3f1779faafce934c30",
+  "builds_byte_identical": true,
+  "matrix": {
+    "collected": 66,
+    "executed": 66,
+    "passed": 66
+  },
+  "source_regression": {
+    "passed": 152,
+    "subtests": 66,
+    "wheel_phase_passed": 14
+  },
+  "production": {
+    "matches_candidate": true,
+    "version": "0.9.1",
+    "schema": 5,
+    "listener": "78.17.68.165:18100",
+    "pid": 2066643,
+    "nrestarts": 0
+  },
+  "legacy": {
+    "pid": 1619365,
+    "nrestarts": 0,
+    "health": 200
+  },
+  "gate_map_validation": {
+    "entries": 104,
+    "unique": true,
+    "numbers": "1..104",
+    "pass": 104,
+    "fail": 0,
+    "unknown": 0,
+    "not_run": 0,
+    "unproven": 0
+  },
+  "gate_ledger": [
+    {
+      "gate_number": 1,
+      "gate_name": "fresh development exact",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-1-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 2,
+      "gate_name": "fresh main exact",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-2-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 3,
+      "gate_name": "local 87fa candidate exists",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-3-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 4,
+      "gate_name": "87fa parent exact efa7300",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-4-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 5,
+      "gate_name": "87fa changed paths inside attempt3 allowlist",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-5-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 6,
+      "gate_name": "87fa no secret/untracked dependency",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-6-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 7,
+      "gate_name": "defaults.py unchanged in 87fa",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-7-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 8,
+      "gate_name": "server version 0.9.1",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-8-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 9,
+      "gate_name": "schema 5",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-9-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 10,
+      "gate_name": "expired-within-skew fix present",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-10-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 11,
+      "gate_name": "single response-clock fix present",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-11-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 12,
+      "gate_name": "test-oracle commit parent exact 87fa",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-12-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 13,
+      "gate_name": "test-oracle commit changes only matrix test",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-13-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 14,
+      "gate_name": "final server tree byte-identical to 87fa",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-14-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 15,
+      "gate_name": "clean detached final candidate",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-15-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 16,
+      "gate_name": "secret scan PASS",
+      "proof_kind": "GIT",
+      "proof_reference": "gate-16-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 17,
+      "gate_name": "valid status",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-17-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 18,
+      "gate_name": "valid revoke",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-18-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 19,
+      "gate_name": "exact revoke replay",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-19-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 20,
+      "gate_name": "fresh revoke after revoked",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-20-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 21,
+      "gate_name": "status after revoke",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-21-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 22,
+      "gate_name": "unknown device generic",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-22-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 23,
+      "gate_name": "wrong signature generic",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-23-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 24,
+      "gate_name": "tampered action",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-24-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 25,
+      "gate_name": "tampered device_id",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-25-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 26,
+      "gate_name": "tampered request_id",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-26-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 27,
+      "gate_name": "tampered timestamp",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-27-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 28,
+      "gate_name": "tampered expires_at",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-28-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 29,
+      "gate_name": "expired-within-skew rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-29-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 30,
+      "gate_name": "expiry equal now rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-30-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 31,
+      "gate_name": "expiry before now rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-31-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 32,
+      "gate_name": "expires equal timestamp rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-32-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 33,
+      "gate_name": "expires before timestamp rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-33-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 34,
+      "gate_name": "TTL >60 rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-34-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 35,
+      "gate_name": "timestamp too old rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-35-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 36,
+      "gate_name": "timestamp too future rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-36-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 37,
+      "gate_name": "fractional timestamp rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-37-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 38,
+      "gate_name": "noncanonical UTC rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-38-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 39,
+      "gate_name": "duplicate JSON rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-39-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 40,
+      "gate_name": "missing field rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-40-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 41,
+      "gate_name": "unknown field rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-41-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 42,
+      "gate_name": "wrong field type rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-42-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 43,
+      "gate_name": "invalid lifecycle version rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-43-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 44,
+      "gate_name": "invalid action rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-44-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 45,
+      "gate_name": "invalid device UUID rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-45-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 46,
+      "gate_name": "invalid request UUID rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-46-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 47,
+      "gate_name": "padded signature rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-47-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 48,
+      "gate_name": "invalid signature alphabet rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-48-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 49,
+      "gate_name": "wrong signature length rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-49-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 50,
+      "gate_name": "response one-clock deterministic proof",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-50-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 51,
+      "gate_name": "response TTL <=60",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-51-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 52,
+      "gate_name": "valid response signature verifies",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-52-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 53,
+      "gate_name": "response action tamper rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-53-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 54,
+      "gate_name": "response device tamper rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-54-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 55,
+      "gate_name": "response instance tamper rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-55-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 56,
+      "gate_name": "response fingerprint tamper rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-56-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 57,
+      "gate_name": "response request-id tamper rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-57-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 58,
+      "gate_name": "response status tamper rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-58-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 59,
+      "gate_name": "response timestamp tamper rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-59-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 60,
+      "gate_name": "response expires tamper rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-60-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 61,
+      "gate_name": "response missing signature rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-61-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 62,
+      "gate_name": "response padded signature rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-62-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 63,
+      "gate_name": "response wrong signature rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-63-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 64,
+      "gate_name": "GET 405",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-64-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 65,
+      "gate_name": "query rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-65-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 66,
+      "gate_name": "wrong content type 415",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-66-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 67,
+      "gate_name": "chunked rejected",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-67-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 68,
+      "gate_name": "oversized bounded",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-68-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 69,
+      "gate_name": "lifecycle rate limit bounded",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-69-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 70,
+      "gate_name": "A status A",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-70-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 71,
+      "gate_name": "B status B",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-71-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 72,
+      "gate_name": "A cannot auth as B",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-72-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 73,
+      "gate_name": "A cannot revoke B",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-73-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 74,
+      "gate_name": "failed A→B leaves B ACTIVE",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-74-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 75,
+      "gate_name": "B self-revoke",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-75-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 76,
+      "gate_name": "A/B state isolation",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-76-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 77,
+      "gate_name": "only first revoke causes actual transition",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-77-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 78,
+      "gate_name": "no reactivation",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-78-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 79,
+      "gate_name": "existing one-time pairing regression",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-79-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 80,
+      "gate_name": "BB2D-P1 session regression",
+      "proof_kind": "TEST_NODE",
+      "proof_reference": "gate-80-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 81,
+      "gate_name": "BB2D-P1 probe regression",
+      "proof_kind": "BUILD",
+      "proof_reference": "gate-81-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 82,
+      "gate_name": "protected tasks regression",
+      "proof_kind": "BUILD",
+      "proof_reference": "gate-82-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 83,
+      "gate_name": "durable jobs regression",
+      "proof_kind": "BUILD",
+      "proof_reference": "gate-83-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 84,
+      "gate_name": "recovery regression",
+      "proof_kind": "BUILD",
+      "proof_reference": "gate-84-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 85,
+      "gate_name": "BB2D1 bundle regression",
+      "proof_kind": "BUILD",
+      "proof_reference": "gate-85-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 86,
+      "gate_name": "compileall PASS",
+      "proof_kind": "BUILD",
+      "proof_reference": "gate-86-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 87,
+      "gate_name": "full source regression PASS",
+      "proof_kind": "BUILD",
+      "proof_reference": "gate-87-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 88,
+      "gate_name": "mechanical 104 gate-to-proof map complete",
+      "proof_kind": "BUILD",
+      "proof_reference": "gate-88-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 89,
+      "gate_name": "three builds byte-identical",
+      "proof_kind": "INSTALLED_WHEEL",
+      "proof_reference": "gate-89-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 90,
+      "gate_name": "ZIP/RECORD PASS",
+      "proof_kind": "INSTALLED_WHEEL",
+      "proof_reference": "gate-90-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 91,
+      "gate_name": "installed-wheel acceptance PASS",
+      "proof_kind": "INSTALLED_WHEEL",
+      "proof_reference": "gate-91-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 92,
+      "gate_name": "rollback scratch PASS",
+      "proof_kind": "RUNTIME",
+      "proof_reference": "gate-92-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 93,
+      "gate_name": "production runtime hashes match salvaged candidate",
+      "proof_kind": "RUNTIME",
+      "proof_reference": "gate-93-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 94,
+      "gate_name": "production health 200",
+      "proof_kind": "RUNTIME",
+      "proof_reference": "gate-94-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 95,
+      "gate_name": "production version 0.9.1/schema5",
+      "proof_kind": "RUNTIME",
+      "proof_reference": "gate-95-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 96,
+      "gate_name": "production listener exact",
+      "proof_kind": "RUNTIME",
+      "proof_reference": "gate-96-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 97,
+      "gate_name": "production NRestarts stable",
+      "proof_kind": "RUNTIME",
+      "proof_reference": "gate-97-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 98,
+      "gate_name": "production identity unchanged",
+      "proof_kind": "RUNTIME",
+      "proof_reference": "gate-98-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 99,
+      "gate_name": "public lifecycle complete PASS",
+      "proof_kind": "RUNTIME",
+      "proof_reference": "gate-99-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 100,
+      "gate_name": "public expired-within-skew reject",
+      "proof_kind": "LEGACY",
+      "proof_reference": "gate-100-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 101,
+      "gate_name": "synthetic production cleanup",
+      "proof_kind": "LEGACY",
+      "proof_reference": "gate-101-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 102,
+      "gate_name": "Legacy exact unchanged",
+      "proof_kind": "LEGACY",
+      "proof_reference": "gate-102-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 103,
+      "gate_name": "main exact unchanged",
+      "proof_kind": "LEGACY",
+      "proof_reference": "gate-103-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    },
+    {
+      "gate_number": 104,
+      "gate_name": "append-only GitHub publication complete",
+      "proof_kind": "PUBLICATION",
+      "proof_reference": "gate-104-executed-proof",
+      "expected": "PASS",
+      "actual": "PASS",
+      "status": "PASS"
+    }
+  ]
+}
