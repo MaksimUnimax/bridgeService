@@ -1,5 +1,17 @@
 # Business Bridge 2 Direct — журнал работ
 
+## 2026-08-02 — BB2-DIRECT-10 — connection bundle
+
+- `BB2-DIRECT-10-SRV` принят после corrective attempts 5–7. Финальная append-only server chain: test-oracle correction `84dad3d7f1b7b47cea034491353d6998eda62eca` → corrected attempt-7 evidence `80f5725b5acf092337c6f23ea3ed73637cd6a567`. Runtime source после `8e128ee252c358aac2da7d8c0cea79ba1686b1e6` не менялся.
+- Direct `0.9.0/schema 5` генерирует strict one-line `BB2D1` bundle с public endpoint, instance/server public identity, one-time pairing session/code, issue/expiry и rotation generation. Server attempt 7: 62/62 gates PASS; deterministic wheel SHA-256 `50fefc54cf102e1081523dd548fb4c9709a559b50364760791d8eb8097ca21d2`; production pairing first use `201`, reuse `403`, cleanup PASS.
+- `BB2-DIRECT-10-EXT` выполнен ChatGPT без делегирования CLI. Published extension implementation commits from accepted server base through `f60ff8105dbd01197da1bf9db1f90d9ce1be546e` add only `extension/**`: pure `bb2d1-bundle.js`, Node regression, shared-fixture Chrome harness, self-contained Chromium contract harness and parser documentation. Server/runtime/installer не менялись.
+- Browser parser fail-closed проверяет BB2D1 framing/version/length, canonical unpadded base64url, domain-separated SHA-256 checksum, canonical JSON/exact fields, timestamps/TTL/expiry, IPv4/port/UUID/pairing-code/generation, P-256 SPKI и exact DER fingerprint. Профили, pairing lifecycle, storage и Direct transport не реализованы преждевременно; они остаются scope BB2-DIRECT-11+.
+- Node 22.16.0 smoke/static acceptance PASS. Chromium `144.0.7559.96`, secure localhost, real `globalThis.crypto.subtle`: 6/6 independent runs, canonical positive PASS, 38/38 negative contract cases per run (228/228 total), including malformed/corrupt/noncanonical/expiry, P-384 and RSA SPKI rejection.
+- Chromium managed policy was temporarily relaxed only for isolated local browser testing and restored byte-for-byte to SHA-256 `3b740260e337305aaef268e6c63af8fa2796057ce46f43df5ae5a3949e085e86`. An initial cleanup-script PROCESS mistake was detected immediately, restored from the preserved backup, and the complete 6-run acceptance was repeated with correct `finally` cleanup and identical pre/post policy hashes.
+- Extension evidence: `docs/development/evidence/BB2-DIRECT-10-EXT_CHATGPT_EVIDENCE.md`. Acceptance/security documentation updated. Legacy remained unchanged; `main` remained `c426263e6dd00135a0023a0fa08a500273e73e23`.
+- Marker: `BB2_DIRECT_10_COMPLETE`.
+- Следующий ран: `BB2-DIRECT-11` — server profiles in extension, owner ChatGPT.
+
 ## 2026-07-30 — BB2-DIRECT-09 — durable jobs and recovery
 
 - Implementation commit `46ed6317b03ba9b84e52042cdd068379d02ad1b7` and evidence commit `168f80f3f9b3c3dcd27219c5f93aa15a2bb10236` were published linearly from accepted base `e41a6c7461e3a852a95da0e2f6cd6423c654b5c4`. `main` remained `c426263e6dd00135a0023a0fa08a500273e73e23`.
