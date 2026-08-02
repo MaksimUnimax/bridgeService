@@ -1,19 +1,35 @@
 {
   "technical_id": "BB2-DIRECT-10-SRV",
-  "attempt": 5,
-  "supersedes_attempt_4": true,
-  "decoder_static_purity": "PASS",
-  "decoder_dynamic_purity": "PASS",
-  "crypto": {
-    "valid_p256_spki": "PASS",
-    "invalid_der": "PASS",
-    "rsa": "PASS",
-    "wrong_ec_curve": "PASS",
-    "fingerprint_mismatch": "PASS"
+  "attempt": 7,
+  "candidate_commit": "84dad3d7f1b7b47cea034491353d6998eda62eca",
+  "artifact_sha256": "50fefc54cf102e1081523dd548fb4c9709a559b50364760791d8eb8097ca21d2",
+  "historical_sha256_comparative_only": "83eea1a09dcfad1eea7d4397edb882c6c62a2111ccf94f49b34c87214b269c04",
+  "targeted_cases": {
+    "POSITIVE_PARTIAL_WRITE": "PASS",
+    "ZERO_WRITE": "PASS",
+    "NONE_WRITE": "PASS",
+    "BROKEN_PIPE_WRITE": "PASS",
+    "GENERIC_OSERROR_WRITE": "PASS",
+    "FLUSH_OSERROR": "PASS",
+    "ENCODE_FAILURE_CLEANUP": "PASS",
+    "SELF_VALIDATION_MISMATCH_CLEANUP": "PASS",
+    "TRANSIENT_REVOKE_LOCK_EVENTUAL_STATE": "PASS",
+    "TRANSIENT_STATUS_LOCK_EVENTUAL_STATE": "PASS",
+    "PERMANENT_CLEANUP_FAILURE": "PASS",
+    "PARSER_NEGATIVES": "PASS",
+    "PARSER_HELP": "PASS",
+    "STATIC_PURITY": "PASS",
+    "DYNAMIC_PURITY": "PASS",
+    "STRICT_P256": "PASS"
   },
-  "stdout_failures": {"short": "PASS", "zero": "PASS", "none": "PASS", "broken_pipe": "PASS", "os_error": "PASS", "flush": "PASS"},
-  "cleanup": {"encode": "PASS", "self_validation": "PASS", "revoke_retry": "PASS", "status_retry": "PASS", "active_after_bounded_retry_is_failure": "PASS"},
-  "parser": {"no_command": "PASS", "unknown_command": "PASS", "unknown_option": "PASS", "invalid_integer": "PASS", "missing_value": "PASS", "ttl_below_300": "PASS", "ttl_above_600": "PASS", "help_non_mutating": "PASS"},
-  "compatibility": {"canonical_vectors": "PASS", "one_line_success": "PASS", "successful_session_active": "PASS", "pairing_cli": "PASS"},
-  "artifact_sha256": "83eea1a09dcfad1eea7d4397edb882c6c62a2111ccf94f49b34c87214b269c04"
+  "postconditions": {
+    "successful_cleanup_status_not_active": "PASS",
+    "transient_real_saved_db_functions": "PASS",
+    "permanent_cleanup_return_false_and_active": "PASS",
+    "invalid_der_rsa_wrong_curve_rejected": "PASS",
+    "p256_and_exact_fingerprint_accepted": "PASS"
+  },
+  "protocol_vectors": "PASS",
+  "canonical_output": "one stdout line; no credential recorded",
+  "production_pairing": {"first":201,"reuse":403,"revoke":"PASS","remaining_active":0}
 }

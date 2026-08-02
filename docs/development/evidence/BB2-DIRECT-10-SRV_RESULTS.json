@@ -1,33 +1,48 @@
 {
   "technical_id": "BB2-DIRECT-10-SRV",
-  "attempt": 5,
-  "execution_mode": "SECURITY_CORRECTION_AND_FULL_REACCEPTANCE",
+  "parent_run": "BB2-DIRECT-10",
+  "attempt": 7,
   "status": "PASS",
-  "supersedes_attempt_4": true,
   "base": {
-    "development": "b7ac536edc4e785a491c17e62f752750029abe8f",
-    "main": "c426263e6dd00135a0023a0fa08a500273e73e23"
+    "development": "79866ba0227d77e9fbd68b0d440b88ed95300586",
+    "main": "c426263e6dd00135a0023a0fa08a500273e73e23",
+    "candidate": "84dad3d7f1b7b47cea034491353d6998eda62eca",
+    "candidate_parent": "79866ba0227d77e9fbd68b0d440b88ed95300586",
+    "changed_paths": ["tests/server/test_bundle_cli.py"],
+    "runtime_tree_commit": "8e128ee252c358aac2da7d8c0cea79ba1686b1e6"
   },
-  "implementation": {
-    "sha": "8e128ee252c358aac2da7d8c0cea79ba1686b1e6",
-    "parent": "b7ac536edc4e785a491c17e62f752750029abe8f",
-    "paths": ["server/FILE_MANIFEST.sha256", "server/src/business_bridge_direct/bundle.py", "server/src/business_bridge_direct/bundle_cli.py", "tests/server/test_bundle.py", "tests/server/test_bundle_cli.py"]
-  },
-  "tests": {"targeted_passed": 18, "targeted_subtests": 45, "full_passed": 81, "full_subtests": 66, "compileall": "PASS"},
-  "artifact": {
-    "filename": "business_bridge_2_direct-0.9.0-py3-none-any.whl",
-    "sha256_build_1": "83eea1a09dcfad1eea7d4397edb882c6c62a2111ccf94f49b34c87214b269c04",
-    "sha256_build_2": "83eea1a09dcfad1eea7d4397edb882c6c62a2111ccf94f49b34c87214b269c04",
-    "sha256_build_3": "83eea1a09dcfad1eea7d4397edb882c6c62a2111ccf94f49b34c87214b269c04",
-    "byte_identical": true,
+  "artifact_oracle": {
+    "source_date_epoch": 1785644421,
+    "python": "3.10.12",
+    "pip": "26.2",
+    "setuptools": "83.0.0",
+    "wheel": "0.47.0",
+    "build_command": "python -m pip wheel --disable-pip-version-check --no-input --no-deps --no-build-isolation --wheel-dir <fresh-output> .",
+    "build1_sha256": "50fefc54cf102e1081523dd548fb4c9709a559b50364760791d8eb8097ca21d2",
+    "build2_sha256": "50fefc54cf102e1081523dd548fb4c9709a559b50364760791d8eb8097ca21d2",
+    "build3_sha256": "50fefc54cf102e1081523dd548fb4c9709a559b50364760791d8eb8097ca21d2",
+    "authoritative_sha256": "50fefc54cf102e1081523dd548fb4c9709a559b50364760791d8eb8097ca21d2",
+    "historical_sha256": "83eea1a09dcfad1eea7d4397edb882c6c62a2111ccf94f49b34c87214b269c04",
+    "historical_match": "runtime members and RECORD match; container metadata differs",
+    "record_validation": "PASS",
     "size": 36516
   },
-  "installed_wheel": {"service_user_import": "PASS", "version": "0.9.0", "schema": 5, "source_tree_import_used": false},
-  "rollback": {"rehearsal": "PASS", "failed_activation_recovered": true, "scope": "Direct-only"},
-  "direct_production": {"pid": 2057065, "start": "Sun 2026-08-02 07:23:39 MSK", "nrestarts": 0, "state": "active/running", "health_http": 200, "version": "0.9.0", "schema": 5, "listener": "78.17.68.165:18100"},
-  "production_purity_probe": "PASS",
-  "production_pairing": {"session_redacted": "18334146…", "initial": 201, "reuse": 403, "cleanup": "PASS", "active_synthetic_sessions": 0},
-  "legacy_before_after": {"pid": 1619365, "start": "Mon 2026-07-27 13:16:29 MSK", "nrestarts": 0, "state": "active/running", "health_http": 200, "modified": false, "restarted": false},
-  "gate_ledger": {"total": 62, "pass": 62, "fail": 0, "unknown": 0},
-  "publication_preflight": {"key_fingerprint": "SHA256:kuOnxZcKHH7LJrqJceqwfzWQLzES3en8bHn72/xX9jY", "development": "b7ac536edc4e785a491c17e62f752750029abe8f", "main": "c426263e6dd00135a0023a0fa08a500273e73e23", "oracle": "repository-specific SSH git ls-remote over SSH/443"}
+  "source_boundary": {
+    "source_applicable_tests": "83/83 PASS, 66 subtests",
+    "installed_wheel_only_tests": 3,
+    "installed_wheel_tests": "3/3 PASS"
+  },
+  "attempt6_failures": [
+    {"node":"tests/server/test_install_permissions.py::InstallPermissionPolicyTests::test_complete_tree_normalizes_root_only_runtime_for_service_user","classification":"PROCESS_HARNESS","root_cause":"root-only /tmp venv path caused pre-application PermissionError"},
+    {"node":"tests/server/test_pairing.py::PairingTests::test_production_shaped_startup_migrates_with_service_permissions","classification":"PROCESS_HARNESS","root_cause":"missing BB2_WHEEL_UNDER_TEST"},
+    {"node":"tests/server/test_wheel_completeness.py::WheelCompletenessTests::test_clean_wheel_contains_complete_runtime_package","classification":"PROCESS_HARNESS","root_cause":"missing BB2_WHEEL_UNDER_TEST"},
+    {"node":"tests/server/test_wheel_completeness.py::WheelCompletenessTests::test_installed_wheel_imports_runtime_modules_and_contract","classification":"PROCESS_HARNESS","root_cause":"missing BB2_WHEEL_UNDER_TEST"}
+  ],
+  "legacy": {"pid":1619365,"start":"Mon 2026-07-27 13:16:29 MSK","nrestarts":0,"state":"active/running","health":200,"modified":false,"restarted":false},
+  "direct": {"pid":2057065,"start":"Sun 2026-08-02 07:23:39 MSK","nrestarts":0,"state":"active/running","health":200,"version":"0.9.0","schema":5,"listener":"78.17.68.165:18100","restarted":false},
+  "production": {"runtime_member_identity":"PASS","decoder_purity":"PASS","bundle_stdout_lines":1,"first_pairing":201,"reuse":403,"active_synthetic_sessions":0},
+  "gates": {"pass":62,"fail":0,"unknown":0,"not_run":0,"unproven":0},
+  "evidence_notes": ["attempt 5 evidence rejected","attempt 6 did not publish evidence","historical wheel SHA is comparative evidence only","artifact oracle corrected to three-build deterministic equality"],
+  "runtime_code_changed": false,
+  "next_expected_step": "BB2-DIRECT-10-EXT"
 }
