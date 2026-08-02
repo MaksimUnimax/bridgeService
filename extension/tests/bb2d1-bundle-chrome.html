@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>BB2D1 shared bundle vectors</title>
+<script type="module">
+import {decodeBundle, BundleError} from '../protocol/bb2d1-bundle.js';
+
+const sameJson = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+(async () => {
+  const response = await fetch('../../tests/fixtures/BB2D1_BUNDLE_VECTORS.json', {cache: 'no-store'});
+  if (!response.ok) throw new Error(`fixture_http_${response.status}`);
+  const fixture = await response.json();
+  const positive = await decodeBundle(fixture.positive.expected_bundle, {now: fixture.positive.decoded_object.issued_at});
+  if (!sameJson(positive, fixture.positive.decoded_object)) throw new Error('positive_object_mismatch');
+
+  const failures = [];
+  let negativePassed = 0;
+  for (const vector of fixture.negative) {
+    try {
+      await decodeBundle(vector.bundle, {now: vector.now ?? fixture.positive.decoded_object.issued_at});
+      failures.push({case: vector.case, result: 'accepted'});
+    } catch (error) {
+      if (!(error instanceof BundleError)) {
+        failures.push({case: vector.case, result: error?.name ?? String(error)});
+      } else {
+        negativePassed += 1;
+      }
+    }
+  }
+
+  const result = {
+    browser: navigator.userAgent,
+    globalThis_crypto_subtle: Boolean(globalThis.crypto?.subtle),
+    fixture_format: fixture.format_version,
+    positive_passed: true,
+    negative_total: fixture.negative.length,
+    negative_passed: negativePassed,
+    failures,
+    pass: fixture.format_version === 'BB2D1' && failures.length === 0 && negativePassed === fixture.negative.length,
+  };
+  document.body.textContent = JSON.stringify(result);
+})().catch(error => {
+  document.body.textContent = JSON.stringify({pass: false, error: String(error), stack: error?.stack ?? null});
+});
+</script>
