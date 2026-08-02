@@ -1,0 +1,51 @@
+<!doctype html><meta charset="utf-8"><title>BB2D1 contract acceptance</title>
+<script type="module">
+import {decodeBundle, BundleError} from '../protocol/bb2d1-bundle.js';
+const positive='BB2D1.eyJidW5kbGVfdmVyc2lvbiI6IkJCMkQxIiwiZXhwaXJlc19hdCI6IjIwMjYtMDctMzBUMDA6MTA6MDBaIiwiaG9zdCI6Ijc4LjE3LjY4LjE2NSIsImluc3RhbmNlX2lkIjoiMTExMTExMTEtMTExMS00MTExLTgxMTEtMTExMTExMTExMTExIiwiaXNzdWVkX2F0IjoiMjAyNi0wNy0zMFQwMDowMDowMFoiLCJwYWlyaW5nX2NvZGUiOiIwMTIzNDU2Nzg5YWJjZGVmMDEyMzQ1Njc4OWFiY2RlZiIsInBhaXJpbmdfc2Vzc2lvbl9pZCI6IjIyMjIyMjIyLTIyMjItNDIyMi04MjIyLTIyMjIyMjIyMjIyMiIsInBvcnQiOjE4MTAwLCJyb3RhdGlvbl9nZW5lcmF0aW9uIjoxLCJzZXJ2ZXJfZmluZ2VycHJpbnQiOiJzaGEyNTY6MTBhNTE3YTU0YTdmYTYyNWEyZTQ2YWQyMTllNDIzZTllMTg1YjUwYzViMjcwYzBlMTc1NWQ0NTdmMmNlMGZhYiIsInNlcnZlcl9wdWJsaWNfa2V5IjoiTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFZGFqc2MwTUtXUEduOEpsQXZkMWlRVEVEOHdnREhZRjIzSGVxMXNNLTVlTDYxekZoS0hld0Y5SG9Nc0UzR0NEMi1aT1VhM3o1WEpTNHJwR1U5eUNDMGciLCJzZXJ2ZXJfcHVibGljX2tleV9mb3JtYXQiOiJTUEtJX0RFUl9CQVNFNjRVUkwiLCJzZXJ2ZXJfc2lnbmluZ19hbGdvcml0aG0iOiJFQ0RTQV9QMjU2X1NIQTI1NiJ9.zTKu--COziZslQDNS25gf8D9Fc6CHCkyUpJqWbvXA3c';
+const te=new TextEncoder(); const td=new TextDecoder();
+const b64u=b=>{let s='';for(const x of new Uint8Array(b))s+=String.fromCharCode(x);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+const unb64=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0));
+const hash=async b=>new Uint8Array(await crypto.subtle.digest('SHA-256',b));
+const checksum=async payload=>{const dom=new Uint8Array(6+payload.length);dom.set(te.encode('BB2D1\0'));dom.set(payload,6);return hash(dom)};
+const fromRaw=async raw=>{const p=te.encode(raw);return `BB2D1.${b64u(p)}.${b64u(await checksum(p))}`};
+const basePayload=JSON.parse(td.decode(unb64(positive.split('.')[1])));
+const canonical=o=>JSON.stringify(Object.fromEntries(Object.keys(o).sort().map(k=>[k,o[k]])));
+const fromObj=async o=>fromRaw(canonical(o));
+const clone=()=>JSON.parse(JSON.stringify(basePayload));
+const bad=[];
+const add=(name,bundle,now='2026-07-30T00:00:00Z')=>bad.push({name,bundle,now});
+add('empty',''); add('wrong_prefix',positive.replace(/^BB2D1/,'XB2D1')); add('unsupported_version',positive.replace(/^BB2D1/,'BB2D2')); add('missing_segment',positive.split('.').slice(0,2).join('.')); add('extra_segment',positive+'.extra'); add('padded_payload',positive.replace('.', '.A=')); add('checksum_mismatch',positive.slice(0,-1)+(positive.endsWith('A')?'B':'A')); add('padded_checksum',positive+'='); add('wrong_checksum_length',positive.slice(0,-1)); add('embedded_crlf',positive.replace('.', '.\n')); add('oversized','B'.repeat(4097));
+let o;
+o=clone(); o.unknown_field=1; add('unknown_field',await fromObj(o));
+o=clone(); delete o.host; add('missing_field',await fromObj(o));
+o=clone(); o.port='18100'; add('wrong_type',await fromObj(o));
+o=clone(); o.host='999.0.0.1'; add('invalid_ipv4',await fromObj(o));
+o=clone(); o.host='01.002.003.004'; add('noncanonical_ipv4',await fromObj(o));
+o=clone(); o.port=0; add('invalid_port',await fromObj(o));
+o=clone(); o.instance_id='not-a-uuid'; add('invalid_instance_uuid',await fromObj(o));
+o=clone(); o.pairing_session_id='not-a-uuid'; add('invalid_session_uuid',await fromObj(o));
+o=clone(); o.pairing_code='ABC'; add('invalid_pairing_code',await fromObj(o));
+o=clone(); o.issued_at='2026-07-30T00:00:00.1Z'; add('invalid_timestamp',await fromObj(o));
+o=clone(); o.expires_at='2026-07-29T23:59:59Z'; add('expiry_before_issued',await fromObj(o));
+o=clone(); o.expires_at='2026-07-30T00:04:59Z'; add('ttl_below_300',await fromObj(o));
+o=clone(); o.expires_at='2026-07-30T00:10:01Z'; add('ttl_above_600',await fromObj(o));
+add('expired',positive,'2026-07-30T00:10:00Z');
+o=clone(); o.server_signing_algorithm='RSA_PSS_SHA256'; add('wrong_signing_algorithm',await fromObj(o));
+o=clone(); o.server_public_key_format='RAW'; add('wrong_key_format',await fromObj(o));
+o=clone(); o.server_public_key='!!notbase64!!'; add('invalid_spki_base64url',await fromObj(o));
+o=clone(); o.server_fingerprint='sha256:ABC'; add('invalid_fingerprint_format',await fromObj(o));
+o=clone(); o.server_fingerprint='sha256:'+'0'.repeat(64); add('spki_fingerprint_mismatch',await fromObj(o));
+o=clone(); o.rotation_generation=0; add('invalid_rotation_generation',await fromObj(o));
+const rawCanonical=canonical(basePayload);
+add('json_whitespace',await fromRaw(rawCanonical.replace('{','{ ')));
+const reverseKeys=Object.keys(basePayload).reverse(); const reverse={}; for(const k of reverseKeys) reverse[k]=basePayload[k]; add('noncanonical_key_order',await fromRaw(JSON.stringify(reverse)));
+const dup=rawCanonical.replace('{','{"bundle_version":"BB2D1",'); add('duplicate_key',await fromRaw(dup));
+{const p=new Uint8Array([0xff]); add('invalid_utf8',`BB2D1.${b64u(p)}.${b64u(await checksum(p))}`)}
+add('non_object_json',await fromRaw('123'));
+async function addKeyCase(name,key){ const der=new Uint8Array(await crypto.subtle.exportKey('spki',key.publicKey)); const x=clone(); x.server_public_key=b64u(der); x.server_fingerprint='sha256:'+Array.from(await hash(der),v=>v.toString(16).padStart(2,'0')).join(''); add(name,await fromObj(x)); }
+await addKeyCase('wrong_ec_curve',await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-384'},true,['sign','verify']));
+await addKeyCase('rsa_spki',await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']));
+const failures=[]; const pos=await decodeBundle(positive,{now:'2026-07-30T00:00:00Z'}); if(pos.host!=='78.17.68.165'||pos.port!==18100) failures.push({name:'positive'});
+for(const t of bad){try{await decodeBundle(t.bundle,{now:t.now});failures.push({name:t.name,result:'accepted'});}catch(e){if(!(e instanceof BundleError))failures.push({name:t.name,result:e.name+':'+e.message});}}
+document.body.textContent=JSON.stringify({pass:failures.length===0,secure:isSecureContext,subtle:Boolean(crypto.subtle),negative_total:bad.length,failures});
+</script>
