@@ -1,5 +1,12 @@
 # Business Bridge 2 Direct — журнал работ
 
+## 2026-08-02 — BB2-DIRECT-11 — server profiles in extension
+
+- ChatGPT-owned `BB2-DIRECT-11-EXT` принят: implementation `650d5dab847dec4e3d72e9f9a3e70190f693b65b`, evidence `58cc89c4cb14afaae552b64870c23b23ffc26e73`; implementation меняет только `extension/**`.
+- Extension `2.0.0.21`, schema `5`: Direct profiles, BB2D1 confirmation/pairing, isolated P-256 device keys, signed BB2D-L1 lifecycle, identity-change fail-closed, migration and Legacy preservation. Node `123/123 PASS`; Chromium/package acceptance PASS; authoritative ZIP SHA-256 `b9cda4ddffcda3909be7026ada8fd813b0a0faa4c333617852b390da286ed34b`.
+- Marker: `BB2_DIRECT_11_COMPLETE`.
+- Следующий ран: `BB2-DIRECT-12` — Direct extension transport, owner ChatGPT.
+
 ## 2026-08-02 — BB2-DIRECT-10 — connection bundle
 
 - `BB2-DIRECT-10-SRV` принят после corrective attempts 5–7. Финальная append-only server chain: test-oracle correction `84dad3d7f1b7b47cea034491353d6998eda62eca` → corrected attempt-7 evidence `80f5725b5acf092337c6f23ea3ed73637cd6a567`. Runtime source после `8e128ee252c358aac2da7d8c0cea79ba1686b1e6` не менялся.
