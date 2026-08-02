@@ -179,6 +179,96 @@ class BundleCliTests(unittest.TestCase):
         finally:
             temp.cleanup()
 
+    def _run_output_failure(self, stdout_object) -> tuple[int, str, str, str]:
+        temp, _, runtime = self._temp_root()
+        try:
+            with self._patch_runtime(runtime):
+                stderr = io.StringIO()
+                with mock.patch.object(bundle_cli.sys, "stdout", stdout_object), mock.patch.object(bundle_cli.sys, "stderr", stderr):
+                    rc = bundle_cli.main(["create", "--ttl", "600"])
+            with sqlite3.connect(runtime.database_path) as c:
+                status = c.execute("SELECT status FROM pairing_sessions").fetchone()[0]
+            return rc, getattr(stdout_object, "value", lambda: "")(), stderr.getvalue(), status
+        finally:
+            temp.cleanup()
+
+    def test_short_zero_and_none_writes_revoke(self) -> None:
+        class Short:
+            def __init__(self, result): self.result = result; self.data = ""
+            def write(self, data): self.data += data; return self.result
+            def flush(self): return None
+            def value(self): return self.data
+        for result in (0, None):
+            rc, _out, err, status = self._run_output_failure(Short(result))
+            self.assertEqual((rc, err), (1, '{"error":"bundle_creation_failed"}\n'))
+            self.assertNotEqual(status, "ACTIVE")
+
+    def test_flush_failure_revoke(self) -> None:
+        class FlushFailure:
+            def __init__(self): self.data = ""
+            def write(self, data): self.data += data; return len(data)
+            def flush(self): raise OSError("flush failed")
+            def value(self): return self.data
+        rc, _out, err, status = self._run_output_failure(FlushFailure())
+        self.assertEqual((rc, err), (1, '{"error":"bundle_creation_failed"}\n'))
+        self.assertNotEqual(status, "ACTIVE")
+
+    def test_cleanup_retries_transient_revoke_and_status(self) -> None:
+        temp, _, runtime = self._temp_root()
+        try:
+            real_revoke = bundle_cli.revoke_session
+            real_status = bundle_cli.session_status
+            revoke_calls = mock.Mock(side_effect=[sqlite3.OperationalError("database is locked"), lambda *args: real_revoke(*args), lambda *args: real_revoke(*args)])
+            status_calls = mock.Mock(side_effect=[sqlite3.OperationalError("database is busy"), lambda *args: real_status(*args)])
+            with self._patch_runtime(runtime), mock.patch.object(bundle_cli, "revoke_session", revoke_calls), mock.patch.object(bundle_cli, "session_status", status_calls):
+                class Broken:
+                    def write(self, _data): raise BrokenPipeError
+                    def flush(self): return None
+                out = Broken(); err = io.StringIO()
+                with mock.patch.object(bundle_cli.sys, "stdout", out), mock.patch.object(bundle_cli.sys, "stderr", err):
+                    rc = bundle_cli.main(["create", "--ttl", "600"])
+            self.assertEqual(rc, 1)
+            self.assertEqual(err.getvalue(), '{"error":"bundle_creation_failed"}\n')
+            self.assertGreaterEqual(revoke_calls.call_count, 2)
+            self.assertGreaterEqual(status_calls.call_count, 2)
+        finally:
+            temp.cleanup()
+
+    def test_cleanup_failure_never_reports_success(self) -> None:
+        temp, _, runtime = self._temp_root()
+        try:
+            with self._patch_runtime(runtime), mock.patch.object(bundle_cli, "revoke_session", side_effect=sqlite3.OperationalError("database is locked")), mock.patch.object(bundle_cli, "session_status", side_effect=sqlite3.OperationalError("database is locked")), mock.patch("business_bridge_direct.bundle.encode_bundle", side_effect=RuntimeError("boom")):
+                out = io.StringIO(); err = io.StringIO()
+                with mock.patch.object(bundle_cli.sys, "stdout", out), mock.patch.object(bundle_cli.sys, "stderr", err):
+                    rc = bundle_cli.main(["create", "--ttl", "600"])
+            self.assertEqual(rc, 1)
+            self.assertEqual(err.getvalue(), '{"error":"bundle_creation_failed"}\n')
+            with sqlite3.connect(runtime.database_path) as c:
+                self.assertEqual(c.execute("SELECT status FROM pairing_sessions").fetchone()[0], "ACTIVE")
+        finally:
+            temp.cleanup()
+
+    def test_parser_contract_for_malformed_arguments(self) -> None:
+        cases = [[], ["wat"], ["create", "--unknown"], ["create", "--ttl", "abc"], ["create", "--config"], ["create", "--ttl", "299"], ["create", "--ttl", "601"]]
+        for argv in cases:
+            with self.subTest(argv=argv):
+                out = io.StringIO(); err = io.StringIO()
+                with mock.patch.object(bundle_cli.sys, "stdout", out), mock.patch.object(bundle_cli.sys, "stderr", err):
+                    rc = bundle_cli.main(argv)
+                self.assertEqual(rc, 1)
+                self.assertEqual(out.getvalue(), "")
+                self.assertEqual(err.getvalue(), '{"error":"bundle_creation_failed"}\n')
+                self.assertNotIn("usage", err.getvalue().lower())
+
+    def test_help_is_non_mutating(self) -> None:
+        out = io.StringIO(); err = io.StringIO()
+        with mock.patch.object(bundle_cli.sys, "stdout", out), mock.patch.object(bundle_cli.sys, "stderr", err):
+            with self.assertRaises(SystemExit) as cm:
+                bundle_cli.main(["--help"])
+        self.assertEqual(cm.exception.code, 0)
+        self.assertIn("usage:", out.getvalue())
+        self.assertEqual(err.getvalue(), "")
+
     def test_existing_pairing_cli_output_unchanged(self) -> None:
         temp, _, runtime = self._temp_root()
         try:

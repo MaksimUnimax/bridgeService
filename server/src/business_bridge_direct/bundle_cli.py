@@ -6,6 +6,7 @@ import base64
 import grp
 import hashlib
 import sys
+import time
 from datetime import datetime, timezone
 
 from . import bundle
@@ -21,6 +22,30 @@ def _utc_now() -> str:
 def _generic_error() -> int:
     sys.stderr.write('{"error":"bundle_creation_failed"}\n')
     return 1
+
+
+class _ArgumentParser(argparse.ArgumentParser):
+    def error(self, _message: str) -> None:
+        raise ValueError("invalid_arguments")
+
+
+def _transient_database_error(exc: BaseException) -> bool:
+    message = str(exc).lower()
+    return "busy" in message or "locked" in message
+
+
+def _cleanup_session(database_path: str, session_id: str) -> bool:
+    """Revoke and verify a failed bundle session, with bounded SQLite retries."""
+    for attempt in range(3):
+        try:
+            revoke_session(database_path, session_id)
+            status = session_status(database_path, session_id)
+            return status is None or status.get("status") != "ACTIVE"
+        except Exception as exc:
+            if not _transient_database_error(exc) or attempt == 2:
+                return False
+            time.sleep(0.01 * (attempt + 1))
+    return False
 
 
 def _public_key_fingerprint(spki_b64url: str) -> str:
@@ -51,16 +76,16 @@ def _build_payload(config, identity: dict[str, object], session_id: str, code: s
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="python -m business_bridge_direct.bundle_cli")
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    parser = _ArgumentParser(prog="python -m business_bridge_direct.bundle_cli")
+    subparsers = parser.add_subparsers(dest="command", required=True, parser_class=_ArgumentParser)
     create = subparsers.add_parser("create")
     create.add_argument("--config", default="/etc/business-bridge-2-direct/service.json")
     create.add_argument("--ttl", type=int, default=600)
-    args = parser.parse_args(argv)
-    if args.command != "create":
-        return _generic_error()
     session_id: str | None = None
     try:
+        args = parser.parse_args(argv)
+        if args.command != "create":
+            raise ValueError("invalid_command")
         if not 300 <= args.ttl <= 600:
             raise ValueError("invalid_ttl")
         config = load_config(args.config)
@@ -76,28 +101,15 @@ def main(argv: list[str] | None = None) -> int:
         decoded = bundle.decode_bundle(bundle_line, now=issued_at)
         if decoded != payload:
             raise ValueError("bundle_self_validation_failed")
-        sys.stdout.write(bundle_line + "\n")
+        record = bundle_line + "\n"
+        write_result = sys.stdout.write(record)
+        if write_result != len(record):
+            raise OSError("short_stdout_write")
         sys.stdout.flush()
         return 0
-    except BrokenPipeError:
-        if session_id is not None:
-            try:
-                revoke_session(config.database_path, session_id)
-                status = session_status(config.database_path, session_id)
-                if status and status.get("status") == "ACTIVE":
-                    raise RuntimeError("session_revocation_failed")
-            except Exception:
-                pass
-        return _generic_error()
     except Exception:
         if session_id is not None:
-            try:
-                revoke_session(config.database_path, session_id)
-                status = session_status(config.database_path, session_id)
-                if status and status.get("status") == "ACTIVE":
-                    raise RuntimeError("session_revocation_failed")
-            except Exception:
-                pass
+            _cleanup_session(config.database_path, session_id)
         return _generic_error()
 
 

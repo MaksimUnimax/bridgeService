@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import ast
 import ipaddress
 import json
 import re
@@ -19,6 +20,8 @@ from business_bridge_direct.tasks import create
 
 
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "BB2D1_BUNDLE_VECTORS.json"
+SYNTETIC_SPKI = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEdajsc0MKWPGn8JlAvd1iQTED8wgDHYF23Heq1sM-5eL61zFhKHewF9HoMsE3GCD2-ZOUa3z5XJS4rpGU9yCC0g"
+SYNTETIC_FINGERPRINT = "sha256:10a517a54a7fa625a2e46ad219e423e9e185b50c5b270c0e1755d457f2ce0fab"
 
 
 class BundleError(ValueError):
@@ -209,6 +212,47 @@ class BundleVectorTests(unittest.TestCase):
                         else:
                             decoder(vector["bundle"])
                     self.assertEqual(type(cm.exception).__name__, vector["expected_error_class"])
+
+    def test_decoder_static_purity_forbids_side_effect_dependencies(self) -> None:
+        source = (Path(prod.__file__)).read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        forbidden = {"os", "subprocess", "tempfile", "socket", "pathlib", "logging", "sqlite3"}
+        imported = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                imported.update(alias.name.split(".")[0] for alias in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                imported.add(node.module.split(".")[0])
+        self.assertTrue(forbidden.isdisjoint(imported))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Name):
+                self.assertNotIn(node.id, {"open", "Popen", "run", "TemporaryDirectory"})
+
+    def test_decoder_dynamic_purity_on_invalid_untrusted_der(self) -> None:
+        with mock.patch("subprocess.run") as run, mock.patch("subprocess.Popen") as popen, mock.patch("builtins.open") as open_file, mock.patch("os.getenv") as getenv, mock.patch("socket.socket") as socket_ctor:
+            with self.assertRaises(prod.BundleError):
+                prod.validate_server_public_key("A" * 68, "sha256:" + "0" * 64)
+        run.assert_not_called(); popen.assert_not_called(); open_file.assert_not_called(); getenv.assert_not_called(); socket_ctor.assert_not_called()
+
+    def test_spki_crypto_validation_is_strict(self) -> None:
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ec, rsa
+        valid = serialization.load_der_public_key(base64.urlsafe_b64decode(SYNTETIC_SPKI + "=" * (-len(SYNTETIC_SPKI) % 4)))
+        self.assertIsNotNone(valid)
+        self.assertIsInstance(prod.validate_server_public_key(SYNTETIC_SPKI, SYNTETIC_FINGERPRINT), bytes)
+        cases = [
+            (b"not-der", "invalid DER"),
+            (rsa.generate_private_key(public_exponent=65537, key_size=2048).public_key(), "RSA"),
+            (ec.generate_private_key(ec.SECP384R1()).public_key(), "wrong curve"),
+        ]
+        for key, _label in cases:
+            if not isinstance(key, bytes):
+                key = key.public_bytes(serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo)
+            encoded = base64.urlsafe_b64encode(key).decode().rstrip("=")
+            with self.assertRaises(prod.BundleError):
+                prod.validate_server_public_key(encoded, "sha256:" + __import__("hashlib").sha256(key).hexdigest())
+        with self.assertRaises(prod.BundleError):
+            prod.validate_server_public_key(SYNTETIC_SPKI, "sha256:" + "0" * 64)
 
     def test_duplicate_task_survives_version_upgrade(self) -> None:
         owner = "00000000-0000-4000-8000-000000000002"

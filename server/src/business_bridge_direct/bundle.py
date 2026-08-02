@@ -6,21 +6,13 @@ import hashlib
 import hmac
 import ipaddress
 import json
-import os
 import re
-import subprocess
-import tempfile
 import uuid
 from datetime import datetime, timezone, timedelta
-from pathlib import Path
 from typing import Any
 
-try:
-    from cryptography.hazmat.primitives import serialization
-    from cryptography.hazmat.primitives.asymmetric import ec
-except Exception:  # pragma: no cover - fallback for stripped runtime images
-    serialization = None
-    ec = None
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import ec
 
 BUNDLE_VERSION = "BB2D1"
 SERVER_SIGNING_ALGORITHM = "ECDSA_P256_SHA256"
@@ -67,29 +59,12 @@ def validate_server_public_key(server_public_key: Any, server_fingerprint: Any) 
     decoded = _b64url_decode(server_public_key, "server_public_key")
     if not 50 <= len(decoded) <= 512:
         raise BundleError("invalid_server_public_key")
-    validated_by_crypto = False
-    if serialization is not None and ec is not None:
-        try:
-            public_key = serialization.load_der_public_key(decoded)
-            validated_by_crypto = isinstance(public_key, ec.EllipticCurvePublicKey) and public_key.curve.name in {"secp256r1", "prime256v1"}
-        except Exception:
-            validated_by_crypto = False
-    if not validated_by_crypto:
-        openssl = os.environ.get("OPENSSL", "/usr/bin/openssl")
-        try:
-            with tempfile.TemporaryDirectory(prefix="bb2d1-bundle-") as td:
-                spki = Path(td) / "server_public_key.der"
-                spki.write_bytes(decoded)
-                result = subprocess.run(
-                    [openssl, "pkey", "-pubin", "-inform", "DER", "-in", str(spki), "-text", "-noout"],
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-        except OSError as exc:
-            raise BundleError("invalid_server_public_key") from exc
-        if result.returncode != 0 or ("prime256v1" not in result.stdout and "P-256" not in result.stdout):
-            raise BundleError("invalid_server_public_key")
+    try:
+        public_key = serialization.load_der_public_key(decoded)
+    except Exception as exc:
+        raise BundleError("invalid_server_public_key") from exc
+    if not isinstance(public_key, ec.EllipticCurvePublicKey) or public_key.curve.name != "secp256r1":
+        raise BundleError("invalid_server_public_key")
     if not isinstance(server_fingerprint, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", server_fingerprint):
         raise BundleError("invalid_server_fingerprint")
     if server_fingerprint != "sha256:" + hashlib.sha256(decoded).hexdigest():
